@@ -35,6 +35,9 @@ Priority: High
   - .Create: Admins shall be able to create courses.
   - .Materials: Courses shall contains materials, these materials shall be uploaded by admins.
     - .StudentSubmit: Students may be allowed to submit materials.
+  - .Offer: Admins shall be able to offer courses for enrollment.
+  - .Prerequiste: Courses shall be able to have prerequistes. Students must pass prerequistes of a course
+                  in order to be able to register that course, if it's offered.
 == Event Management
 === Description
 

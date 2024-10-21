@@ -1,0 +1,14 @@
+@startuml
+
+skinparam linetype ortho
+
+Course }o-|| Course: prerequiste 
+Classroom }o---o{ Student
+Classroom }o---|{ Instructor
+Offering }o--|| Instructor
+Offering }o-----|| Course
+Event }o---o{ Student
+AbsenseRecord }o---|| Student
+AbsenseRecord }o---|| Offering
+
+@enduml

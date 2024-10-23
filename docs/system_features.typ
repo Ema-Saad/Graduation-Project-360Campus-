@@ -52,24 +52,54 @@ Priority: High
 === Description
 Automatic logging of students' attendance.
 
-
 Priority: Medium
 === Functional Requirements
 - *Attendance*
 == Performance Analysis
 === Description
+Track the performance of students and staff
 
 Priority: Medium
 === Functional Requirements
 - *Performance*
+  - .Initial: The System Administrator shall create admin accounts and will have full control over all 
+              performance analysis features. 
+
+  - .Student: Every student in the university shall have access to performance analysis system.
+    - .Permissions: Student accounts shall have the following permissions by default
+      - View their graph representing their registered courses and grades
+      - View and download performance reports.
+      // - Grades will be calculated based on attendance and assessments
+  - .ProfessorTA: Professsors and TAs shall have acccess to performance analysis for the courses they manage.
+    - .Permissions: TA and professor accounts shall have the following permissions by default: 
+      - View student performance data in their courses (individual grades, class 
+        averages, participation). 
+      - Generate detailed performance reports for each class or student. 
+      - Provide feedback on student performance based on the analysis. 
+
+    - .Admins: Admins shall have full access to manage the performance analysis system. 
+      - .Permissions: Admin accounts shall have the following permissions by default:
+        - Add, edit, and remove student, TA, and professor performance data. 
+        - View and manage overall system performance metrics (department-level or 
+          university-wide reports). 
+        - Grant or revoke access to performance analysis tools for students, TAs, and 
+          professors. 
 
 == Graduation Project Tracking
 === Description
-Management of students' graduation projects.
+View and discover students' graduation projects. 
 
 Priority: Medium
 === Functional Requirements
 - *GraduationProject*
+  - .Students: Studenst shall be able to view and discover students' graduation projects.
+  - .Professors
+    - .Manage: Professors shall be able to upload detailed 
+               records of past graduation projects they have supervised, including project descriptions, team 
+               members, final grades, and comprehensive details such as technologies used, challenges faced, 
+               and outcomes achieved. This data will be available for future reference and exploration by 
+               students and staff.
+  - .Admins: Admins shall be able to create, edit, and remove graduation projects from the system. 
 == Report Generation
 === Description
 Automatic generation of reports
@@ -77,6 +107,19 @@ Automatic generation of reports
 Priority: Medium
 === Functional Requirements
 - *Report*
+  - .AutomaticGen: The system shall automatically generate reports based on 
+    predefined criteria (student performance, attendance). 
+  - .ScheduledGen: Admins shall be able to schedule automatic report generation (e.g., weekly, 
+    monthly, end of semester) for key metrics such as GPA trends, course pass rates, and project 
+    evaluations. 
+  - .Download: Users shall be able to download reports in multiple formats, such as 
+    PDF, CSV, or Excel. 
+  - .Share: Admins and professors shall be able to share generated reports with other 
+    authorized users via email or within the system. 
+  - .Visualise: The system shall generate visual representations (e.g., charts, graphs) within 
+    reports to better illustrate trends and key performance indicators. 
+  - .Audit: Every report generated, customized, or shared shall be logged in the system for 
+    auditing purposes. 
 
 == Virtual Classroom
 === Description

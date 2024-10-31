@@ -149,9 +149,75 @@ Priority: Low
 === Functional Requirements
 - *Timetable*
   - .Create: Admins shall create timetables.
-  - .Constraints: Admins shall supply constraints for timetable generation. Constraints include
-                  - Available rooms, and their capacities.
-                  - Student Sections. // TODO: a better name for that.
-                  - Time intervals where professors and teaching assistants are available.
-  - .Conflicts: The system shall fail to generate a timetable when a conflict is detected and a warning
-                shall be sent to the admins.
+  - .Formulation
+    - .Variables: The problem contains the following variables:
+      - $C$: The set of courses.
+      - $M = {"Lecture", "Lab", "Tutorial"}$: The set of class types.
+      - $T$: The set of time periods.
+      - $R$: The set of available rooms.
+      - $I$: The set of instructors.
+      - $S$: The set of student sections.
+      - $A = { A_s = (m, t, r) | s in S, m in M, t in T, r in R }$: 
+        The set of assignment variables, 3-tuples that solves the scheduling problem
+        for each student section.
+    - .HardConstraints: The system shall statisfy all of the following contraints:
+      - .RoomCapacity: The number of students in a room must not exceed the room's capacity.
+        $
+          forall s in S : "TotalStudents"(s) <= "Capacity"(A_s.r)
+        $
+
+      - .RoomAvailability: A room cannot be assigned to more than one class at the same time.
+        $
+          forall s_1, s_2 in S, s_1 != s_2 : not (A_s_1.t = A_s_2.t and A_s_1.r = A_s_2.r)
+        $
+
+      - .InstructorAvailability: An instrcutor cannot teach more than one class at the same time.
+        $
+          forall s_1, s_2 in S : not ( "Instructor"(s_1) = "Instructor"(s_2) and A_s_1.t = A_s_2.t)
+        $
+
+      - .SectionSchedule: A section cannot attend more than one class at the same time.
+        $
+          forall s in S, A_1, A_2 in A : 
+        $
+
+      - .ClassEquipment: Classes must be scheduled in rooms that have the required equipment.
+        $
+          forall s in S : "RequiredEquipment"(s) subset "Equipment"(A_s.r)
+        $
+      - .PreAssignedClasses: Some classes have fixed time slots and/or rooms
+        $
+          forall s in S_"preassigned" : A_s.t = "PreassignedTime"(s), A_s.r = "PreassignedRoom"(s)
+        $
+    - .SoftConstraints: The system shall satisfy any of the following constraints
+      - .InstructorTimePreference: Instructors have preferred time slots and unavailable periods
+      $
+        forall s in S: "Penalty" -> "Penalty" + cases(
+          w_"instructor" & "if"  A_s.t in "InstructorUnavailable"(s),
+          0 & "otherwise",
+        )
+      $
+
+    - .StudentTimePreference: Minimise gaps in student schedules; avoid scheduling classes too early or late
+      $
+        "Penalty" += w_"studentGap" times "TotalIdleTime"(u)
+      $
+    - .RoomPreference: Prefer specific rooms for certain classes (e.g., proximity to department)
+      $
+          forall s in S : "Penalty" -> "Penalty" + cases(
+            w_"roomPref" & "if" A_s.r != "PreferredRoom"(s),
+            0 & "otherwise",
+          )
+      $
+    - .ClassSpread: Spread classes evenly throughout the week to avoid overloading days
+      $
+        "Penalty" -> "Penalty" + w_"dailyLoad" times "VarianceOfDailyCounts"
+      $
+    - .InstructorConsecutive: Avoid scheduling instructors for multiple consecutive classes without breaks
+      $
+        "Penalty" -> "Penalty" + w_"instructorBreak" times "NumberOfConsecutiveClasses"(i)
+      $
+  - .ObjectiveFunction: The system shall minimise the sum of the penalties of all the soft constraints,
+    given that all hard constraints are satisfied
+
+

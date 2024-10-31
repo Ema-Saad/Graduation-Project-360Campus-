@@ -1,5 +1,156 @@
 @startuml
 
+/'
+Table Staff {
+  id int [pk]
+  name varchar
+  email varchar [unique]
+  Role varchar
+  college varchar
+  department varchar
+}
+
+Table Student {
+  id int [pk]
+  name varchar
+  email varchar [unique]
+  college varchar
+  department varchar
+}
+
+Table Staff_Student {
+  staff_id int
+  student_id int
+}
+
+Ref: Staff_Student.staff_id > Staff.id
+Ref: Staff_Student.student_id > Student.id
+
+Table Course {
+  id int [pk] // Unique identifier for each course
+  title varchar // Title of the course
+  description text // Detailed description of the course
+  admin_id int // Admin who created the course
+  prerequisite_id int // ID of prerequisite course if any
+  created_at datetime // Timestamp for when the course was created
+  updated_at datetime // Timestamp for the last update
+}
+
+Table Material {
+  id int [pk] // Unique identifier for each material
+  course_id int // ID of the course this material is associated with
+  year int // Academic year the material is relevant to (e.g., 2024, 2023)
+  type varchar // Type of material (e.g., lecture, lab, tutorial, assignment)
+  file_path varchar // Path to the uploaded material
+  description text // Description of the material
+}
+
+Table Lecture {
+  id int [pk] // Unique identifier for each lecture
+  course_id int // ID of the course this lecture belongs to
+  title varchar // Title of the lecture
+  date datetime // Date and time of the lecture
+  duration int // Duration in minutes
+}
+
+Table Lab {
+  id int [pk] // Unique identifier for each lab
+  course_id int // ID of the course this lab belongs to
+  title varchar // Title of the lab
+  date datetime // Date and time of the lab
+  duration int // Duration in minutes
+}
+
+Table Tutorial {
+  id int [pk] // Unique identifier for each tutorial
+  course_id int // ID of the course this tutorial belongs to
+  title varchar // Title of the tutorial
+  date datetime // Date and time of the tutorial
+  duration int // Duration in minutes
+}
+
+Table Assignment {
+  id int [pk] // Unique identifier for each assignment
+  course_id int // ID of the course this assignment belongs to
+  title varchar // Title of the assignment
+  description text // Description of the assignment
+  due_date datetime // Due date for the assignment
+  submitted boolean // Indicator if the assignment has been submitted
+}
+
+// Define foreign key relationships
+Ref: Staff.id < Course.id
+Ref: Student.id < Course.id
+Ref: Staff.id < Material.id
+Ref: Material.course_id > Course.id
+Ref: Lecture.course_id > Course.id
+Ref: Lab.course_id > Course.id
+Ref: Tutorial.course_id > Course.id
+Ref: Assignment.course_id > Course.id
+
+Table Attendance {
+  id int [pk]
+  student_id int [ref: > Student.id]
+  course_id int [ref: > Course.id]
+  date datetime
+  status varchar // e.g., Present, Absent, Late
+}
+
+Table Event {
+  id int [pk]
+  title varchar
+  description text
+  date datetime
+  created_by int [ref: > Staff.id]
+}
+
+Table Enrollment {
+  id int [pk]
+  student_id int [ref: > Student.id]
+  course_id int [ref: > Course.id]
+  enrolled_at datetime
+}
+
+Table Chatroom {
+  id int [pk]
+  course_id int [ref: > Course.id]
+  title varchar // Main or Private
+  created_at datetime
+}
+
+Table Message {
+  id int [pk]
+  chatroom_id int [ref: > Chatroom.id]
+  sender_id int [ref: - Staff.id, ref: - Student.id]
+  content text
+  sent_at datetime
+}
+
+// Added refactor: managing relationships between course materials and user submissions
+Table Submission {
+  id int [pk]
+  assignment_id int [ref: > Assignment.id]
+  student_id int [ref: > Student.id]
+  file_path varchar
+  submitted_at datetime
+}
+
+// Events registration and attendance tracking
+Table Event_Registration {
+  event_id int [ref: > Event.id]
+  student_id int [ref: > Student.id]
+  registered_at datetime
+}
+/*Ref: posts.user_id > users.id // many-to-one
+
+Ref: users.id < follows.following_user_id
+
+Ref: users.id < follows.followed_user_id*/
+'
+'
+'
+'/
+
 skinparam linetype ortho
 
 Course }o-|| Course: prerequiste 

@@ -1,20 +1,36 @@
 @startuml
 
-entity Staff {
-    staff_id: int 
-    staff_name: varchar
-    staff_email: varchar 
-    staff_role: varchar
-    staff_college: varchar
-    staff_department: varchar
-}
+together {
+    () person_type
 
-entity Student {
-    student_id: int 
-    student_name: varchar
-    student_email: varchar 
-    student_college: varchar
-    student_department: varchar
+    entity Person {
+        person_id int
+        person_name varchar
+        person_email varchar
+        person_college varchar
+        person_department varchar
+        person_type char
+    }
+
+    entity Professor {
+        person_id int
+        prof_id int
+    }
+
+    entity Student {
+        person_id int
+        student_id: int 
+    }
+
+    entity TeachingAssistant {
+        person_id int
+        ta_id int
+    }
+
+    entity Admin {
+        person_id int
+        admin_id int
+    }
 }
 
 entity Course {
@@ -185,28 +201,41 @@ entity GraduationProject {
 
 skinparam linetype ortho
 
-Course }o---|| Course: prerequiste 
-Classroom }o-o{ Student
-Classroom }o-|{ Instructor
-Enrollment }o-|| Instructor
-Enrollment }o-|| Course
-Assignment }o-|| Course
-Tutorial }|-|| Course
-Lab }|--|| Course
-Lecture }|--|| Course
-Material }o--|| Course
-Staff ||---o{ Material
-Message }o----|| Student
-Message }o----|| Chatroom
+
+Person -- person_type
+person_type -- "S" Student
+person_type -- "P" Professor
+person_type - "T" TeachingAssistant
+person_type - "A" Admin
+
+Student -[hidden]> Professor
+Professor -[hidden]> TeachingAssistant
+TeachingAssistant -[hidden]> Admin
+
+Student }o--|| EventRegistration
+Student ||--o{ Submission
+Student ||--o{ Message
+Student }|--|| GraduationProject
+Professor ||---|{ GraduationProject
+Professor ||---o{ Enrollment
+Professor ||---o{ StaffPerformance
+Professor ||---o{ Material
+Course "prerequiste" }o----|| "course" Course: requires
+Course ||---o{ Enrollment
+Course ||----o{ Assignment
+Course ||----o{ Tutorial
+Course ||-----|{ Lab
+Course ||-----|{ Lecture
+Course ||------o{ Material
+Course ||------o{ StaffPerformance
+TeachingAssistant ||----|{ Tutorial
+Enrollment ||---o{ Submission
+Enrollment ||---o{ Absence
 Event }o---|| EventRegistration
-Student }o---|| EventRegistration
-Absence ||----|| Enrollment
-Student ||-----o{ Submission
-Assignment ||-----o{ Submission
-Enrollment ||------o{ Submission
-GraduationProject ||-----|{ Student
-GraduationProject }|-----|| Staff
-StaffPerformance }o-----|| Staff
-StaffPerformance }o-----|| Course
+Message }o---|| Chatroom
+Assignment ||----o{ Submission
+Person }o-|| Report
+Chatroom ||-|| Course
+
 
 @enduml

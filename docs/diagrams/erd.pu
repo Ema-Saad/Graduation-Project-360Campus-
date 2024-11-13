@@ -1,145 +1,138 @@
 @startuml
 
 entity Staff {
-    id: int 
-    name: varchar
-    email: varchar 
-    role: varchar
-    college: varchar
-    department: varchar
+    staff_id: int 
+    staff_name: varchar
+    staff_email: varchar 
+    staff_role: varchar
+    staff_college: varchar
+    staff_department: varchar
 }
 
 entity Student {
-    id: int 
-    name: varchar
-    email: varchar 
-    college: varchar
-    department: varchar
+    student_id: int 
+    student_name: varchar
+    student_email: varchar 
+    student_college: varchar
+    student_department: varchar
 }
 
 entity Course {
-    id: int  
-    title: varchar 
-    description: text 
+    course_id: int 
     admin_id: int 
-    prerequisite_id: int 
-    created_at: datetime 
-    updated_at: datetime 
+    course_title: varchar 
+    course_description: text 
+    course_prerequisite_id: int 
+    course_created_at: datetime 
+    course_updated_at: datetime 
 }
 
 entity Material {
-    id: int  
+    material_id: int  
     course_id: int 
-    year: int 
-    type: varchar 
-    file_path: varchar 
-    description: text 
+    material_year: int 
+    material_type: varchar 
+    material_file_path: varchar 
+    material_description: text 
 }
 
 entity Lecture {
-  id int  
-  course_id int 
-  title varchar 
-  date datetime 
-  duration int 
+    lecture_id int  
+    course_id int 
+    lecture_title varchar 
+    lecture_date datetime 
+    lecture_duration int 
 }
 
 entity Lab {
-  id int  
-  course_id int 
-  title varchar 
-  date datetime 
-  duration int 
+    lab_id int  
+    course_id int 
+    lab_title varchar 
+    lab_date datetime 
+    lab_duration int 
 }
 
 entity Tutorial {
-  id int  
-  course_id int 
-  title varchar 
-  date datetime 
-  duration int 
+    tutorial_id int  
+    course_id int 
+    tutorial_title varchar 
+    tutorial_date datetime 
+    tutorial_duration int 
 }
 
 entity Assignment {
-  id int  
-  course_id int 
-  title varchar 
-  description text 
-  due_date datetime 
-  submitted boolean 
+    course_id int 
+    assignment_id int  
+    assignment_title varchar 
+    assignment_description text 
+    assignment_due_date datetime 
+    assignment_submitted boolean 
 }
 
 entity Absence {
-  id int 
-  student_id int 
-  course_id int 
-  date datetime
-  status varchar 
+    absence_id int 
+    student_id int 
+    course_id int 
+    absence_date datetime
+    absence_status varchar 
 }
 
 entity Event {
-  id int 
-  title varchar
-  description text
-  date datetime
-  created_by int 
+    event_id int 
+    event_title varchar
+    event_description text
+    event_date datetime
+    ' event_created_by int TODO: Is that an admin's ID ?
 }
 
 entity Enrollment {
-  id int 
-  student_id int 
-  course_id int 
-  enrolled_at datetime
+    student_id int 
+    course_id int 
+    enrollment_enrolled_at datetime
+    enrollment_grade float
+    enrollment_feedback text
+    enrollment_created_at timestamp 
 }
 
 entity Chatroom {
-  id int 
-  course_id int 
-  title varchar 
-  created_at datetime
+    course_id int 
+    chatroom_id int 
+    chatroom_title varchar 
+    chatroom_created_at datetime
 }
 
 entity Message {
-  id int 
-  chatroom_id int 
-  sender_id int 
-  content text
-  sent_at datetime
+    chatroom_id int 
+    message_id int 
+    message_sender_id int 
+    message_content text
+    message_sent_at datetime
 }
 
 
 entity Submission {
-  id int 
-  assignment_id int 
-  student_id int 
-  file_path varchar
-  submitted_at datetime
+    assignment_id int 
+    submission_id int 
+    student_id int 
+    submission_file_path varchar
+    submission_submitted_at datetime
 }
 
 
 entity EventRegistration {
-  event_id int 
-  student_id int 
-  registered_at datetime
-}
-
-Table StudentPerformance {
-    performance_id int [pk]
-    student_id int [ref: > Student.id]
-    course_id int [ref: > Course.id]
-    grade float
-    feedback text
-    created_at timestamp [default: `current_timestamp`]
+    event_id int 
+    student_id int 
+    registered_at datetime
 }
 
 Table StaffPerformance {
-    performance_id int [pk]
-    staff_id int [ref: > Staff.id]
-    course_id int [ref: > Course.id]
-    role varchar(10) // Professor, TA
-    evaluation_score float // e.g., based on student feedback or other metrics
-    feedback text
-    created_at timestamp [default: `current_timestamp`]
+performance_id int [pk]
+staff_id int [ref: > Staff.id]
+course_id int [ref: > Course.id]
+role varchar(10) // Professor, TA
+evaluation_score float // e.g., based on student feedback or other metrics
+feedback text
+created_at timestamp [default: `current_timestamp`]
 }
 
 //Add a note to clarify reference
@@ -147,48 +140,48 @@ Table StaffPerformance {
 //otherwise it references 'staff_id' in 'Staff'. Ensure application logic enforces this relationship.
 
 Table Report {
-  report_id int [pk]
-  title varchar
-  content text
-  generated_by_type varchar // Either 'Student' or 'Staff'
-  generated_by_id int [ref: > Staff.id, ref: > Student.id]// Refers to either student_id or staff_id based on type
-  generated_date datetime
-  data json
+report_id int [pk]
+title varchar
+content text
+generated_by_type varchar // Either 'Student' or 'Staff'
+generated_by_id int [ref: > Staff.id, ref: > Student.id]// Refers to either student_id or staff_id based on type
+generated_date datetime
+data json
 
 }
 
 Table GraduationProject {
-    project_id int [pk]
-    project_name varchar(100)
-    description text
-    student_id INT [ref: < Student.id]
-    supervised_by int [ref: > Staff.id]
-    final_grade varchar
-    created_at timestamp [default: `current_timestamp`]
+project_id int [pk]
+project_name varchar(100)
+description text
+student_id INT [ref: < Student.id]
+supervised_by int [ref: > Staff.id]
+final_grade varchar
+created_at timestamp [default: `current_timestamp`]
 }
 
 Table Timetable {
-    timetable_id int [pk]
-    course_id int [ref: < Course.id]
-    instructor_id int [ref: < Staff.id]
-    room_id int [ref: < Rooms.room_id]
-    timeslot_id int [ref: < Timeslots.timeslot_id]
-    section_id int
-    created_at timestamp [default: `current_timestamp`]
+timetable_id int [pk]
+course_id int [ref: < Course.id]
+instructor_id int [ref: < Staff.id]
+room_id int [ref: < Rooms.room_id]
+timeslot_id int [ref: < Timeslots.timeslot_id]
+section_id int
+created_at timestamp [default: `current_timestamp`]
 }
 
 Table Timeslots {
-    timeslot_id int [pk]
-    start_time time
+timeslot_id int [pk]
+start_time time
     end_time time
     day varchar(10) // Monday, Tuesday, etc.
 }
 
 Table Rooms {
-    room_id int [pk]
-    room_name varchar(50)
-    capacity int
-    equipment json
+room_id int [pk]
+room_name varchar(50)
+capacity int
+equipment json
 }
 
 skinparam linetype ortho

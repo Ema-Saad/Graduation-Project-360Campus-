@@ -108,7 +108,6 @@ entity Message {
     message_sent_at datetime
 }
 
-
 entity Submission {
     assignment_id int 
     submission_id int 
@@ -152,8 +151,8 @@ entity GraduationProject {
     project_id int 
     project_name varchar(100)
     project_description text
-    student_id INT [ref: < Student.id]
-    project_supervised_by int [ref: > Staff.id]
+    student_id int 
+    project_supervised_by int 
     project_final_grade varchar
     project_created_at timestamp 
 }
@@ -186,31 +185,28 @@ entity GraduationProject {
 
 skinparam linetype ortho
 
-Course }o-|| Course: prerequiste 
-Classroom }o---o{ Student
-Classroom }o---|{ Instructor
-Enrollment }o--|| Instructor
-Enrollment }o-----|| Course
-AbsenseRecord }o---|| Student
-AbsenseRecord }o---|| Enrollment
-Assignment }o----|| Course
-Tutorial }|----|| Course
-Lab }|----|| Course
-Lecture }|---|| Course
-Material }o---|| Course
+Course }o---|| Course: prerequiste 
+Classroom }o-o{ Student
+Classroom }o-|{ Instructor
+Enrollment }o-|| Instructor
+Enrollment }o-|| Course
+Assignment }o-|| Course
+Tutorial }|-|| Course
+Lab }|--|| Course
+Lecture }|--|| Course
+Material }o--|| Course
 Staff ||---o{ Material
-Message }o---|| Student
-Message }o---|| Chatroom
-Event }o----|| EventRegistration
+Message }o----|| Student
+Message }o----|| Chatroom
+Event }o---|| EventRegistration
 Student }o---|| EventRegistration
-Absence ||---|| Enrollment
-Student ||---o{ Submission
-Assignment ||---o{ Submission
-Enrollment ||---o{ Submission
-GradutaionProject ||---|{ Student
-GradutationProject }|---|| Staff
-StaffPerformance }o---|| Staff
-StaffPerformance }o---|| Course
-
+Absence ||----|| Enrollment
+Student ||-----o{ Submission
+Assignment ||-----o{ Submission
+Enrollment ||------o{ Submission
+GraduationProject ||-----|{ Student
+GraduationProject }|-----|| Staff
+StaffPerformance }o-----|| Staff
+StaffPerformance }o-----|| Course
 
 @enduml

@@ -32,26 +32,27 @@ The 360Campus system consists of several key components, each addressing specifi
 - AI Scheduling System: Automates timetable generation for classes and events.
 
 == User classes and characteristics
-- Student
-   - Use Frequency: Daily 
-   - Functions: Access materials and courses, track attendance, use map. 
-   - Technical Expertise: Moderate 
-   - Security Level: Standard user access 
-   - Importance: High 
+#table(
+   rows: 4,
+   columns: (1fr, 1fr, 2fr, 1fr, 1fr, 1fr) ,
+   [User Class], [Use Frequency], [Functions], [Technical Expertise], [Security Level], [Importance],
+   [Student], [ Daily ], [ 
+   - Access materials and courses
+   - Track attendance
+   - Use map. 
+   ], [ Moderate ], [ Standard user access ], [ High ],
 
-- Instructors
-   - Use Frequency: Daily to weekly 
-   - Functions: Upload materials, track attendance, analyze performance. 
-   - Technical Expertise: Moderate to high 
-   - Security Level: Elevated access 
-   - Importance: High 
+   [Instructors], [ Daily to weekly ], [ 
+      - Upload materials
+      - Track attendance 
+      - Analyze performance 
+   ], [ Moderate to high ], [ Elevated access ], [ High ],
 
-- Administrators
-   - Use Frequency: Weekly to monthly 
-   - Functions: Manage user accounts, oversee courses. 
-   - Technical Expertise: High 
-   - Security Level: Elevated access 
-   - Importance: Medium 
+   [Administrators], [ Weekly to monthly ], [ 
+      - Manage user accounts
+      - Oversee courses
+   ], [ High ], [ Elevated access ], [ Medium ],
+)
 
 == Operating environment
 The platform will operate in a cloud environment, ensuring scalability and accessibility. It will support 

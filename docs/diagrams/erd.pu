@@ -224,18 +224,17 @@ Course "prerequiste" }o----|| "course" Course: requires
 Course ||---o{ Enrollment
 Course ||----o{ Assignment
 Course ||----o{ Tutorial
-Course ||-----|{ Lab
-Course ||-----|{ Lecture
+Course ||-----o{ Lab
+Course ||-----o{ Lecture
 Course ||------o{ Material
 Course ||------o{ StaffPerformance
 TeachingAssistant ||----|{ Tutorial
 Enrollment ||---o{ Submission
 Enrollment ||---o{ Absence
-Event }o---|| EventRegistration
+Event ||---o{ EventRegistration
 Message }o---|| Chatroom
 Assignment ||----o{ Submission
 Person }o-|| Report
 Chatroom ||-|| Course
-
 
 @enduml

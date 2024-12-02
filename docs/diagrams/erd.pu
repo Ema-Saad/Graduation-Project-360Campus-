@@ -212,12 +212,12 @@ Student -[hidden]> Professor
 Professor -[hidden]> TeachingAssistant
 TeachingAssistant -[hidden]> Admin
 
-Student }o--|| EventRegistration
-Student ||--o{ Submission
-Student ||--o{ Message
-Student }|--|| GraduationProject
+Student }o---|| EventRegistration
+Student ||---o{ Submission
+Student ||---o{ Message
+Student }|---|| GraduationProject
+Student ||---o{ Enrollment
 Professor ||---|{ GraduationProject
-Professor ||---o{ Enrollment
 Professor ||---o{ StaffPerformance
 Professor ||---o{ Material
 Course "prerequiste" }o----|| "course" Course: requires

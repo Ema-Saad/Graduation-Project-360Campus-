@@ -27,29 +27,21 @@ class Person(AbstractBaseUser):
 
 
 class Student(Person):
-    student_id = models.AutoField(primary_key=True)
-
     class Meta:
         verbose_name = "Student"
 
 
 class Professor(Person):
-    professor_id = models.AutoField(primary_key=True)
-
     class Meta:
         verbose_name = "Professor"
 
 
 class TeachingAssistant(Person):
-    ta_id = models.AutoField(primary_key=True)
-
     class Meta:
         verbose_name = "Teaching Assistant"
 
 
 class Admin(Person):
-    admin_id = models.AutoField(primary_key=True)
-
     class Meta:
         verbose_name = "Admin"
 

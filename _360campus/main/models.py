@@ -1,4 +1,5 @@
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import UserManager
 from django.db import models
 
 
@@ -20,6 +21,8 @@ class Person(AbstractBaseUser):
     email = models.EmailField(unique=True)
     department = models.CharField(max_length=50, null=True, blank=True)
     person_type = models.CharField(max_length=1, choices=PERSON_TYPE_CHOICES)
+
+    objects = UserManager()
 
     class Meta:
         verbose_name = "Person"

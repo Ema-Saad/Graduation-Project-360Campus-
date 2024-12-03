@@ -1,14 +1,20 @@
+from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 
 
 # Person model with Single Table Inheritance
-class Person(models.Model):
+class Person(AbstractBaseUser):
     PERSON_TYPE_CHOICES = [
         ('S', 'Student'),
         ('P', 'Professor'),
         ('T', 'Teaching Assistant'),
         ('A', 'Admin'),
     ]
+
+    USERNAME_FIELD = 'email'
+    EMAIL_FIELD = 'email'
+    REQUIRED_FIELDS = ['person_type', 'department']
+
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     email = models.EmailField(unique=True)

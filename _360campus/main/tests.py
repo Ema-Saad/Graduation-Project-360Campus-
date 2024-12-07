@@ -6,13 +6,16 @@ from .models import *
 class TestStudentAccessClassroom(TestCase):
 
     def setUp(self):
-        student = Student.objects.create(first_name='John', last_name='Doe', email='email@domain.com', person_type='P')
+        student = Student.objects.create(first_name='John', last_name='Doe', email='email@domain.com', person_type='S')
         student.set_password('test')
 
         course = Course.objects.create(title='Course 1', description='Desc. 1')
         Course.objects.create(title='Course 2', description='Desc. 2')
 
         Enrollment.objects.create(student=student, course=course)
+        classroom = Classroom.objects.create(course=course, title='Course 1 - 2020')
+        classroom.students.add(student)
+        classroom.save()
 
         self.client.login(email='email@domain.com', password='test')
 

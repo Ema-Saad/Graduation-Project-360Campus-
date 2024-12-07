@@ -1,26 +1,27 @@
 from django.shortcuts import render
+from django.http.response import HttpResponseNotFound
 
 def student_login(req):
-    pass
+    return HttpResonseNotFound()
 
 def student_logout(req):
-    pass
+    return HttpResponseNotFound()
 
 def student_home(req):
-    pass
+    return HttpResponseNotFound()
 
 def course_list(req):
-    pass
+    return HttpResponseNotFound()
 
 def course_view(req, course_pk):
-    pass
+    return HttpResponseNotFound()
 
 def classroom_view(req, course_pk):
-    pass
+    return HttpResponseNotFound()
 
 def material_list(req, course_pk):
-    pass
+    return HttpResponseNotFound()
 
 def material_view(req, course_pk, material_pk):
-    pass
+    return HttpResponseNotFound()
 

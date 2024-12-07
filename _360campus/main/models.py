@@ -107,6 +107,22 @@ class Enrollment(models.Model):
         unique_together = ('student', 'course')
 
 
+class Classroom(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+
+    class Meta:
+        verbose_name = 'Classroom'
+
+def get_materials_file_location(inst, filename):
+    return f'{inst.classroom.title}/'
+
+class Material(models.Model):
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+    name = models.CharField(max_length=500)
+    file = models.FileField(upload_to=get_materials_file_location)
+
+
 # Lecture Model
 class Lecture(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="lectures")

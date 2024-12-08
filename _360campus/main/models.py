@@ -1,9 +1,27 @@
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin, BaseUserManager
 from django.db import models
 
+class PersonManager(BaseUserManager):
+    def create_user(self, email, person_type, password=None, **extra_fields):
+        if not email:
+            raise ValueError("The Email field is required.")
+        if not person_type:
+            raise ValueError("The person_type field is required.")
+        email = self.normalize_email(email)
+        user = self.model(email=email, person_type=person_type, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
-# Person model with Single Table Inheritance
-class Person(AbstractBaseUser):
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('person_type', 'A')  # Admin
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_staff', True)
+        return self.create_user(email, password=password, **extra_fields)
+
+
+class Person(AbstractBaseUser, PermissionsMixin):
     PERSON_TYPE_CHOICES = [
         ('S', 'Student'),
         ('P', 'Professor'),
@@ -11,20 +29,23 @@ class Person(AbstractBaseUser):
         ('A', 'Admin'),
     ]
 
-    USERNAME_FIELD = 'email'
-    EMAIL_FIELD = 'email'
-    REQUIRED_FIELDS = ['person_type', 'department']
-
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=20, unique=True, primary_key=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    email = models.EmailField(unique=True)
     department = models.CharField(max_length=50, null=True, blank=True)
     person_type = models.CharField(max_length=1, choices=PERSON_TYPE_CHOICES)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+
+    objects = PersonManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['person_type', 'department']
 
     class Meta:
         verbose_name = "Person"
         verbose_name_plural = "People"
-
 
 class Student(Person):
     class Meta:

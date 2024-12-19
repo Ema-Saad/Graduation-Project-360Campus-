@@ -100,7 +100,7 @@
 </template>
 
 <script>
-  import courseImage from '@/assets/pexels-photo.png'; // Common image for all courses
+  import courseImage from '@/assets/pexels-pixabay.jpg'; // Common image for all courses
   import instructorIcon1 from '@/assets/doctor-img.png'; // Icon for Dr. Mohamed
   import instructorIcon2 from '@/assets/doctor-img2.png'; // Icon for Dr. Ayman
   import instructorIcon3 from '@/assets/doctor-img3.png'; // Icon for Dr. Mostafa

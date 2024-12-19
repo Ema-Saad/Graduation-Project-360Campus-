@@ -1,10 +1,10 @@
 <template>
   <div class="events-page">
     <div class="images-container">
-      <img src="@/assets/pexels-photo.png" alt="Event Image 1" class="image image1" />
-      <img src="@/assets/pexels-photo.png" alt="Event Image 2" class="image image2" />
-      <img src="@/assets/pexels-photo.png" alt="Event Image 3" class="image image3" />
-      <img src="@/assets/pexels-photo.png" alt="Event Image 4" class="image image4" />
+      <img src="@/assets/pexels-pixabay.jpg" alt="Event Image 1" class="image image1" />
+      <img src="@/assets/pexels-pixabay.jpg" alt="Event Image 2" class="image image2" />
+      <img src="@/assets/pexels-pixabay.jpg" alt="Event Image 3" class="image image3" />
+      <img src="@/assets/pexels-pixabay.jpg" alt="Event Image 4" class="image image4" />
     </div>
 
     <div class="event-details">

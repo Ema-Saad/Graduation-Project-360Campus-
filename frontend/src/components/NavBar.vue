@@ -3,7 +3,7 @@
   <nav class="navbar">
     <!-- Logo on the left -->
     <div class="logo">
-      <img src="@/assets/pexels-photo.png" alt="Logo" />
+      <img src="@/assets/pexels-pixabay.jpg" alt="Logo" />
     </div>
 
     <!-- Nav links (buttons) in the middle -->

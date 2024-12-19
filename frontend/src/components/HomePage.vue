@@ -23,7 +23,7 @@
       <div class="card-container">
         <div class="card" v-for="i in 3" :key="i">
 
-          <img class="card-img" src="@/assets/pexels-photo.png" alt="Course Image" />
+          <img class="card-img" src="@/assets/pexels-pixabay.jpg" alt="Course Image" />
 
           <div class="card-content">
             <h2 class="card-title">Course Title {{ i }}</h2>
@@ -67,7 +67,7 @@
         <div class="card" v-for="i in 3" :key="i">
           <a href="#course-{{ i }}" class="card-link">
             <!-- Make the card clickable -->
-            <img class="card-img" src="@/assets/pexels-photo.png" alt="Course Image" />
+            <img class="card-img" src="@/assets/pexels-pixabay.jpg" alt="Course Image" />
             <div class="card-content">
               <h2 class="card-title">Course Title {{ i }}</h2>
               <p class="card-description">

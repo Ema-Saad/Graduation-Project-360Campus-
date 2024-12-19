@@ -20,7 +20,7 @@ import VerificationPage from '@/components/VerificationPage.vue';
 import ResetPasswordPage from '@/components/ResetPassword.vue';
 import CongratulationsPage from '@/components/CongratulationsPage.vue';
 import ErrorPage from '@/components/ErrorPage.vue';
-import ProfilePage from "@/components/ProfilePage.vue";
+// import ProfilePage from "@/components/ProfilePage.vue";
 import MyCourses from '@/components/MyCourses.vue';
 import ToDoPage from "@/components/ToDoPage.vue";
 import MyCourseDetail from '@/components/MyCourseDetail.vue';
@@ -30,11 +30,11 @@ import Timeline from "@/components/Timeline.vue";
 
 // Define routes
 const routes = [
-  {
+ /* {
     path: '/profile',  // Changed to '/profile' for clarity
     name: 'ProfilePage',  // Fixed name, removed extra dot
     component: ProfilePage
-  },
+  },*/
   { path: '/', component: HomePage, name: 'Home' },
   { path: '/home', redirect: '/', },
   { path: '/login', component: LoginPage, name: 'Login' },

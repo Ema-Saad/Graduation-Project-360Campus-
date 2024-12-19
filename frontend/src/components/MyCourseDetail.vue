@@ -50,11 +50,11 @@
 </template>
 
 <script>
-  import bannerImage from "@/assets/pexels-photo.png"; // Import the top banner image
-  import week1Image from "@/assets/pexels-photo.png"; // Import week 1 image
-  import week2Image from "@/assets/pexels-photo.png"; // Import week 2 image
-  import week3Image from "@/assets/pexels-photo.png"; // Import week 3 image
-  import week4Image from "@/assets/pexels-photo.png"; // Import week 4 image
+  import bannerImage from "@/assets/pexels-pixabay.jpg"; // Import the top banner image
+  import week1Image from "@/assets/pexels-pixabay.jpg"; // Import week 1 image
+  import week2Image from "@/assets/pexels-pixabay.jpg"; // Import week 2 image
+  import week3Image from "@/assets/pexels-pixabay.jpg"; // Import week 3 image
+  import week4Image from "@/assets/pexels-pixabay.jpg"; // Import week 4 image
 
   export default {
     data() {

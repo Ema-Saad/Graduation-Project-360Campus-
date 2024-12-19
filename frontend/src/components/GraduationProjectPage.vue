@@ -93,7 +93,7 @@
 </template>
 
 <script>
-  import projectImage from '@/assets/pexels-photo.png';
+  import projectImage from '@/assets/pexels-pixabay.jpg';
   import instructorIcon1 from '@/assets/doctor-img.png';
   import instructorIcon2 from '@/assets/doctor-img2.png';
   import instructorIcon3 from '@/assets/doctor-img3.png';

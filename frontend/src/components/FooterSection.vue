@@ -3,7 +3,7 @@
     <div class="footer-container">
       <!-- Logo and Title -->
       <div class="footer-logo-section">
-        <img src="@/assets/pexels-photo.png" alt="Logo" class="footer-logo" />
+        <img src="@/assets/pexels-pixabay.jpg" alt="Logo" class="footer-logo" />
 
         <span class="footer-title">360Campus</span>
       </div>

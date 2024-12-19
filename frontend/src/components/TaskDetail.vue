@@ -2,7 +2,7 @@
   <div class="task-detail">
     <!-- Top Image -->
     <div class="top-image">
-      <img src="@/assets/pexels-photo.png" alt="Task Detail Image" />
+      <img src="@/assets/pexels-pixabay.jpg" alt="Task Detail Image" />
     </div>
 
     <!-- Two Sections Below -->
@@ -11,7 +11,7 @@
       <div class="left-section">
         <div class="sheet-card">
           <h3>Sheet 1</h3>
-          <img src="@/assets/pexels-photo.png" alt="Sheet Image" @click="viewSheet" />
+          <img src="@/assets/pexels-pixabay.jpg" alt="Sheet Image" @click="viewSheet" />
         </div>
       </div>
 

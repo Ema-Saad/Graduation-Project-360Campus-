@@ -2,7 +2,7 @@
   <div>
     <!-- Main Header Image inside a container -->
     <div class="image-container">
-      <img src="../assets/pexels-photo.png" alt="Course Image" class="main-image" />
+      <img src="../assets/pexels-pixabay.jpg" alt="Course Image" class="main-image" />
     </div>
 
     <h1>{{ course.title }}</h1>
@@ -11,7 +11,7 @@
     <div class="weeks-container">
       <div class="week-box" v-for="week in weeks" :key="week.id">
         <div class="week-header" @click="toggleDropdown(week.id)">
-          <img src="../assets/pexels-photo.png" alt="Week Image" class="week-image" />
+          <img src="../assets/pexels-pixabay.jpg" alt="Week Image" class="week-image" />
           <span class="arrow" :class="{ 'rotate': isDropdownOpen(week.id) }">&#9660;</span>
         </div>
 

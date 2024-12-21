@@ -25,6 +25,9 @@
           <p class="forgot-password">
             <router-link to="/forgot-password">Forgot Password?</router-link>
           </p>
+          <p class="errorlist">
+            {{ errors }}
+          </p>
         </div>
       </div>
     </div>
@@ -32,21 +35,31 @@
 </template>
 
 <script>
-  export default {
+import axios from 'axios';
+import { getCurrentInstance } from 'vue';
+
+export default {
     name: 'LoginPage',
     data() {
-      return {
-        username: '',
-        password: '',
-      };
+        return {
+            username: '',
+            password: '',
+            errors: '',
+        };
     },
     methods: {
-      handleLogin() {
-        // Logic for login
-        this.$router.push({ name: 'Home' });
-      },
+        handleLogin() {
+          this.$root.login(this.username, this.password)
+            .then(() => {
+              this.$router.push({ name: 'Home' });
+            })
+            .catch((err) => {
+              this.errors = `an Error occured\n${err}`;
+            });
+
+        },
     },
-  };
+};
 </script>
 
 <style scoped>

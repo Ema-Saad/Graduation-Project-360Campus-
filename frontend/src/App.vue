@@ -15,10 +15,34 @@
   import { useRoute } from "vue-router";
   import NavBar from "./components/NavBar.vue";
   import Footer from "./components/FooterSection.vue";
+  import axios from 'axios';
 
   export default defineComponent({
     name: "App",
-    authtoken: '',
+    data() {
+      return {
+        authtoken: '',
+      }
+    },
+    methods: {
+      async login(username, password) {
+        try {
+          let response = await axios.post('http://127.0.0.1:8000/api/auth/login', { username, password });
+          
+          if (response.status === 200) {
+
+            this.authtoken = response.data['token'];
+            return true;
+
+          } else {
+
+            return false;
+          }
+        } catch (err) {
+          throw err;
+        }
+      }
+    },
     components: {
       NavBar,
       Footer,

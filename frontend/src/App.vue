@@ -1,15 +1,13 @@
 <template>
-  <div id="app">
-    <!-- Conditionally render the Navbar and Footer based on the route -->
-    <NavBar v-if="!shouldHideNavBar" />
+  <!-- Conditionally render the Navbar and Footer based on the route -->
+  <NavBar v-if="!shouldHideNavBar" />
 
-    <!-- Main content area where routed components will be rendered -->
-    <div class="main-content">
-      <router-view />
-    </div>
-
-    <Footer v-if="!shouldHideFooter" />
+  <!-- Main content area where routed components will be rendered -->
+  <div class="main-content">
+    <router-view />
   </div>
+
+  <Footer v-if="!shouldHideFooter" />
 </template>
 
 <script lang="ts">
@@ -20,6 +18,7 @@
 
   export default defineComponent({
     name: "App",
+    authtoken: '',
     components: {
       NavBar,
       Footer,

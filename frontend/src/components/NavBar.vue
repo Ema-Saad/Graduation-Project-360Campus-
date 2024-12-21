@@ -24,7 +24,7 @@
         <i class="fas fa-search search-icon"></i>
       </div>
 
-      <div class="profile-dropdown">
+      <div v-if="this.$root.authtoken" class="profile-dropdown">
         <button @click="toggleDropdown" class="profile-btn">
           <i class="fas fa-user-circle" style="font-size: 40px; color: black;"></i>
         </button>
@@ -33,9 +33,13 @@
           <h4>Mo'men Ali</h4>
           <!-- Profile and Settings buttons -->
           <button @click="goTo('profile')">Profile</button>
-          <button @click="goTo('settings')">Settings</button>
+          <button @click="goTo('SettingsSection')">Settings</button>
           <button @click="logout">Logout</button> <!-- Logout button -->
         </div>
+      </div>
+
+      <div v-if="!this.$root.authtoken">
+        <button @click="goTo('Login')"> Login </button>
       </div>
     </div>
 
@@ -73,11 +77,7 @@
         this.closeMobileMenu();
 
         // Handle navigation for profile or settings
-        if (target === 'profile') {
-          this.$router.push('/profile');
-        } else if (target === 'settings') {
-          this.$router.push('/settings');
-        }
+        this.$router.push({ name: target })
       },
       toggleMobileMenu() {
         this.mobileMenuOpen = !this.mobileMenuOpen;
@@ -89,10 +89,9 @@
         this.dropdownOpen = !this.dropdownOpen;
       },
       logout() {
-        // Clear any user authentication-related data (e.g., remove from localStorage)
-        localStorage.removeItem('auth-token'); // If using localStorage for token
+        this.$root.authtoken = '';
         this.dropdownOpen = false; // Close the dropdown menu on logout
-        this.$router.push('/login'); // Redirect to the Login page
+        this.$router.push({ name: 'Home' });
       }
     }
   };

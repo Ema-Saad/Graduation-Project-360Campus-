@@ -90,6 +90,12 @@
         dropdownOpen: false // Remove if not needed
       };
     },
+    beforeCreate() {
+      if (!this.$root.authtoken) {
+        this.$router.replace({ name: 'Login' })
+      }
+
+    },
     methods: {
       goTo(target) {
         // Simulate navigation, replace with actual routing later if needed

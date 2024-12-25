@@ -37,10 +37,6 @@
           <button @click="logout">Logout</button> <!-- Logout button -->
         </div>
       </div>
-
-      <div v-if="!this.$root.authtoken">
-        <button @click="goTo('Login')"> Login </button>
-      </div>
     </div>
 
     <!-- Mobile Menu Toggle -->
@@ -91,7 +87,7 @@
       logout() {
         this.$root.authtoken = '';
         this.dropdownOpen = false; // Close the dropdown menu on logout
-        this.$router.push({ name: 'Home' });
+        this.$router.replace({ name: 'Login' });
       }
     }
   };

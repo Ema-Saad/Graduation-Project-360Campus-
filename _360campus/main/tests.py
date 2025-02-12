@@ -1,9 +1,11 @@
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
+from rest_framework import status
 from django.test import TestCase, Client
 from django.shortcuts import reverse
 from django.http import request
 from .models import *
+
 
 class TestStudentAccessClassroom(TestCase):
 
@@ -75,44 +77,44 @@ class TestStudentEventRegistration(APITestCase):
                                          email='test@example.com',
                                          person_type='S')
         token = Token.objects.create(user=student)
-        self.client.login(token=token)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
 
         import datetime
 
-        evt = Event.objects.create(title='Event enrolled',
+        evt = Event.objects.create(title='event enrolled',
                                    date=datetime.date.today() + datetime.timedelta(weeks=2))
 
-        Event.objects.create(title='Event',
+        Event.objects.create(title='event',
                              date=datetime.date.today() + datetime.timedelta(weeks=3))
 
-        Event.objects.create(title='Event Past',
+        Event.objects.create(title='event passed',
                              date=datetime.date.today() + datetime.timedelta(days=-2))
 
-        Event.objects.create(title='Event Today', date=datetime.date.today())
+        Event.objects.create(title='event today', date=datetime.date.today())
 
         EventRegistration.objects.create(event=evt, student=student)
 
     def test_enroll_in_event(self):
-        evt = Event.objects.get(title='Event')
-        response = self.client.post(reverse('main:event_register', pk=evt.pk))
-        self.assertContains(response, status_code=200)
+        evt = Event.objects.get(title='event')
+        response = self.client.post(reverse('main:event_register', args=[evt.pk]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_enroll_in_enrolled_event(self):
-        evt = Event.objects.get(title='Event enrolled')
-        response = set.client.post(reverse('main:event_register', pk=evt.pk))
-        self.assertContains(response, status_code=422, text="already enrolled") # TODO: validate this choice of status code
+        evt = Event.objects.get(title='event enrolled')
+        response = self.client.post(reverse('main:event_register', args=[evt.pk]))
+        self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY) # TODO: validate this choice of status code
 
     def test_enroll_in_expired_event(self):
-        evt = Event.objects.get(title='Event enrolled')
-        response = set.client.post(reverse('main:event_register', pk=evt.pk))
-        self.assertContains(response, status_code=422, text="event passed") # TODO: validate this choice of status code
+        evt = Event.objects.get(title='event passed')
+        response = self.client.post(reverse('main:event_register', args=[evt.pk]))
+        self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY) # TODO: validate this choice of status code
 
     def test_enroll_in_nonexistent_event(self):
-        response = set.client.post(reverse('main:event_register', pk=100))
-        self.assertContains(response, status_code=404)
+        response = self.client.post(reverse('main:event_register', args=[100]))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_enroll_in_event_happening_today(self):
-        evt = Event.objects.get(title='Event Today')
-        response = set.client.post(reverse('main:event_register', pk=evt.pk))
+        evt = Event.objects.get(title='event today')
+        response = self.client.post(reverse('main:event_register', args=[evt.pk]))
         # FIXME: what should happen here ???
 

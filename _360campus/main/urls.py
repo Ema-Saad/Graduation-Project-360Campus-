@@ -11,5 +11,7 @@ urlpatterns = [
     path('api/course/<int:course_pk>/materials', material_list, name='material_list'),
     path('api/course/<int:course_pk>/material/<int:material_pk>', material_view, name='material_view'),
     path('api/events', event_list, name='event_list'),
+    path('api/event/<int:pk>/register', event_register, name='event_register'),
+
 ]
 

@@ -15,8 +15,8 @@
 <script lang="ts">
   import { defineComponent, computed } from "vue";
   import { useRoute } from "vue-router";
-  import NavBar from "./components/NavBar.vue";
-  import Footer from "./components/FooterSection.vue";
+  import NavBar from "./components/Student/NavBar.vue";
+  import Footer from "./components/Student/FooterSection.vue";
 
   export default defineComponent({
     name: "App",

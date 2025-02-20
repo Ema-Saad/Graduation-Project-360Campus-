@@ -15,9 +15,8 @@ export default defineConfig({
   server: {
     fs: {
       allow: [
-        '/node_modules', // Allow node_modules
-        'D:/Student/node_modules', // Allow node_modules from this path
-        'D:/Student/vueproject5/src', // Allow src directory
+        './node_modules', // Allow node_modules
+        './src',
       ],
     },
   },

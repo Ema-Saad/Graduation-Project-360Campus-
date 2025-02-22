@@ -9,7 +9,7 @@ from .models import *
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 User = get_user_model()
-"""class TestStudentAccessClassroom(TestCase):
+class TestStudentAccessClassroom(TestCase):
 
     def setUp(self):
         student = Student.objects.create(first_name='John', last_name='Doe', email='email@domain.com', person_type='S')
@@ -118,7 +118,7 @@ class TestStudentEventRegistration(APITestCase):
     def test_enroll_in_event_happening_today(self):
         evt = Event.objects.get(title='event today')
         response = self.client.post(reverse('main:event_register', args=[evt.pk]))
-        # FIXME: what should happen here ???"""
+        # FIXME: what should happen here ???
 class TestMaterialsSection(APITestCase):
     def setUp(self):
         # Create a test student (and log them in)

@@ -6,6 +6,8 @@ from django.urls import reverse
 from .models import *
 from .serializers import *
 import datetime
+from django.http import HttpResponseNotFound
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -23,12 +25,6 @@ def course_view(req, course_pk):
     return HttpResponseNotFound()
 
 def classroom_view(req, course_pk):
-    return HttpResponseNotFound()
-
-def material_list(req, course_pk):
-    return HttpResponseNotFound()
-
-def material_view(req, course_pk, material_pk):
     return HttpResponseNotFound()
 
 @api_view(['POST'])
@@ -51,6 +47,40 @@ def event_register(req, pk):
     EventRegistration.objects.create(event=evt, student=req.user.student) 
 
     return Response(status=200)
+
+@api_view(['GET'])
+def material_list(request, course_pk):
+    materials = Material.objects.all()
+    
+    if course_pk:
+        materials = materials.filter(classroom__course__pk=course_pk)
+    
+    college = request.query_params.get('college')
+    if college:
+        materials = materials.filter(classroom__course__college__iexact=college)
+    
+    year = request.query_params.get('year')
+    if year:
+        materials = materials.filter(classroom__course__year__iexact=year)
+    
+    semester = request.query_params.get('semester')
+    if semester:
+        materials = materials.filter(classroom__course__semester=semester)
+    
+    serializer = MaterialSerializer(materials, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def material_view(request, course_pk, material_pk):
+    """
+    Retrieve details for a specific material.
+    It ensures the material belongs to the course with id course_pk.
+    """
+    material = get_object_or_404(Material, pk=material_pk, classroom__course__pk=course_pk)
+    serializer = MaterialSerializer(material)
+    return Response(serializer.data)
+
 
 
 

@@ -6,7 +6,3 @@ class EventSerializer(ModelSerializer):
         model = Event
         fields = '__all__'
 
-class MaterialSerializer(ModelSerializer):
-    class Meta:
-        model = Material
-        fields = '__all__'

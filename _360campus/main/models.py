@@ -81,10 +81,6 @@ class Course(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     admin = models.ForeignKey(Admin, on_delete=models.SET_NULL, null=True, related_name="courses")
     prerequisites = models.ManyToManyField('self', symmetrical=False, related_name="required_for", blank=True)
-    # I added New fields to filter matrials
-    college = models.CharField(max_length=100, null=True, blank=True)   
-    year = models.CharField(max_length=50, null=True, blank=True)       
-    semester = models.IntegerField(null=True, blank=True)               
 
     class Meta:
         verbose_name = "Course"
@@ -109,14 +105,10 @@ class Classroom(models.Model):
     class Meta:
         verbose_name = 'Classroom'
 
-
+def get_materials_file_location(inst, filename):
+    return f'{inst.classroom.title}/'
 
 class Material(models.Model):
-    # I added this function to avoid the SuspiciousFileOperation error
-    def get_materials_file_location(inst, filename):
-    # Include the filename in the path so that the full path is valid
-        return f'{inst.classroom.title}/{filename}'
-    course =models.ForeignKey(Course, on_delete=models.CASCADE)
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
     name = models.CharField(max_length=500)
     file = models.FileField(upload_to=get_materials_file_location)

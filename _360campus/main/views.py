@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from .models import *
@@ -31,8 +32,9 @@ def course_list(req):
 def course_view(req, course_pk):
     return HttpResponseNotFound()
 
+@api_view(['GET'])
 def classroom_view(req, course_pk):
-    return HttpResponseNotFound()
+    return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

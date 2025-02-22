@@ -135,10 +135,10 @@ class Enrollment(models.Model):
         verbose_name = "Enrollment"
         unique_together = ('student', 'course')
 
-
 class Classroom(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
+    students = models.ManyToManyField(Student)
 
     class Meta:
         verbose_name = 'Classroom'

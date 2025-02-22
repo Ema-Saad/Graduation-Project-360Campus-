@@ -8,34 +8,39 @@ from django.http import request
 from .models import *
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-User = get_user_model()
-"""class TestStudentAccessClassroom(TestCase):
+class TestStudentAccessClassroom(APITestCase):
 
     def setUp(self):
-        student = Student.objects.create(first_name='John', last_name='Doe', email='email@domain.com', person_type='S')
-        student.set_password('test')
+        student = Student.objects.create(first_name='John',
+                                         last_name='Doe',
+                                         email='email@domain.com',
+                                         person_type='S')
+
+        token = Token.objects.create(user=student)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
 
         course = Course.objects.create(title='Course 1', description='Desc. 1')
-        Course.objects.create(title='Course 2', description='Desc. 2')
+        other_course = Course.objects.create(title='Course 2', description='Desc. 2')
 
         Enrollment.objects.create(student=student, course=course)
         classroom = Classroom.objects.create(course=course, title='Course 1 - 2020')
         classroom.students.add(student)
         classroom.save()
-
-        self.client.login(email='email@domain.com', password='test')
+        Classroom.objects.create(course=other_course, title='Course 2')
 
     def test_access_to_registered_course(self):
-        result = self.client.get(reverse('main:course_view', kwargs={'course_pk': 1}))
-        self.assertEqual(200, result.status_code, 'failed to access a registered course')
+        registered_classroom = Classroom.objects.get(course__title='Course 1')
+        response = self.client.get(reverse('main:classroom_view', kwargs={'course_pk': registered_classroom.pk}))
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
 
     def test_access_to_nonregistered_course(self):
-        result = self.client.get(reverse('main:course_view', kwargs={'course_pk': 2}))
-        self.assertEqual(401, result.status_code, 'failed to deny access to unregistered course')
+        nonregistered_classroom = Classroom.objects.get(course__title='Course 2')
+        response = self.client.get(reverse('main:classroom_view', kwargs={'course_pk': nonregistered_classroom.pk}))
+        self.assertEqual(status.HTTP_403_FORBIDDEN, response.status_code)
 
     def test_access_to_nonexistant_course(self):
-        result = self.client.get(reverse('main:course_view', kwargs={'course_pk': 100}))
-        self.assertEqual(404, result.status_code, 'failed to return error on nonexistant course')
+        response = self.client.get(reverse('main:classroom_view', kwargs={'course_pk': 1000}))
+        self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)
 
 
 class TestStudentEventRegistration(APITestCase):
@@ -86,7 +91,7 @@ class TestStudentEventRegistration(APITestCase):
         evt = Event.objects.get(title='event today')
         response = self.client.post(reverse('main:event_register', args=[evt.pk]))
         # FIXME: what should happen here ???"""
-        # FIXME: what should happen here ???
+
 class TestMaterialsSection(APITestCase):
     def setUp(self):
         # Create a test student (and log them in)

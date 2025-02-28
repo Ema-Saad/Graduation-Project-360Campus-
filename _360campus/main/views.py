@@ -51,21 +51,17 @@ def classroom_view(req, course_pk):
 def event_register(req, pk):
     evt = get_object_or_404(Event, pk=pk)
 
-    # TODO: This looks weird
-    try:
-        EventRegistration.objects.get(student=req.user.student, event=evt)
-        return Response(status=422)
-    except EventRegistration.DoesNotExist:
-        pass
+    if EventRegistration.objects.filter(student=req.user.student, event=evt).exists():
+        return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     today = datetime.datetime.now(tz=datetime.timezone.utc)
     if today > evt.date:
-        return Response(status=422)
+        return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     # TODO: Ensure that req.user is a student
-    EventRegistration.objects.create(event=evt, student=req.user.student) 
+    EventRegistration.objects.create(event=evt, student=req.user.student)
 
-    return Response(status=200)
+    return Response(status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def material_list(request):

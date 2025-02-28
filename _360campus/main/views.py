@@ -33,8 +33,18 @@ def course_view(req, course_pk):
     return HttpResponseNotFound()
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def classroom_view(req, course_pk):
-    return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
+
+    course = get_object_or_404(Course, pk=course_pk)
+
+    if not Enrollment.objects.filter(student=req.user.student, course=course).exists():
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    classroom = Classroom.objects.get(course=course)
+    classroom_serializer = ClassroomSerializer(instance=classroom)
+
+    return Response(data=classroom_serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

@@ -15,3 +15,9 @@ class GraduationProjectSerializer(ModelSerializer):
     class Meta:
         model = GraduationProject
         fields = '__all__'  # Includes all fields from the model
+
+class ClassroomSerializer(ModelSerializer):
+    class Meta:
+        model = Classroom
+        fields = '__all__'
+

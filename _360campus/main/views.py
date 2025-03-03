@@ -49,37 +49,63 @@ def event_register(req, pk):
     return Response(status=200)
 
 @api_view(['GET'])
-def material_list(request, course_pk):
-    materials = Material.objects.all()
+def material_list(request):
+    """
+    Returns a list of all courses that have at least one material available on the website.
+    Supports optional filtering by college, year, and semester via query parameters.
+    For example:
+      ?college=Engineering&year=First%20Year&semester=1
+    """
+    # Start with courses that have at least one material.
+    courses = Course.objects.filter(materials__isnull=False).distinct()
     
-    if course_pk:
-        materials = materials.filter(classroom__course__pk=course_pk)
-    
+    # Apply optional filters based on query parameters.
     college = request.query_params.get('college')
     if college:
-        materials = materials.filter(classroom__course__college__iexact=college)
+        courses = courses.filter(college__iexact=college)
     
     year = request.query_params.get('year')
     if year:
-        materials = materials.filter(classroom__course__year__iexact=year)
+        courses = courses.filter(year__iexact=year)
     
     semester = request.query_params.get('semester')
     if semester:
-        materials = materials.filter(classroom__course__semester=semester)
+        courses = courses.filter(semester=semester)
     
+    serializer = CourseSerializer(courses, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def course_materials_by_week(request, course_pk):
+    """
+    For the specified course, return a list of distinct weeks for which materials exist
+    """
+    # Using the direct relation from Material to Course.
+    materials = Material.objects.filter(course__pk=course_pk)
+    weeks = materials.values_list('week', flat=True).distinct().order_by('week')
+    weeks = [w for w in weeks if w is not None]  # Exclude any materials without a week set.
+    return Response([{"week": w} for w in weeks])
+
+@api_view(['GET'])
+def materials_for_week(request, course_pk, week):
+    """
+    Returns all materials for the specified course and week.
+    """
+    materials = Material.objects.filter(course__pk=course_pk, week=week)
     serializer = MaterialSerializer(materials, many=True)
     return Response(serializer.data)
 
-
 @api_view(['GET'])
-def material_view(request, course_pk, material_pk):
+def material_view(request, course_pk, week, material_pk):
     """
-    Retrieve details for a specific material.
-    It ensures the material belongs to the course with id course_pk.
+    Retrieves details for a specific material that belongs to the given course and week.
+    Includes a download URL for the file.
     """
-    material = get_object_or_404(Material, pk=material_pk, classroom__course__pk=course_pk)
+    material = get_object_or_404(Material, pk=material_pk, course__pk=course_pk, week=week)
     serializer = MaterialSerializer(material)
-    return Response(serializer.data)
+    data = serializer.data
+    data['download_url'] = request.build_absolute_uri(material.file.url)
+    return Response(data)
 
 
 

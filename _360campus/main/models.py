@@ -120,6 +120,8 @@ class Material(models.Model):
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
     name = models.CharField(max_length=500)
     file = models.FileField(upload_to=get_materials_file_location)
+    week = models.IntegerField(null=True, blank=True)  
+    material_type = models.CharField(max_length=50, null=True, blank=True)#"Lecture", "Tutorial", "Lab", "assignment".
 
 
 # Lecture Model

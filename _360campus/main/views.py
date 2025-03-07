@@ -108,5 +108,32 @@ def material_view(request, course_pk, week, material_pk):
     return Response(data)
 
 
+@api_view(['GET'])
+def graduation_project_list(request):
+    """
+    Returns a list of all graduation projects sorted by rating (highest first).
+    Supports optional filtering by:
+      - faculty 
+      - year 
+    """
+    projects = GraduationProject.objects.all().order_by('-rate')
+    faculty = request.query_params.get('faculty')
+    if faculty:
+        projects = projects.filter(faculty__iexact=faculty)  # ✅ Case-insensitive
 
+    year = request.query_params.get('year')
+    if year:
+        projects = projects.filter(year=year)
 
+    serializer = GraduationProjectSerializer(projects, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def graduation_project_detail(request, project_id):
+    """
+    Retrieves details of a specific graduation project.
+    """
+    project = get_object_or_404(GraduationProject, id=project_id)
+    serializer = GraduationProjectSerializer(project)
+
+    return Response(serializer.data)

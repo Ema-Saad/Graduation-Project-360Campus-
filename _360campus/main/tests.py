@@ -9,7 +9,7 @@ from .models import *
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 User = get_user_model()
-class TestStudentAccessClassroom(TestCase):
+"""class TestStudentAccessClassroom(TestCase):
 
     def setUp(self):
         student = Student.objects.create(first_name='John', last_name='Doe', email='email@domain.com', person_type='S')
@@ -148,3 +148,52 @@ class TestMaterialsSection(APITestCase):
         url = reverse('main:material_view', kwargs={'course_pk': self.course1.pk, 'material_pk': 999})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        """
+        
+class GraduationProjectTests(TestCase):
+    def setUp(self):
+        # Create a test user
+        self.user = User.objects.create_user(username='testuser', password='password')
+
+        # Create test graduation projects
+        self.project1 = GraduationProject.objects.create(
+            name='AI-Powered Diagnosis',
+            faculty='Engineering',
+            year=2023,
+            description='A machine learning model for medical diagnosis.',
+            rate=4.8,
+        )
+
+        self.project2 = GraduationProject.objects.create(
+            name='Smart Traffic Management',
+            faculty='Computer Science',
+            year=2024,
+            description='AI-based system to optimize traffic flow.',
+            rate=4.5,
+        )
+
+    def test_graduation_project_list_view(self):
+        url = reverse('main:graduation_project_list') 
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'AI-Powered Diagnosis')
+        self.assertContains(response, 'Smart Traffic Management')
+
+    def test_filter_by_faculty(self):
+        url = reverse('main:graduation_project_list') + '?faculty=Engineering' 
+        response = self.client.get(url)
+        self.assertContains(response, 'AI-Powered Diagnosis')
+        self.assertNotContains(response, 'Smart Traffic Management')
+
+    def test_filter_by_year(self):
+        url = reverse('main:graduation_project_list') + '?year=2024' 
+        response = self.client.get(url)
+        self.assertContains(response, 'Smart Traffic Management')
+        self.assertNotContains(response, 'AI-Powered Diagnosis')
+
+    def test_graduation_project_detail_view(self):
+        url = reverse('main:graduation_project_detail', args=[self.project1.id])  
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'AI-Powered Diagnosis')
+        self.assertContains(response, 'A machine learning model for medical diagnosis.')

@@ -16,21 +16,10 @@
         <p><span class="icon">🕒</span>{{ event.date }} </p>
         <p><span class="icon">📍</span> HQ Professor Abo Ismail Theater</p>
       </div>
-      <button :class="enrollButtonClass" @click="openModal">{{ enrollButtonText }}</button>
+      <button v-if="!event.registered" class="enroll-button" @click="enroll(event)">Register</button>
+      <p v-else> Enrolled! </p>
     </div>
 
-    <!-- Modal -->
-    <div v-if="showModal" class="modal-overlay">
-      <div class="modal">
-        <button class="close-button" @click="closeModal">×</button>
-        <h2>AI for Good Summit 2024 Event</h2>
-        <form class="modal-form" @submit.prevent="confirmEnrollment">
-          <input type="text" placeholder="Enter your Name..." required />
-          <input type="email" placeholder="Enter your Email..." required />
-          <button type="submit" class="confirmation-button">Confirmation</button>
-        </form>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -38,40 +27,39 @@
   export default {
     beforeMount() {
       let events = this.$root.request_api_endpoint('api/events', 'get', null);
+      let registered_events = this.$root.request_api_endpoint('api/events/registered', 'get', null);
       
-      events.then((data) => {
-        this.events = data;
+      Promise.all([events, registered_events]).then((data) => {
+        this.events = data[0].map((evt) => {
+          return { registered: false, ...evt };
+        });
+
+        let registered_events = data[1].map((evt) => evt.event);
+
+        let event_set = new Set(this.events.map((e) => e.id));
+        let registered_event_set = new Set(registered_events);
+
+        let registerable_events = event_set.difference(registered_event_set);
+
+        for (let evt of this.events) {
+          evt.registered = !registerable_events.has(evt.id);
+        }
+
       });
 
     },
     data() {
       return {
-        showModal: false,
-        enrollmentConfirmed: false, // Tracks if the user has confirmed their enrollment
         events: [],
       };
     },
-    computed: {
-      enrollButtonClass() {
-        // Change the button's style dynamically
-        return this.enrollmentConfirmed ? "enroll-button confirmed" : "enroll-button";
-      },
-      enrollButtonText() {
-        // Change the button's text dynamically
-        return this.enrollmentConfirmed ? "Enrolled!" : "Enroll";
-      },
-    },
     methods: {
-      openModal() {
-        this.showModal = true;
+      enroll(evt) {
+        this.$root.request_api_endpoint(`api/event/${evt.id}/register`, 'post', null);
+        evt.registered = true;
+
       },
-      closeModal() {
-        this.showModal = false;
-      },
-      confirmEnrollment() {
-        this.enrollmentConfirmed = true; // Mark the enrollment as confirmed
-        this.closeModal(); // Close the modal
-      },
+
     },
   };
 </script>

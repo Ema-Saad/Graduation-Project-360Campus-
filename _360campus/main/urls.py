@@ -21,7 +21,7 @@ urlpatterns = [
     #Graduation Project
     path('api/graduation-projects/',graduation_project_list, name='graduation_project_list'),
     path('api/graduation-project/<int:project_id>/', graduation_project_detail, name = 'graduation_project_detail')
-    
+    path('api/course/<int:course_pk>/classroom/assignment/<int:assignment_pk>', assignment_view, name='assignment_view'),
 
 ]
 

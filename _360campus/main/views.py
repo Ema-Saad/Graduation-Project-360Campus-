@@ -151,3 +151,23 @@ def graduation_project_detail(request, project_id):
     serializer = GraduationProjectSerializer(project)
 
     return Response(serializer.data)
+
+@permission_classes([IsAuthenticated])
+def assignment_view(req, course_pk, assignment_pk):
+    assignment = get_object_or_404(Assignment, \
+                                   classroom__course__pk=course_pk, pk=assignment_pk)
+
+    serializer = AssignmentSerializer(assignment)
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def assignment_submit(req, course_pk, assignment_pk):
+    pass
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def assignment_comment(req, course_pk, assignment_pk):
+    pass
+

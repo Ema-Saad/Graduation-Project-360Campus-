@@ -53,7 +53,7 @@ export default {
         handleLogin() {
           this.$root.login(this.username, this.password)
             .then(() => {
-              this.$router.push({ name: 'Home' });
+              this.$router.push({ name: 'StudentHome' });
             })
             .catch((err) => {
               this.errors = `an Error occured\n${err}`;

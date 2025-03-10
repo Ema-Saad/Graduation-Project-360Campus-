@@ -32,11 +32,17 @@
     methods: {
       async login(username, password) {
         try {
-          let response = await axios.post('http://127.0.0.1:8000/api/auth/login', { username, password });
-          
+          let response = await fetch('http://127.0.0.1:8000/api/auth/login', {
+            method: 'POST',
+            mode: 'cors',
+            body: new URLSearchParams({ username, password }),
+          });
+
           if (response.status === 200) {
 
-            this.authtoken = response.data['token'];
+            let data = await response.json();
+
+            this.authtoken = data['token'];
             return true;
 
           } else {

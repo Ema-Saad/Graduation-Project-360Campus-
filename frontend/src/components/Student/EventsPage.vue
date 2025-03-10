@@ -1,5 +1,5 @@
 <template>
-  <div class="events-page">
+  <div class="events-page" v-for="event in events">
     <div class="images-container">
       <img src="@/assets/event3.png" alt="Event Image 1" class="image image1" />
       <img src="@/assets/event4.png" alt="Event Image 2" class="image image2" />
@@ -8,15 +8,12 @@
     </div>
 
     <div class="event-details">
-      <h2>AI for Good Summit 2024</h2>
+      <h2>{{ event.title }}</h2>
       <p>
-        Join thought leaders, innovators, and advocates at the AI for Good Summit 2024,
-        where we explore the transformative potential of artificial intelligence in addressing global challenges.
-        This event will feature keynotes, panel discussions, and hands-on workshops focused on AI applications in
-        healthcare, climate change, education, and more. Don't miss the opportunity to network and contribute to meaningful change!
+        {{ event.description }}
       </p>
       <div class="event-info">
-        <p><span class="icon">🕒</span> Thursday 5/10 at 6 P.M.</p>
+        <p><span class="icon">🕒</span>{{ event.date }} </p>
         <p><span class="icon">📍</span> HQ Professor Abo Ismail Theater</p>
       </div>
       <button :class="enrollButtonClass" @click="openModal">{{ enrollButtonText }}</button>
@@ -39,10 +36,19 @@
 
 <script>
   export default {
+    beforeMount() {
+      let events = this.$root.request_api_endpoint('api/events', 'get', null);
+      
+      events.then((data) => {
+        this.events = data;
+      });
+
+    },
     data() {
       return {
         showModal: false,
         enrollmentConfirmed: false, // Tracks if the user has confirmed their enrollment
+        events: [],
       };
     },
     computed: {

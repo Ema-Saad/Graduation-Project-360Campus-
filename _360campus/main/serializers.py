@@ -21,3 +21,8 @@ class ClassroomSerializer(ModelSerializer):
         model = Classroom
         fields = '__all__'
 
+class AssignmentSerializer(ModelSerializer):
+    class Meta:
+        model = Assignment
+        fields = '__all__'
+

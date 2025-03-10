@@ -18,6 +18,13 @@ def event_list(req):
 
     return Response(serializer.data)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def registered_event_list(req):
+    registered_events = EventRegistration.objects.filter(student=req.user.student).values("event")
+
+    return Response(registered_events)
+
 def course_list(req):
     return HttpResponseNotFound()
 

@@ -37,39 +37,6 @@ User = get_user_model()
         result = self.client.get(reverse('main:course_view', kwargs={'course_pk': 100}))
         self.assertEqual(404, result.status_code, 'failed to return error on nonexistant course')
 
-class TestStudentAccessMaterials(TestCase):
-
-    def setUp(self):
-        student = Student.objects.create(first_name='John', last_name='Doe', email='john@example.com', person_type='S')
-        student.set_password('test')
-        course = Course.objects.create(title='Course 1')
-        another = Course.objects.create(title='Course 2')
-        Enrollment.objects.create(student=student, course=course)
-
-        classroom = Classroom.objects.create(title='Course 1 - 2020', course=course)
-        classroom.students.add(student)
-        classroom.save()
-        another_classroom = Classroom.objects.create(title='Course 2 - 2021', course=another)
-
-        Material.objects.create(classroom=classroom, name='material')
-        Material.objects.create(classroom=another_classroom, name='something else')
-        self.client.login(email='john@example.com', password='test')
-
-    def test_access_to_existing_material(self):
-        result = self.client.get(reverse('main:material_view', kwargs={'course_pk': 1, 'material_pk': 1}))
-        self.assertEqual(200, result.status_code, 'failed to access a material in classroom of a registered course')
-
-    def test_access_to_nonexisting_material(self):
-        result = self.client.get(reverse('main:material_view', kwargs={'course_pk': 1, 'material_pk': 10}))
-        self.assertEqual(404, result.status_code)
-
-    def test_access_to_existing_material_in_nonregistered_course(self):
-        result = self.client.get(reverse('main:material_view', kwargs={'course_pk': 2, 'material_pk': 1}))
-        self.assertEqual(401, result.status_code)
-
-    def test_access_to_materials_in_nonexistant_course(self):
-        result = self.client.get(reverse('main:material_view', kwargs={'course_pk': 10, 'material_pk': 10}))
-        self.assertEqual(404, result.status_code)
 
 class TestStudentEventRegistration(APITestCase):
 
@@ -119,6 +86,7 @@ class TestStudentEventRegistration(APITestCase):
         evt = Event.objects.get(title='event today')
         response = self.client.post(reverse('main:event_register', args=[evt.pk]))
         # FIXME: what should happen here ???"""
+        # FIXME: what should happen here ???
 class TestMaterialsSection(APITestCase):
     def setUp(self):
         # Create a test student (and log them in)
@@ -179,3 +147,52 @@ class TestMaterialsSection(APITestCase):
         url = reverse('main:material_view', kwargs={'course_pk': self.course1.pk, 'material_pk': 999})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        """
+class GraduationProjectTests(TestCase):
+    def setUp(self):
+        # Create a test user
+        self.user = User.objects.create_user(username='testuser', password='password')
+
+        # Create test graduation projects
+        self.project1 = GraduationProject.objects.create(
+            name='AI-Powered Diagnosis',
+            faculty='Engineering',
+            year=2023,
+            description='A machine learning model for medical diagnosis.',
+            rate=4.8,
+        )
+
+        self.project2 = GraduationProject.objects.create(
+            name='Smart Traffic Management',
+            faculty='Computer Science',
+            year=2024,
+            description='AI-based system to optimize traffic flow.',
+            rate=4.5,
+        )
+
+    def test_graduation_project_list_view(self):
+        url = reverse('main:graduation_project_list') 
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'AI-Powered Diagnosis')
+        self.assertContains(response, 'Smart Traffic Management')
+
+    def test_filter_by_faculty(self):
+        url = reverse('main:graduation_project_list') + '?faculty=Engineering' 
+        response = self.client.get(url)
+        self.assertContains(response, 'AI-Powered Diagnosis')
+        self.assertNotContains(response, 'Smart Traffic Management')
+
+    def test_filter_by_year(self):
+        url = reverse('main:graduation_project_list') + '?year=2024' 
+        response = self.client.get(url)
+        self.assertContains(response, 'Smart Traffic Management')
+        self.assertNotContains(response, 'AI-Powered Diagnosis')
+
+    def test_graduation_project_detail_view(self):
+        url = reverse('main:graduation_project_detail', args=[self.project1.id])  
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'AI-Powered Diagnosis')
+        self.assertContains(response, 'A machine learning model for medical diagnosis.')
+        """

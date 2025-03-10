@@ -30,6 +30,31 @@
       }
     },
     methods: {
+      async request_api_endpoint(endpoint, method, data) {
+        try {
+          let url = `http://127.0.0.1:8000/${endpoint}`;
+          
+          let options = {
+            method: method,
+            mode: 'cors',
+            headers: {
+              "Authorization": `Token ${this.authtoken}`,
+            },
+          };
+
+          if (data) {
+            options = {
+              body: new URLSearchParams(data),
+              ...options
+            };
+          }
+          let response = await fetch(url, options);
+          
+          return await response.json();
+        } catch (err) {
+          throw err;
+        }
+      },
       async login(username, password) {
         try {
           let response = await fetch('http://127.0.0.1:8000/api/auth/login', {
@@ -46,7 +71,6 @@
             return true;
 
           } else {
-
             return false;
           }
         } catch (err) {

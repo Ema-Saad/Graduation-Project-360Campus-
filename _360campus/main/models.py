@@ -202,3 +202,25 @@ class Message(models.Model):
         
 
 
+
+class Assignment(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    max_grade = models.IntegerField(blank=True, null=True)
+    deadline = models.DateTimeField(blank=True, null=True)
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+    submissions = models.ManyToManyField(Student, through='AssignmentSubmission', related_name='submissions')
+    comments = models.ManyToManyField(Student, through='AssignmentComment', related_name='comments')
+
+class AssignmentSubmission(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
+    submitted_file = models.FileField(blank=True, null=True)
+    grade = models.IntegerField(blank=True, null=True)
+
+
+class AssignmentComment(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
+    comment = models.TextField()
+    is_private = models.BooleanField(null=True)

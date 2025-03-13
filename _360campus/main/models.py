@@ -107,6 +107,16 @@ class EventRegistration(models.Model):
         unique_together = ('event', 'student')
 
 
+class Semester(models.Model):
+    SEMESTER_TYPE = [
+        ('F', 'Fall'),
+        ('S', 'Spring'),
+        ('s', 'Summer'),
+    ]
+
+    kind = models.CharField(max_length=1, choices=SEMESTER_TYPE)
+    year = models.IntegerField()
+
 # Course Model
 class Course(models.Model):
     title = models.CharField(max_length=200)
@@ -118,7 +128,7 @@ class Course(models.Model):
     # I added New fields to filter matrials
     college = models.CharField(max_length=100, null=True, blank=True)   
     year = models.CharField(max_length=50, null=True, blank=True)       
-    semester = models.IntegerField(null=True, blank=True)               
+    semester = models.ForeignKey(Semester, on_delete=models.SET_NULL)
 
     class Meta:
         verbose_name = "Course"

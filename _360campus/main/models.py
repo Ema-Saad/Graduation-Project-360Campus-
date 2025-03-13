@@ -65,16 +65,6 @@ class College(models.Model):
         return self.name
 
 class Faculty(models.Model):
-    code = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=200)
-    college = models.ForeignKey(College, on_delete=models.CASCADE)
-    description = models.TextField()
-    head = models.ForeignKey(Professor, on_delete=models.SET_NULL, related_name="head_of_faculty", null=True, blank=True)
-
-    def __str__(self):
-        return self.name
-
-class Faculty(models.Model):
     name = models.CharField(max_length=200)
     college = models.ForeignKey(College, on_delete=models.CASCADE)
     description = models.TextField()

@@ -78,7 +78,7 @@ class Faculty(models.Model):
     name = models.CharField(max_length=200)
     college = models.ForeignKey(College, on_delete=models.CASCADE)
     description = models.TextField()
-    head = models.ForeignKey(Professor, on_delete=models.SET_NULL, related_name="head_of_faculty", null=True)
+    head = models.ForeignKey(Professor, on_delete=models.SET_NULL, related_name="head_of_faculty", null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -135,7 +135,7 @@ class Course(models.Model):
     description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    admin = models.ForeignKey(Admin, on_delete=models.SET_NULL, null=True, related_name="courses")
+    admin = models.ForeignKey(Admin, on_delete=models.SET_NULL, null=True, blank=True, related_name="courses")
     prerequisites = models.ManyToManyField('self', symmetrical=False, related_name="required_for", blank=True)
     # I added New fields to filter matrials
     college = models.ForeignKey(College, on_delete=models.CASCADE)

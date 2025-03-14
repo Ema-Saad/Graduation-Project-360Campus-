@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from django.urls import reverse
 from .models import *
 from .serializers import *
@@ -26,8 +26,27 @@ def registered_event_list(req):
 
     return Response(registered_events)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def course_list(req):
-    return HttpResponseNotFound()
+    options = {}
+    if 'college' in req.GET:
+        options['college'] = req.GET['college']
+
+    if 'level' in req.GET:
+        options['level'] = req.GET['level']
+
+    if 'semester' in req.GET:
+        options['semester_kind'] = req.GET['semester_kind']
+
+    if 'search_query' in req.GET:
+        options['title__icontains'] = req.GET['search_query']
+        options['description__icontains'] = req.GET['search_query']
+
+    courses = get_list_or_404(Course, **options)
+    serializer = CourseSerializer(courses, many=True)
+
+    return Response(serializer.data)
 
 def course_view(req, course_pk):
     return HttpResponseNotFound()

@@ -26,3 +26,9 @@ class AssignmentSerializer(ModelSerializer):
         model = Assignment
         fields = '__all__'
 
+class CourseSerializer(ModelSerializer):
+    class Meta:
+        model = Course
+        exclude = 'admin'
+        depth = 1
+

@@ -120,12 +120,7 @@ class Semester(models.Model):
 # Course Model
 class Course(models.Model):
 
-<<<<<<< HEAD
     LEVELS = [(i, f'{i}') for i in range(1, 5)]
-=======
-    LEVELS = [(i, '') for i in range(1, 5)]
->>>>>>> 8d48202 (backend: modifications to Course and correcting mistakes)
-
     title = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

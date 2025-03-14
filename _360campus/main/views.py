@@ -48,9 +48,6 @@ def course_list(req):
 
     return Response(serializer.data)
 
-def course_view(req, course_pk):
-    return HttpResponseNotFound()
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def classroom_view(req, course_pk):

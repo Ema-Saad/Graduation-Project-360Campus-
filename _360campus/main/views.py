@@ -13,7 +13,7 @@ from django.http import HttpResponseNotFound
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def event_list(req):
-    limit = req.GET['limit'] if 'limit' in req.GET else 5
+    limit = req.query_params['limit'] if 'limit' in req.query_params else 5
     events = Event.objects.all()[:limit]
     serializer = EventSerializer(events, many=True)
 
@@ -30,18 +30,18 @@ def registered_event_list(req):
 @permission_classes([IsAuthenticated])
 def course_list(req):
     options = {}
-    if 'college' in req.GET:
-        options['college'] = req.GET['college']
+    if 'college' in req.query_params:
+        options['college'] = req.query_params['college']
 
-    if 'level' in req.GET:
-        options['level'] = req.GET['level']
+    if 'level' in req.query_params:
+        options['level'] = req.query_params['level']
 
-    if 'semester' in req.GET:
-        options['semester_kind'] = req.GET['semester_kind']
+    if 'semester' in req.query_params:
+        options['semester_kind'] = req.query_params['semester_kind']
 
-    if 'search_query' in req.GET:
-        options['title__icontains'] = req.GET['search_query']
-        options['description__icontains'] = req.GET['search_query']
+    if 'search_query' in req.query_params:
+        options['title__icontains'] = req.query_params['search_query']
+        options['description__icontains'] = req.query_params['search_query']
 
     courses = get_list_or_404(Course, **options)
     serializer = CourseSerializer(courses, many=True)

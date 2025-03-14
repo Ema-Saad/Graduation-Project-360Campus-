@@ -32,3 +32,9 @@ class CourseSerializer(ModelSerializer):
         exclude = 'admin'
         depth = 1
 
+
+class CollegeSerializer(ModelSerializer):
+    class Meta:
+        model = College
+        fields = '__all__'
+        depth = 1

@@ -29,7 +29,7 @@ class AssignmentSerializer(ModelSerializer):
 class CourseSerializer(ModelSerializer):
     class Meta:
         model = Course
-        exclude = 'admin'
+        exclude = ['admin']
         depth = 1
 
 

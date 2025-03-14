@@ -21,14 +21,14 @@ class Person(AbstractUser):
         verbose_name_plural = "People"
 
 class Professor(Person):
-    faculty = models.ForeignKey('Faculty', on_delete=model.CASCADE)
+    faculty = models.ForeignKey('Faculty', on_delete=models.CASCADE)
     class Meta:
         verbose_name = "Professor"
 
 class GraduationProject(models.Model):
     name = models.CharField(max_length=200)
     year = models.IntegerField()
-    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+    faculty = models.ForeignKey('Faculty', on_delete=models.CASCADE)
     description = models.TextField()
     supervisor = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, blank=True, related_name="supervised_projects" )
     rate = models.DecimalField(max_digits=3, decimal_places= 2 , default= 0.00)
@@ -76,9 +76,9 @@ class Faculty(models.Model):
 
 class Faculty(models.Model):
     name = models.CharField(max_length=200)
-    college = models.ForeignKey(College, on_delete=models.SET_NULL)
+    college = models.ForeignKey(College, on_delete=models.CASCADE)
     description = models.TextField()
-    head = models.ForeignKey(Professor, on_delete=models.SET_NULL, related_name="head_of_faculty")
+    head = models.ForeignKey(Professor, on_delete=models.SET_NULL, related_name="head_of_faculty", null=True)
 
     def __str__(self):
         return self.name
@@ -128,6 +128,9 @@ class Semester(models.Model):
 
 # Course Model
 class Course(models.Model):
+
+    LEVELS = [(i, '') for i in range(1, 5)]
+
     title = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -135,9 +138,9 @@ class Course(models.Model):
     admin = models.ForeignKey(Admin, on_delete=models.SET_NULL, null=True, related_name="courses")
     prerequisites = models.ManyToManyField('self', symmetrical=False, related_name="required_for", blank=True)
     # I added New fields to filter matrials
-    college = models.CharField(max_length=100, null=True, blank=True)   
-    year = models.CharField(max_length=50, null=True, blank=True)       
-    semester = models.ForeignKey(Semester, on_delete=models.SET_NULL)
+    college = models.ForeignKey(College, on_delete=models.CASCADE)
+    level = models.IntegerField(choices=LEVELS)
+    semester_kind = models.CharField(max_length=1, choices=Semester.SEMESTER_TYPE)
 
     class Meta:
         verbose_name = "Course"

@@ -7,13 +7,7 @@
       <div class="filter-item">
         <select id="faculty-filter" v-model="filters.faculty">
           <option value="">Faculty</option>
-          <option value="Pharma D">Pharma D</option>
-          <option value="Engineering">Engineering</option>
-          <option value="Computer Science">Computer Science</option>
-          <option value="Sustainable Architecture">Sustainable Architecture</option>
-          <option value="Basic and Applied Science">Basic and Applied Science</option>
-          <option value="Art and Design">Art and Design</option>
-          <option value="International Business">International Business</option>
+          <option v-for="college in colleges" value="{{ college.id }}">{{ college.name }}</option>
         </select>
       </div>
 
@@ -21,12 +15,12 @@
       <div class="filter-item">
         <select id="level-filter" v-model="filters.level">
           <option value="">Level</option>
-          <option value="First Level">First Level</option>
-          <option value="Second Level">Second Level</option>
-          <option value="Third Level">Third Level</option>
-          <option value="Fourth Level">Fourth Level</option>
-          <option value="Fifth Level">Fifth Level</option>
-          <option value="Sixth Level">Sixth Level</option>
+          <option value="1">First Level</option>
+          <option value="2">Second Level</option>
+          <option value="3">Third Level</option>
+          <option value="4">Fourth Level</option>
+          <option value="5">Fifth Level</option>
+          <option value="6">Sixth Level</option>
         </select>
       </div>
 
@@ -34,38 +28,118 @@
       <div class="filter-item">
         <select id="semester-filter" v-model="filters.semester">
           <option value="">Semester</option>
-          <option value="Fall">Fall</option>
-          <option value="Spring">Spring</option>
+          <option value="F">Fall</option>
+          <option value="S">Spring</option>
         </select>
       </div>
     </div>
 
-    <!-- Display Filtered Materials -->
-    <div v-if="filteredMaterials.length > 0" class="filtered-materials">
-      <h2 class="best-courses-title">Available Materials</h2>
-      <ul>
-        <li v-for="material in filteredMaterials" :key="material.id">
-          {{ material.course_name }} - {{ material.title }} ({{ material.semester }})
-        </li>
-      </ul>
+    <!-- Display Popular Courses if No Filters are Applied -->
+    <div v-if="!isFiltered" class="popular-courses">
+      <h2 class="best-courses-title">Our Popular Courses</h2>
+      <div class="course-list">
+        <router-link v-for="course in popularCourses" :key="course.id"
+                     :to="{ name: 'CourseDetails', params: { id: course.id } }"
+                     class="course-item">
+          <!--<div class="course-image">
+            <img :src="course.imageUrl" alt="Course Image" />
+          </div>-->
+          <div class="course-details">
+            <p class="course-title">{{ course.title }}</p>
+            <p class="course-code">{{ course.id }}</p>
+          </div>
+        </router-link>
+      </div>
     </div>
 
-    <div v-if="filteredMaterials.length === 0" class="no-materials-message">
-      <p>No materials found for the selected filters.</p>
+    <!-- Show Filtered Courses if Filters are Applied -->
+    <div v-if="isFiltered && filteredCourses.length > 0" class="filtered-courses">
+      <h2 class="best-courses-title">Filtered Courses</h2>
+      <div class="course-list">
+        <!-- Course Item -->
+        <router-link v-for="course in filteredCourses" :key="course.id"
+                     :to="{ name: 'CourseDetails', params: { id: course.id } }"
+                     class="course-item">
+          <!--<div class="course-image">
+            <img :src="course.imageUrl" alt="Course Image" />
+          </div>-->
+          <div class="course-details">
+            <p class="course-title">{{ course.title }}</p>
+            <p class="course-code">{{ course.id }}</p>
+          </div>
+        </router-link>
+
+
+      </div>
+    </div>
+
+    <!-- Message if No Courses Match the Filter -->
+    <div v-if="isFiltered && filteredCourses.length === 0" class="no-courses-message">
+      <p>No courses found for the selected filters. Please adjust your filters.</p>
     </div>
   </div>
 </template>
 
 <script>
-export default {
-  name: "MaterialsPage",
-  data() {
-    return {
-      materials: [], // To store materials fetched from API
-      filters: {
-        faculty: "",
-        level: "",
-        semester: "",
+  import courseImage from '@/assets/pexels-photo.png'; // Common image for all courses
+  import instructorIcon1 from '@/assets/doctor-img4.png'; // Icon for Dr. Mohamed
+  import instructorIcon2 from '@/assets/doctor-img4.png'; // Icon for Dr. Ayman
+  import instructorIcon3 from '@/assets/doctor-img4.png'; // Icon for Dr. Mostafa
+
+  export default {
+    name: 'MaterialsPage',
+    data() {
+      return {
+        colleges: [],
+        popularCourses: [
+          { id: 1, code: 'CSC 410', title: 'Software Quality', instructor: 'Dr. Mohamed', instructorIconUrl: instructorIcon1, imageUrl: courseImage, rating: 5, faculty: 'Computer Science', level: 'First Level', semester: 'Spring' },
+          { id: 2, code: 'CSC 420', title: 'Web Development', instructor: 'Dr. Mohamed', instructorIconUrl: instructorIcon1, imageUrl: courseImage, rating: 4, faculty: 'Computer Science', level: 'Second Level', semester: 'Spring' },
+          { id: 3, code: 'CSC 430', title: 'Database Systems', instructor: 'Dr. Ayman', instructorIconUrl: instructorIcon2, imageUrl: courseImage, rating: 3, faculty: 'Computer Science', level: 'Third Level', semester: 'Fall' },
+          { id: 4, code: 'CSC 440', title: 'Artificial Intelligence', instructor: 'Dr. Mostafa', instructorIconUrl: instructorIcon3, imageUrl: courseImage, rating: 5, faculty: 'Engineering', level: 'Third Level', semester: 'Fall' },
+        ],
+
+        courses: [
+          { id: 1, code: 'CSC 410', title: 'Software Quality', instructor: 'Dr. Mohamed', instructorIconUrl: instructorIcon1, imageUrl: courseImage, rating: 5, faculty: 'Computer Science', level: 'First Level', semester: 'Spring' },
+          { id: 2, code: 'CSC 420', title: 'Web Development', instructor: 'Dr. Mohamed', instructorIconUrl: instructorIcon1, imageUrl: courseImage, rating: 4, faculty: 'Computer Science', level: 'Second Level', semester: 'Spring' },
+          { id: 3, code: 'CSC 430', title: 'Database Systems', instructor: 'Dr. Ayman', instructorIconUrl: instructorIcon2, imageUrl: courseImage, rating: 3, faculty: 'Computer Science', level: 'Third Level', semester: 'Fall' },
+          { id: 4, code: 'CSC 440', title: 'Artificial Intelligence', instructor: 'Dr. Mostafa', instructorIconUrl: instructorIcon3, imageUrl: courseImage, rating: 5, faculty: 'Engineering', level: 'Third Level', semester: 'Fall' },
+          { id: 5, code: 'CSC 450', title: 'Machine Learning', instructor: 'Dr. Ayman', instructorIconUrl: instructorIcon2, imageUrl: courseImage, rating: 4, faculty: 'Engineering', level: 'First Level', semester: 'Spring' },
+        ],
+
+        filters: {
+          faculty: '',  // Selected faculty
+          level: '',    // Selected level
+          semester: '', // Selected semester
+        },
+      };
+    },
+    beforeMount() {
+      let colleges = this.$root.request_api_endpoint('api/colleges', 'get', null);
+      let courses = this.$root.request_api_endpoint('api/courses', 'get', null);
+
+      colleges.then((data) => { 
+        this.colleges = data;
+      });
+
+      courses.then((data) => {
+        this.popularCourses = this.courses = data;
+
+      });
+
+    },
+    computed: {
+      isFiltered() {
+        return this.filters.faculty || this.filters.level || this.filters.semester;
+      },
+
+      filteredCourses() {
+        return this.courses.filter(course => {
+          return (
+            (!this.filters.faculty || course.college.id === this.filters.faculty) &&
+            (!this.filters.level || course.level === this.filters.level) &&
+            (!this.filters.semester || course.semester === this.filters.semester)
+          );
+        });
       },
     };
   },

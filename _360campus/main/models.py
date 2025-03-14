@@ -121,6 +121,7 @@ class Semester(models.Model):
 class Course(models.Model):
 
     LEVELS = [(i, f'{i}') for i in range(1, 5)]
+
     title = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

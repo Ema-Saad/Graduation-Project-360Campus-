@@ -117,9 +117,7 @@ class Semester(models.Model):
     kind = models.CharField(max_length=1, choices=SEMESTER_TYPE)
     year = models.IntegerField()
 
-# Course Model
 class Course(models.Model):
-
     LEVELS = [(i, f'{i}') for i in range(1, 5)]
 
     title = models.CharField(max_length=200)
@@ -133,29 +131,25 @@ class Course(models.Model):
     level = models.IntegerField(choices=LEVELS)
     semester_kind = models.CharField(max_length=1, choices=Semester.SEMESTER_TYPE)
 
-    class Meta:
-        verbose_name = "Course"
-
-
-# Enrollment Model
 class Enrollment(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="enrollments")
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="enrollments")
+    classroom = models.ForeignKey('Classroom', on_delete=models.CASCADE)
     feedback = models.TextField(null=True, blank=True)
+    rating = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Enrollment"
-        unique_together = ('student', 'course')
+        unique_together = ('student', 'classroom')
 
 class Classroom(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
-    students = models.ManyToManyField(Student)
+    instructor = models.ForeignKey(Professor, on_delete=models.CASCADE)
+    semester = models.ForeignKey(Semester, on_delete=models.SET_NULL, null=True)
+    rating = models.FloatField()
+    students = models.ManyToManyField(Student, through=Enrollment)
 
     class Meta:
-        verbose_name = 'Classroom'
-
+        unique_together = ('course', 'instructor', 'semester')
 
 
 class Material(models.Model):

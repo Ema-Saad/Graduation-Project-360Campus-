@@ -9,6 +9,7 @@ app_name = 'main'
 urlpatterns = [
     path('api/auth/login', views.obtain_auth_token),
     path('api/courses', course_list, name='course_list'),
+    path('api/classrooms', classroom_list, name='classroom_list'),
     path('api/colleges', \
          generics.ListAPIView.as_view(queryset=College.objects.all(), serializer_class=CollegeSerializer), \
          name='college_list'),

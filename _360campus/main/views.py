@@ -62,6 +62,16 @@ def classroom_view(req, course_pk):
 
     return Response(data=classroom_serializer.data, status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def classroom_list(req):
+    current_semester = Semester.objects.last()
+    classrooms = Classroom.objects.filter(students__contains=req.user.student, \
+                                          semester=current_semester)
+    serializer = ClassroomSerializer(classrooms, many=True)
+
+    return Response(serializer.data)
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def event_register(req, pk):

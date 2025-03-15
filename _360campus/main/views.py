@@ -51,16 +51,19 @@ def course_list(req):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def classroom_view(req, course_pk):
-
+    current_semester = Semester.objects.last()
     course = get_object_or_404(Course, pk=course_pk)
 
-    if not Enrollment.objects.filter(student=req.user.student, course=course).exists():
+    if not Enrollment.objects.filter(classroom__semester=current_semester, \
+                                     student=req.user.student, \
+                                     course=course).exists():
         return Response(status=status.HTTP_403_FORBIDDEN)
 
-    classroom = Classroom.objects.get(course=course)
-    classroom_serializer = ClassroomSerializer(instance=classroom)
+    classroom = Classroom.objects.get(course=course, \
+                                      semester=current_semester)
+    serializer = ClassroomSerializer(classroom)
 
-    return Response(data=classroom_serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.data)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

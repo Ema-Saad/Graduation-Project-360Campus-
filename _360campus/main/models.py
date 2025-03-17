@@ -55,6 +55,25 @@ class Admin(Person):
         verbose_name = "Admin"
 
 
+class College(models.Model):
+    code = models.CharField(max_length=5, primary_key=True)
+    name = models.CharField(max_length=200)
+    description = models.TextField()
+    chairman = models.ForeignKey(Professor, on_delete=models.SET_NULL, related_name="dean_of_college", null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+class Faculty(models.Model):
+    code = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=200)
+    college = models.ForeignKey(College, on_delete=models.CASCADE)
+    description = models.TextField()
+    head = models.ForeignKey(Professor, on_delete=models.SET_NULL, related_name="head_of_faculty", null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
 # Report Model
 class Report(models.Model):
     title = models.CharField(max_length=200)

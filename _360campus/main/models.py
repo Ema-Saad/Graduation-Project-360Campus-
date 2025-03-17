@@ -65,6 +65,7 @@ class College(models.Model):
         return self.name
 
 class Faculty(models.Model):
+    code = models.CharField(max_length=10, primary_key=True)
     name = models.CharField(max_length=200)
     college = models.ForeignKey(College, on_delete=models.CASCADE)
     description = models.TextField()

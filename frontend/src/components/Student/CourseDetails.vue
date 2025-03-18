@@ -8,7 +8,7 @@
           <h1 class="course-name">{{ course.description }}</h1>
         </div>
       </div>
-      <img src="../assets/pexels-photo.png" alt="Course Image" class="main-image" />
+      <!--<img src="../assets/pexels-photo.png" alt="Course Image" class="main-image" />-->
     </div>
 
     <h1>{{ course.title }}</h1>
@@ -23,7 +23,7 @@
             <div class="week-overlay">
               Week {{ week.id }} <!-- Display "Week" before the Week ID -->
             </div>
-            <img src="../assets/pexels-photo.png" alt="Week Image" class="week-image" />
+            <!--<img src="../assets/pexels-photo.png" alt="Week Image" class="week-image" />-->
           </div>
           <span class="arrow" :class="{ 'rotate': isDropdownOpen(week.id) }">&#9660;</span>
         </div>

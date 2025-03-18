@@ -9,7 +9,7 @@ urlpatterns = [
     path('api/course/<int:course_pk>', course_view, name='course_view'),
     path('api/course/<int:course_pk>/classroom', classroom_view, name='classroom_view'),
     # Materials endpoints (for courses that have materials)
-    path('api/course/<int:course_pk>/materials', material_list, name='material_list'),
+    path('api/materials', material_list, name='material_list'),
     path('api/course/<int:course_pk>/materials/weeks', course_materials_by_week, name='course_materials_by_week'),
     path('api/course/<int:course_pk>/materials/week/<int:week>', materials_for_week, name='materials_for_week'),
     #material itself "files or content"

@@ -29,41 +29,9 @@
       </div>
     </div>
 
-    <!-- "Our Best Projects" section when no filters are applied -->
-    <div v-if="!filters.faculty && !filters.year" class="best-projects">
-      <h2 class="projects-title">Our Best Projects</h2>
-
-      <div class="project-list">
-        <div v-for="project in popularProjects" :key="project.id" @click="goToProject(project.id)" class="project-item">
-          <div class="project-image">
-            <img :src="project.imageUrl" alt="Project Image" />
-            <div class="overlay">
-              <div class="overlay-text">
-                <p class="project-title-overlay">{{ project.title }}</p>
-              </div>
-            </div>
-          </div>
-          <div class="project-details">
-            <div class="project-instructor">
-              <div class="instructor-avatar-container">
-                <img class="instructor-icon" :src="project.instructorIconUrl" alt="Instructor Icon" />
-              </div>
-              <span class="instructor-name">{{ project.instructor }}</span>
-            </div>
-            <div class="project-title">{{ project.title }}</div>
-            <p class="project-major">Majors: {{ project.major }}</p>
-          </div>
-          <div class="project-rating">
-            <span v-for="n in 5" :key="n" class="star">★</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Only Show Filtered Projects After Faculty is Selected -->
-    <div v-if="filters.faculty && filteredProjects.length > 0" class="filtered-projects">
+    <!-- Conditionally render filtered projects if any filter is applied -->
+    <div v-if="(filters.faculty || filters.year) && filteredProjects.length > 0" class="filtered-projects">
       <h2 class="projects-title">Filtered Graduation Projects</h2>
-
       <div class="project-list">
         <div v-for="project in filteredProjects" :key="project.id" @click="goToProject(project.id)" class="project-item">
           <div class="project-image">
@@ -91,24 +59,49 @@
       </div>
     </div>
 
-    <!-- Show the message only if faculty is selected and no projects match the filter -->
-    <div v-else-if="filters.faculty && filteredProjects.length === 0" class="no-projects-message">
+    <!-- Show best projects when no filters are applied -->
+    <div v-else-if="!filters.faculty && !filters.year" class="best-projects">
+      <h2 class="projects-title">Our Best Projects</h2>
+      <div class="project-list">
+        <div v-for="project in popularProjects" :key="project.id" @click="goToProject(project.id)" class="project-item">
+          <div class="project-image">
+            <img :src="project.imageUrl" alt="Project Image" />
+            <div class="overlay">
+              <div class="overlay-text">
+                <p class="project-title-overlay">{{ project.title }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="project-details">
+            <div class="project-instructor">
+              <div class="instructor-avatar-container">
+                <img class="instructor-icon" :src="project.instructorIconUrl" alt="Instructor Icon" />
+              </div>
+              <span class="instructor-name">{{ project.instructor }}</span>
+            </div>
+            <div class="project-title">{{ project.title }}</div>
+            <p class="project-major">Majors: {{ project.major }}</p>
+          </div>
+          <div class="project-rating">
+            <span v-for="n in 5" :key="n" class="star">★</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Show message if filters are applied but no projects match -->
+    <div v-else-if="(filters.faculty || filters.year) && filteredProjects.length === 0" class="no-projects-message">
       <p>No projects found for the selected filters. Please adjust your filters.</p>
     </div>
   </div>
 </template>
 
 <script>
-  import projectImage from '@/assets/project-image.png';
-  import instructorIcon1 from '@/assets/doctor-img4.png';
-  import instructorIcon2 from '@/assets/doctor-img4.png';
-  import instructorIcon3 from '@/assets/doctor-img4.png';
-
 export default {
   name: "ProjectsPage",
   data() {
     return {
-      projects: [],  // Stores graduation projects from the API
+      projects: [], // Stores all graduation projects fetched from the API
       filters: {
         faculty: "",
         year: ""
@@ -117,27 +110,27 @@ export default {
   },
   computed: {
     filteredProjects() {
-      return this.projects.filter((project) => {
+      return this.projects.filter(project => {
         return (
           (!this.filters.faculty || project.faculty === this.filters.faculty) &&
-          (!this.filters.year || project.year === this.filters.year)
+          (!this.filters.year || project.year == this.filters.year)
         );
       });
+    },
+    popularProjects() {
+      // For demonstration, using the first 5 projects as "popular" ones.
+      return this.projects.slice(0, 5);
     }
   },
   async mounted() {
-    // Fetch graduation projects when the page loads
-    this.projects = await this.$root.api_request("graduation-projects/");
+    // Fetch all projects once when the page loads
+    this.projects = await this.$root.request_api_endpoint("api/graduation-projects/", "get", null);
   },
   methods: {
-    async updateFilter() {
-      // Fetch filtered projects from the API when the filters change
-      let endpoint = "graduation-projects/";
-      if (this.filters.faculty || this.filters.year) {
-        endpoint += `?faculty=${this.filters.faculty}&year=${this.filters.year}`;
-      }
-
-      this.projects = await this.$root.api_request(endpoint);
+    updateFilter() {
+      // Since filtering is done locally via the computed property,
+      // no API call is needed here.
+      console.log("Filters updated:", this.filters);
     },
     goToProject(projectId) {
       this.$router.push({ name: "ProjectDetails", params: { id: projectId } });

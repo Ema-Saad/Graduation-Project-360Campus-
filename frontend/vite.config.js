@@ -13,6 +13,7 @@ export default defineConfig({
     },
   },
   server: {
+    port: 5173,
     fs: {
       allow: [
         './node_modules', // Allow node_modules

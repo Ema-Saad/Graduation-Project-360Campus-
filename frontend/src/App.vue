@@ -15,108 +15,113 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, computed } from "vue";
-  import { useRoute } from "vue-router";
-  import NavBarStudent from "./components/Student/NavBar.vue";
-  import NavBarDoctor from "./components/Doctor/NavBarDOC.vue";  // Import doctor's navbar
-  import Footer from "./components/Student/FooterSection.vue";
-  import FooterDOC from "./components/Doctor/FooterDOC.vue"; // Import doctor's footer
+import { defineComponent, computed } from "vue";
+import { useRoute } from "vue-router";
+import NavBarStudent from "./components/Student/NavBar.vue";
+import NavBarDoctor from "./components/Doctor/NavBarDOC.vue";  // Import doctor's navbar
+import Footer from "./components/Student/FooterSection.vue";
+import FooterDOC from "./components/Doctor/FooterDOC.vue"; // Import doctor's footer
 
-  export default defineComponent({
-    name: "App",
-    data() {
-      return {
-        authtoken: '',
+export default defineComponent({
+  name: "App",
+  data() {
+    return {
+      authtoken: '',
+    }
+  },
+  methods: {
+    async request_api_endpoint(endpoint: string, method: string, data?: any): Promise<any> {
+      try {
+        const url = `http://127.0.0.1:8000/${endpoint}`;
+        
+        // Only add the Authorization header if authtoken is non-empty.
+        const headers: HeadersInit = {};
+        if (this.authtoken) {
+          headers["Authorization"] = `Token ${this.authtoken}`;
+        }
+        
+        const options: RequestInit = {
+          method: method,
+          mode: 'cors',
+          headers: headers,
+        };
+
+        if (data) {
+          options.body = new URLSearchParams(data);
+        }
+        const response = await fetch(url, options);
+        
+        // Optionally check for errors before returning the JSON.
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(JSON.stringify(errorData));
+        }
+        
+        return await response.json();
+      } catch (err) {
+        throw err;
       }
     },
-    methods: {
-      async request_api_endpoint(endpoint, method, data) {
-        try {
-          let url = `http://127.0.0.1:8000/${endpoint}`;
-          
-          let options = {
-            method: method,
-            mode: 'cors',
-            headers: {
-              "Authorization": `Token ${this.authtoken}`,
-            },
-          };
+    async login(username: string, password: string): Promise<boolean> {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/auth/login', {
+          method: 'POST',
+          mode: 'cors',
+          body: new URLSearchParams({ username, password }),
+        });
 
-          if (data) {
-            options = {
-              body: new URLSearchParams(data),
-              ...options
-            };
-          }
-          let response = await fetch(url, options);
-          
-          return await response.json();
-        } catch (err) {
-          throw err;
+        if (response.status === 200) {
+          const data = await response.json();
+          this.authtoken = data['token'];
+          return true;
+        } else {
+          return false;
         }
-      },
-      async login(username, password) {
-        try {
-          let response = await fetch('http://127.0.0.1:8000/api/auth/login', {
-            method: 'POST',
-            mode: 'cors',
-            body: new URLSearchParams({ username, password }),
-          });
-
-          if (response.status === 200) {
-
-            let data = await response.json();
-
-            this.authtoken = data['token'];
-            return true;
-
-          } else {
-            return false;
-          }
-        } catch (err) {
-          throw err;
-        }
+      } catch (err) {
+        throw err;
       }
-    },
+    }
+  },
 
-    components: {
-      NavBarStudent,
-      NavBarDoctor,
-      Footer,
-      FooterDOC, // Register FooterDOC component
-    },
-    setup() {
-      const route = useRoute();
+  components: {
+    NavBarStudent,
+    NavBarDoctor,
+    Footer,
+    FooterDOC,
+  },
+  setup() {
+    const route = useRoute();
 
-      // Pages where the navbar and footer should be hidden (for both student and doctor pages)
-      const pagesWithoutLayout = new Set([
-        "/login",
-        "/forgot-password",
-        "/reset-password",
-        "/verification",
-        "/congratulations",
-        "/error", // Updated error page path
-        "/doctor/login",
-        "/doctor/forgot-password",
-        "/doctor/reset-password",
-        "/doctor/verification",
-        "/doctor/congratulations",
-        "/doctor/error" // Updated error page path for doctor
-      ]);
+    // Pages where the navbar and footer should be hidden (for both student and doctor pages)
+    const pagesWithoutLayout = new Set([
+      "/login",
+      "/forgot-password",
+      "/reset-password",
+      "/verification",
+      "/congratulations",
+      "/error", // Updated error page path
+      "/doctor/login",
+      "/doctor/forgot-password",
+      "/doctor/reset-password",
+      "/doctor/verification",
+      "/doctor/congratulations",
+      "/doctor/error" // Updated error page path for doctor
+    ]);
 
-      // Compute whether to hide the navbar and footer based on the current route
-      const shouldHideLayout = computed(() => pagesWithoutLayout.has(route.path));
+    // Compute whether to hide the navbar and footer based on the current route
+    const shouldHideLayout = computed(() => pagesWithoutLayout.has(route.path));
 
-      // Logic to choose the correct navbar based on the route
-      const isDoctor = computed(() => route.path.startsWith('/doctor')); // This still checks for /doctor prefix
+    // Logic to choose the correct navbar based on the route
+    const isDoctor = computed(() => route.path.startsWith('/doctor'));
 
-      return {
-        shouldHideLayout,
-        isDoctor
-      };
-    },
-  });
+    return {
+      shouldHideLayout,
+      isDoctor
+    };
+  },
+});
 </script>
+
 
 <style scoped>
   #app {

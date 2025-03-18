@@ -9,14 +9,14 @@ app_name = 'main'
 urlpatterns = [
     path('api/auth/login', views.obtain_auth_token),
     path('api/courses', course_list, name='course_list'),
-    path('api/classrooms', classroom_list, name='classroom_list'),
+    path('api/registered_classrooms', registered_classroom_list, name='classroom_list'),
     path('api/colleges', \
          generics.ListAPIView.as_view(queryset=College.objects.all(), serializer_class=CollegeSerializer), \
          name='college_list'),
     path('api/course/<int:pk>', \
          generics.RetrieveAPIView.as_view(queryset=Course.objects.all(), serializer_class=CourseSerializer), \
          name='course_view'),
-    path('api/course/<int:course_pk>/classroom', classroom_view, name='classroom_view'),
+    path('api/course/<int:course_pk>/classroom', registered_classroom_view, name='classroom_view'),
     # Materials endpoints (for courses that have materials)
     path('api/materials', material_list, name='material_list'),
     path('api/course/<int:course_pk>/materials/weeks', course_materials_by_week, name='course_materials_by_week'),

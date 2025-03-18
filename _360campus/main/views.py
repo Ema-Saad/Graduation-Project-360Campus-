@@ -50,7 +50,7 @@ def course_list(req):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def classroom_view(req, course_pk):
+def registered_classroom_view(req, course_pk):
     current_semester = Semester.objects.last()
     course = get_object_or_404(Course, pk=course_pk)
 
@@ -67,7 +67,7 @@ def classroom_view(req, course_pk):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def classroom_list(req):
+def registered_classroom_list(req):
     current_semester = Semester.objects.last()
     classrooms = Classroom.objects.filter(students__contains=req.user.student, \
                                           semester=current_semester)

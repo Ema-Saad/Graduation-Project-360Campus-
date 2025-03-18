@@ -59,7 +59,7 @@ import DOCAssignment from '@/components/Doctor/DOCAssignment.vue';
 
 const routes = [
   // Redirect root to doctor home (can be changed to student home if needed)
-  { path: '/', redirect: '/doctor' },
+// { path: '/', redirect: '/doctor' },
 
   // Doctor Routes
   { path: '/doctor', component: HomePageDOC, name: 'DoctorHome' },
@@ -88,6 +88,7 @@ const routes = [
 
 
   // Student Routes
+  { path: '/', redirect:'/home'},
   { path: '/home', component: HomePage, name: 'StudentHome' },
   { path: '/profile', component: ProfilePage, name: 'ProfilePage' },
   { path: '/login', component: LoginPage, name: 'Login' },

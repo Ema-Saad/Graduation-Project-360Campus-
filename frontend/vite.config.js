@@ -20,4 +20,12 @@ export default defineConfig({
       ],
     },
   },
+  build: {
+    rollupOptions: {
+      onwarn(warning, warn) {
+        if (warning.code === 'UNRESOLVED_IMPORT') return; //Ignore missing imports
+        warn(warning);
+      }
+    }
+  }
 });

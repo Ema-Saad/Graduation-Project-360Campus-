@@ -104,61 +104,48 @@
   import instructorIcon2 from '@/assets/doctor-img4.png';
   import instructorIcon3 from '@/assets/doctor-img4.png';
 
-  export default {
-    name: 'ProjectsPage',
-    data() {
-      return {
-        popularProjects: [
-          { id: 1, title: 'Smart Irrigation System', instructor: 'Dr. Mohamed', instructorIconUrl: instructorIcon1, imageUrl: projectImage, major: 'Computer Science', faculty: 'Computer Science', year: '2024' },
-          { id: 2, title: 'Energy Efficient Homes', instructor: 'Dr. Ahmed', instructorIconUrl: instructorIcon2, imageUrl: projectImage, major: 'Sustainable Architecture', faculty: 'Engineering', year: '2023' },
-          { id: 3, title: 'AI in Healthcare', instructor: 'Dr. Ayman', instructorIconUrl: instructorIcon3, imageUrl: projectImage, major: 'Artificial Intelligence', faculty: 'Engineering', year: '2024' },
-        ],
-        projects: [
-          { id: 1, title: 'Smart Irrigation System', instructor: 'Dr. Mohamed', instructorIconUrl: instructorIcon1, imageUrl: projectImage, major: 'Computer Science', faculty: 'Computer Science', year: '2024' },
-          { id: 2, title: 'Energy Efficient Homes', instructor: 'Dr. Ahmed', instructorIconUrl: instructorIcon2, imageUrl: projectImage, major: 'Sustainable Architecture', faculty: 'Engineering', year: '2023' },
-          { id: 3, title: 'AI in Healthcare', instructor: 'Dr. Ayman', instructorIconUrl: instructorIcon3, imageUrl: projectImage, major: 'Artificial Intelligence', faculty: 'Engineering', year: '2024' },
-        ],
-        filters: {
-          faculty: '',
-          year: '',
-        },
-      };
-    },
-    computed: {
-      filteredProjects() {
-        // If no filters are applied, show all projects
-        if (!this.filters.faculty && !this.filters.year) {
-          return this.projects;
-        }
-
-        // Filter by faculty if selected
-        if (this.filters.faculty && !this.filters.year) {
-          return this.projects.filter(project => project.faculty === this.filters.faculty);
-        }
-
-        // Filter by year if selected
-        if (!this.filters.faculty && this.filters.year) {
-          return this.projects.filter(project => project.year === this.filters.year);
-        }
-
-        // Filter by both faculty and year
-        if (this.filters.faculty && this.filters.year) {
-          return this.projects.filter(project => project.faculty === this.filters.faculty && project.year === this.filters.year);
-        }
-
-        return [];
-      },
-    },
-    methods: {
-      updateFilter() {
-        // This method ensures that filters are re-triggered when changed
-      },
-      goToProject(projectId) {
-        this.$router.push({ name: 'ProjectDetails', params: { id: projectId } });
+export default {
+  name: "ProjectsPage",
+  data() {
+    return {
+      projects: [],  // Stores graduation projects from the API
+      filters: {
+        faculty: "",
+        year: ""
       }
+    };
+  },
+  computed: {
+    filteredProjects() {
+      return this.projects.filter((project) => {
+        return (
+          (!this.filters.faculty || project.faculty === this.filters.faculty) &&
+          (!this.filters.year || project.year === this.filters.year)
+        );
+      });
     }
-  };
+  },
+  async mounted() {
+    // Fetch graduation projects when the page loads
+    this.projects = await this.$root.api_request("graduation-projects/");
+  },
+  methods: {
+    async updateFilter() {
+      // Fetch filtered projects from the API when the filters change
+      let endpoint = "graduation-projects/";
+      if (this.filters.faculty || this.filters.year) {
+        endpoint += `?faculty=${this.filters.faculty}&year=${this.filters.year}`;
+      }
+
+      this.projects = await this.$root.api_request(endpoint);
+    },
+    goToProject(projectId) {
+      this.$router.push({ name: "ProjectDetails", params: { id: projectId } });
+    }
+  }
+};
 </script>
+
 
 <style scoped>
   .projects-page {

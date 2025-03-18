@@ -21,14 +21,14 @@ class Person(AbstractUser):
         verbose_name_plural = "People"
 
 class Professor(Person):
-    faculty = models.ForeignKey('Faculty', on_delete=models.CASCADE)
+    faculty = models.ForeignKey('main.Faculty', on_delete=models.CASCADE)
     class Meta:
         verbose_name = "Professor"
 
 class GraduationProject(models.Model):
     name = models.CharField(max_length=200)
     year = models.IntegerField()
-    faculty = models.ForeignKey('Faculty', on_delete=models.CASCADE)
+    faculty = models.ForeignKey('main.Faculty', on_delete=models.CASCADE)
     description = models.TextField()
     supervisor = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, blank=True, related_name="supervised_projects" )
     rate = models.DecimalField(max_digits=3, decimal_places= 2 , default= 0.00)
@@ -38,7 +38,7 @@ class GraduationProject(models.Model):
         ordering = ["-rate"]
 
 class Student(Person):
-    faculty = models.ForeignKey('Faculty', on_delete=models.CASCADE)
+    faculty = models.ForeignKey('main.Faculty', on_delete=models.CASCADE)
     graduation_project = models.ForeignKey(GraduationProject, on_delete=models.SET_NULL, null=True, blank=True, related_name="students")
     class Meta:
         verbose_name = "Student"

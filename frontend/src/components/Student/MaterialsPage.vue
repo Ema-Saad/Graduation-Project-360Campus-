@@ -141,37 +141,8 @@
           );
         });
       },
-    };
-  },
-  computed: {
-    filteredMaterials() {
-      return this.materials.filter((material) => {
-        return (
-          (!this.filters.faculty || material.faculty === this.filters.faculty) &&
-          (!this.filters.level || material.level === this.filters.level) &&
-          (!this.filters.semester || material.semester === this.filters.semester)
-        );
-      });
     },
-  },
-  beforeMount() {
-    this.fetchMaterials();
-  },
-  methods: {
-    async fetchMaterials() {
-      try {
-        let materialsResponse = await this.$root.request_api_endpoint(
-          "api/materials",
-          "get",
-          null
-        );
-        this.materials = materialsResponse; // Assuming the API returns an array of materials
-      } catch (error) {
-        console.error("Error fetching materials:", error);
-      }
-    },
-  },
-};
+  }
 </script>
 
 <style scoped>

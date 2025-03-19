@@ -75,6 +75,17 @@ def registered_classroom_list(req):
 
     return Response(serializer.data)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def classroom_list(req, course_pk):
+    current_semester = Semester.objects.last()
+    course = get_object_or_404(Course, pk=course_pk)
+    classrooms = get_list_or_404(Classroom, semester=current_semester, \
+                                 course=course)
+    serializer = ClassroomSerializer(classrooms, many=True)
+
+    return Response(serializer.data)
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def event_register(req, pk):

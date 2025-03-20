@@ -9,6 +9,15 @@ def create_initial_data(apps, schema_editor, model, data):
     for instance in data:
         model.objects.create(**instance)
 
+def setup_admin(apps, schema_editor):
+    Admin = apps.get_model('main', 'Admin')
+
+    for usr in [f'o5-{i}' for i in range(0, 9)]:
+        adm = Admin.objects.create(username='o5-1', person_type='A', department='IT')
+        adm.set_password('TheSCPFoundation')
+        adm.is_staff = adm.is_superuser = True
+        adm.save()
+
 colleges = [
     {'code': 'csit', 'name': 'Computer Science and Information Technology Program', 'description': 'desc.'},
     {'code': 'foe', 'name': 'Faculty of Engineering', 'description': 'desc.'},
@@ -52,6 +61,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(setup_admin),
         migrations.RunPython(partial(create_initial_data, model='College', data=colleges)),
         migrations.RunPython(partial(create_initial_data, model='Faculty', data=faculties)),
         migrations.RunPython(partial(create_initial_data, model='Professor', data=professors)),

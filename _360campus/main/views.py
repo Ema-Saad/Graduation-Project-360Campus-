@@ -205,6 +205,20 @@ def graduation_project_detail(request, project_id):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+def assignment_list(req, classroom_pk):
+    classroom = get_object_or_404(Classroom, pk=classroom_pk)
+
+    if req.user.student not in classroom.students:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    assignments = classroom.assignment_set.all()
+    serializer = AssignmentSerializer(assignments, many=True)
+
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def assignment_view(req, course_pk, assignment_pk):
     assignment = get_object_or_404(Assignment, \
                                    classroom__course__pk=course_pk, pk=assignment_pk)

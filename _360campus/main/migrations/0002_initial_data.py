@@ -67,6 +67,18 @@ courses = [
     {'title': 'Database Systems', 'college_id': 'csit', 'level': 3, 'semester_kind': 'S'},
 ]
 
+semesters = [
+    {'kind': 'F', 'year': 2020},
+    {'kind': 'S', 'year': 2020},
+    {'kind': 'F', 'year': 2021},
+    {'kind': 'S', 'year': 2021},
+    {'kind': 'F', 'year': 2022},
+    {'kind': 'S', 'year': 2022},
+    {'kind': 'F', 'year': 2023},
+    {'kind': 'S', 'year': 2023},
+
+]
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -74,7 +86,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(setup_admin),
+    #    migrations.RunPython(setup_admin),
         migrations.RunPython(partial(create_initial_data, model='College', data=colleges)),
         migrations.RunPython(partial(create_initial_data, model='Faculty', data=faculties)),
         migrations.RunPython(partial(create_initial_data, model='Professor', data=professors)),

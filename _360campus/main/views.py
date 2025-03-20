@@ -208,7 +208,7 @@ def graduation_project_detail(request, project_id):
 def assignment_list(req, classroom_pk):
     classroom = get_object_or_404(Classroom, pk=classroom_pk)
 
-    if req.user.student not in classroom.students:
+    if req.user.student not in classroom.students.all():
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     assignments = classroom.assignment_set.all()
@@ -216,6 +216,18 @@ def assignment_list(req, classroom_pk):
 
     return Response(serializer.data)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def submitted_assignment_list(req, classroom_pk):
+    classroom = get_object_or_404(Classroom, pk=classroom_pk)
+
+    if req.user.student not in classroom.students.all():
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    submitted_assignments = AssignmentSubmission.objects.filter(student=req.user.student, \
+                                                                assignment__classroom=classroom) \
+                                                        .values('assignment')
+    return Response(submitted_assignments)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

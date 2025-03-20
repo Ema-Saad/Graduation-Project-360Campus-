@@ -54,6 +54,19 @@ professors = [
     {'faculty_id': 'csit-bif', 'username': 'csit_bif_prof4', 'first_name': 'Test', 'last_name': 'Prof16', 'email': 'csit_bif_prof4@example.com'},
 ]
 
+courses = [
+    {'title': 'Fundamentals of Programming', 'college_id': 'csit', 'level': 1, 'semester_kind': 'F'},
+    {'title': 'Data Structures and Algorithms', 'college_id': 'csit', 'level': 1, 'semester_kind': 'S'},
+    {'title': 'Advanced Programming', 'college_id': 'csit', 'level': 1, 'semester_kind': 'S'},
+    {'title': 'Software Engineering', 'college_id': 'csit', 'level': 1, 'semester_kind': 'F'},
+    {'title': 'Operating Systems', 'college_id': 'csit', 'level': 2, 'semester_kind': 'F'},
+    {'title': 'Intelligent Systems', 'college_id': 'csit', 'level': 2, 'semester_kind': 'S'},
+    {'title': 'Computer Networks', 'college_id': 'csit', 'level': 2, 'semester_kind': 'S'},
+    {'title': 'Digital Logic Design', 'college_id': 'csit', 'level': 2, 'semester_kind': 'F'},
+    {'title': 'Computer Organisation', 'college_id': 'csit', 'level': 3, 'semester_kind': 'S'},
+    {'title': 'Database Systems', 'college_id': 'csit', 'level': 3, 'semester_kind': 'S'},
+]
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -65,4 +78,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(partial(create_initial_data, model='College', data=colleges)),
         migrations.RunPython(partial(create_initial_data, model='Faculty', data=faculties)),
         migrations.RunPython(partial(create_initial_data, model='Professor', data=professors)),
+        migrations.RunPython(partial(create_initial_data, model='Course', data=courses)),
     ]

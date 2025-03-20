@@ -91,4 +91,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(partial(create_initial_data, model='Faculty', data=faculties)),
         migrations.RunPython(partial(create_initial_data, model='Professor', data=professors)),
         migrations.RunPython(partial(create_initial_data, model='Course', data=courses)),
+        migrations.RunPython(partial(create_initial_data, model='Semester', data=semesters)),
     ]

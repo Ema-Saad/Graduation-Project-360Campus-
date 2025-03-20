@@ -16,6 +16,7 @@ urlpatterns = [
     path('api/course/<int:pk>', \
          generics.RetrieveAPIView.as_view(queryset=Course.objects.all(), serializer_class=CourseSerializer), \
          name='course_view'),
+    path('api/classroom/<int:pk>/join', classroom_join, name='classroom_join'),
     path('api/course/<int:course_pk>/classroom', registered_classroom_view, name='classroom_view'),
     path('api/course/<int:course_pk>/classrooms', classroom_list, name='classroom_list'),
     # Materials endpoints (for courses that have materials)

@@ -139,7 +139,7 @@ class Enrollment(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="enrollments")
     classroom = models.ForeignKey('Classroom', on_delete=models.CASCADE)
     feedback = models.TextField(null=True, blank=True)
-    rating = models.FloatField()
+    rating = models.FloatField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

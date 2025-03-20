@@ -55,8 +55,8 @@ def registered_classroom_view(req, course_pk):
     course = get_object_or_404(Course, pk=course_pk)
 
     if not Enrollment.objects.filter(classroom__semester=current_semester, \
-                                     student=req.user.student, \
-                                     course=course).exists():
+                                     classroom__course=course, \
+                                     student=req.user.student).exists():
         return Response(status=status.HTTP_403_FORBIDDEN)
 
     classroom = Classroom.objects.get(course=course, \

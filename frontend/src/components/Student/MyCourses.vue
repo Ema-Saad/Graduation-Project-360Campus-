@@ -1,42 +1,47 @@
 <template>
   <div class="app-container">
-    <div :class="['background-container', { 'blur-background': showModal }]">
-
-      <header class="header">
-        <!-- To Do Button that navigates to the To Do list -->
-        <div class="todo-button-container">
-          <button class="todo-button" @click="goToToDoPage">
-            To Do
-            <span class="badge">{{ taskCount }}</span>
-          </button>
-        </div>
-
-        <button class="join-button" @click="showModal = true">Join</button>
-      </header>
-
-      <!-- The class cards or any other content here -->
-      <div class="class-cards">
-        <button v-for="klass in registered_classes"
-                :key="klass.id"
-                @click="goToCourseDetail(klass.id)"
-                class="class-card">
-
-          <h3>{{ klass.course.title }}</h3>
-          <p class="author">👤 {{ klass.instructor.first_name }} {{ klass.instructor.last_name }}</p>
+    <header class="header">
+      <!-- To Do Button that navigates to the To Do list -->
+      <div class="todo-button-container">
+        <button class="todo-button" @click="goToToDoPage">
+          To Do
+          <span class="badge">{{ taskCount }}</span>
         </button>
       </div>
+
+      <div id="join-controls">
+        <select id="course" v-model="enroll_in.course" @change="populateClassroomsForEnroll">
+          <option value="0"> Course </option>
+          <option v-for="course in courses" :value="course.id">
+            {{ course.title }}
+          </option>
+        </select>
+        
+        <span> Taught by </span>
+        <select id="classroom" v-model="enroll_in.classroom">
+          <option value="0"> Instructor </option>
+
+          <option v-for="classroom in classrooms_of_course" :value="classroom.id">
+          {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}
+          </option>
+        </select>
+
+        <button class="join-button" @click="join">Join</button>
+      </div>
+    </header>
+
+    <!-- The class cards or any other content here -->
+    <div class="class-cards">
+      <button v-for="klass in registered_classes"
+              :key="klass.id"
+              @click="goToCourseDetail(klass.id)"
+              class="class-card">
+
+        <h3>{{ klass.course.title }}</h3>
+        <p class="author">👤 {{ klass.instructor.first_name }} {{ klass.instructor.last_name }}</p>
+      </button>
     </div>
 
-    <!-- Modal Popup for joining a class -->
-    <div v-if="showModal" class="modal-container">
-      <div class="modal">
-        <button class="close-button" @click="showModal = false">×</button>
-        <h2>Ask your doctor for the class code,</h2>
-        <p>then enter it here</p>
-        <input type="text" placeholder="Enter the class code..." class="input-box" />
-        <button class="modal-button">Joining</button>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -50,9 +55,14 @@
     name: 'MyCourses',
     data() {
       return {
-        showModal: false,
+        enroll_in: {
+          course: 0,
+          classroom: 0,
+        },
         taskCount: 3,
         registered_classes: [],
+        courses: [],
+        classrooms_of_course: [],
       };
     },
     beforeMount() {
@@ -60,17 +70,49 @@
 
       classes.then((data) => {
         this.registered_classes = data;
+
+        // after fetching registered classes, fetch all courses
+        let courses_promise = this.$root.request_api_endpoint('api/courses', 'get', null);
+
+        return courses_promise;
+      }).then((data) => {
+        // show only unenrolled courses
+        this.courses = data.filter((d) =>
+          this.registered_classes.find((e) => e.course.id === d.id) === undefined
+        );
       });
 
     },
     methods: {
       // Method to navigate to the To-Do page
+      populateClassroomsForEnroll() {
+        let classrooms_promise = this.$root.request_api_endpoint(`api/course/${this.enroll_in.course}/classrooms`, 'get', null);
+
+        classrooms_promise.then((data) => {
+          this.classrooms_of_course = data;
+        });
+  
+      },
       goToToDoPage() {
         this.$router.push({ name: 'ToDoPage' }); // 'ToDoPage' should be the name of the route for the to-do list
       },
       goToCourseDetail(courseId) {
         this.$router.push({ name: 'MyCourseDetail', params: { id: courseId } });
       },
+      join() {
+        let join_promise = this.$root.request_api_endpoint(`api/classroom/${this.enroll_in.classroom}/join`, 'post', null);
+
+        join_promise.then((_) => 
+          this.$root.request_api_endpoint(`api/course/${this.enroll_in.course}/classroom`, 'get', null)
+        ).then((data) => {
+          this.registered_classes = [...this.registered_classes, data];
+          this.courses = this.courses.filter((c) => c.id === this.enroll_in.course);
+          this.enroll_in = {
+            course: 0,
+            classroom: 0,
+          };
+        });
+      }
     },
   };
 </script>
@@ -80,23 +122,10 @@
   .app-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-  }
-
-  /* Background container with optional blur effect */
-  .background-container {
-    flex-grow: 1;
-    background-color: #f8f8f8;
-    display: flex;
-    flex-direction: column;
     justify-content: start;
     align-items: center;
     padding-top: 20px;
-    transition: filter 0.3s ease;
-  }
-
-  .blur-background {
-    filter: blur(5px); /* Applies blur when modal is visible */
+    height: 100vh;
   }
 
   /* Header section styling */
@@ -210,65 +239,6 @@
     width: 80%; /* Adjust width */
     font-size: 14px;
   }
-
-  /* Modal container styling */
-  .modal-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-
-  /* Modal box styling */
-  .modal {
-    background: linear-gradient(to bottom, #3b3b98, #f9c74f);
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    width: 300px;
-    position: relative;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  }
-
-  .close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: transparent;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-  }
-
-  /* Input box styling */
-  .input-box {
-    width: 90%;
-    padding: 10px;
-    margin: 15px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-  }
-
-  .modal-button {
-    padding: 10px 20px;
-    background-color: #3b3b98;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-    .modal-button:hover {
-      background-color: #2a2973;
-    }
-
   /* Media query for screens below 768px */
   @media (max-width: 768px) {
     /* Adjust the layout of the app container for mobile */
@@ -310,9 +280,9 @@
       margin-bottom: 15px; /* Add margin-bottom to create space between buttons */
     }
 
-      .todo-button:hover, .join-button:hover {
-        background-color: darkorange;
-      }
+    .todo-button:hover, .join-button:hover {
+      background-color: darkorange;
+    }
 
     /* Badge adjustments */
     .badge {
@@ -340,25 +310,6 @@
 
     .class-image {
       height: 100px;
-    }
-
-    /* Adjust the modal for mobile */
-    .modal-container {
-      padding: 10px;
-    }
-
-    .modal {
-      width: 90%;
-      padding: 15px;
-    }
-
-    .input-box {
-      width: 100%;
-      font-size: 12px;
-    }
-
-    .modal-button {
-      padding: 8px 16px;
     }
   }
 

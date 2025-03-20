@@ -69,7 +69,7 @@ def registered_classroom_view(req, course_pk):
 @permission_classes([IsAuthenticated])
 def registered_classroom_list(req):
     current_semester = Semester.objects.last()
-    classrooms = Classroom.objects.filter(students__contains=req.user.student, \
+    classrooms = Classroom.objects.filter(enrollment__student=req.user.student, \
                                           semester=current_semester)
     serializer = ClassroomSerializer(classrooms, many=True)
 

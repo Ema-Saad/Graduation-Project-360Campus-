@@ -20,6 +20,7 @@ class ClassroomSerializer(ModelSerializer):
     class Meta:
         model = Classroom
         fields = '__all__'
+        depth = 1
 
 class AssignmentSerializer(ModelSerializer):
     class Meta:

@@ -155,6 +155,9 @@ class Classroom(models.Model):
     class Meta:
         unique_together = ('course', 'instructor', 'semester')
 
+    def __str__(self):
+        return f'{self.course.title} by {self.instructor.first_name} {self.instructor.last_name}'
+
 
 class Material(models.Model):
     # I added this function to avoid the SuspiciousFileOperation error

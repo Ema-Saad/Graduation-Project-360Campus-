@@ -203,6 +203,7 @@ def graduation_project_detail(request, project_id):
 
     return Response(serializer.data)
 
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def assignment_view(req, course_pk, assignment_pk):
     assignment = get_object_or_404(Assignment, \

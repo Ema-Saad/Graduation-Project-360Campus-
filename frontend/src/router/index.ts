@@ -99,7 +99,7 @@ const routes = [
   { path: '/timeline', component: Timeline, name: 'Timeline' },
   { path: '/settings', component: SettingsSection, name: 'Settings' },
   { path: '/materials', component: MaterialsPage, name: 'Materials' },
-  { path: '/myclass', component: MyClassPage, name: 'MyClass' },
+  { path: '/myclass', component: MyCourses, name: 'MyClass' },
   { path: '/task/:taskId', component: TaskDetail, name: 'taskDetail', props: true },
   { path: '/my-courses', component: MyCourses, name: 'MyCourses' },
   { path: '/my-course/details/:id', component: MyCourseDetail, name: 'MyCourseDetail', props: true },

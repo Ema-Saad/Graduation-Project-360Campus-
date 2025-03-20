@@ -53,7 +53,6 @@ class Admin(Person):
     class Meta:
         verbose_name = "Admin"
 
-
 class College(models.Model):
     code = models.CharField(max_length=5, primary_key=True)
     name = models.CharField(max_length=200)
@@ -116,6 +115,9 @@ class Semester(models.Model):
     kind = models.CharField(max_length=1, choices=SEMESTER_TYPE)
     year = models.IntegerField()
 
+    def __str__(self):
+        return f'{self.kind} {self.year}'
+
 class Course(models.Model):
     LEVELS = [(i, f'{i}') for i in range(1, 5)]
 
@@ -129,6 +131,9 @@ class Course(models.Model):
     college = models.ForeignKey(College, on_delete=models.CASCADE)
     level = models.IntegerField(choices=LEVELS)
     semester_kind = models.CharField(max_length=1, choices=Semester.SEMESTER_TYPE)
+
+    def __str__(self):
+        return f'{self.title}'
 
 class Enrollment(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="enrollments")

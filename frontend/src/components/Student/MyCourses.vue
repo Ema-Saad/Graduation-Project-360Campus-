@@ -16,20 +16,13 @@
 
       <!-- The class cards or any other content here -->
       <div class="class-cards">
-        <button v-for="(classItem, index) in classes"
-                :key="classItem.id"
-                @click="goToCourseDetail(classItem.id)"
+        <button v-for="klass in registered_classes"
+                :key="klass.id"
+                @click="goToCourseDetail(klass.id)"
                 class="class-card">
-          <div class="class-image-container">
-            <img :src="classItem.image" alt="Class Image" class="class-image" />
-            <div class="class-card-overlay">
-              <h3>{{ classItem.id }}</h3>
-              <p>{{ classItem.subtitle }}</p>
-            </div>
-          </div>
-          <h3>{{ classItem.title }}</h3>
-          <p>{{ classItem.subtitle }}</p>
-          <p class="author">👤 {{ classItem.author }}</p>
+
+          <h3>{{ klass.course.title }}</h3>
+          <p class="author">👤 {{ klass.instructor.first_name }} {{ klass.instructor.last_name }}</p>
         </button>
       </div>
     </div>
@@ -59,30 +52,16 @@
       return {
         showModal: false,
         taskCount: 3,
-        classes: [
-          {
-            id: 'csc410',
-            image: class1Image,
-            title: 'CSC 410',
-            subtitle: 'Software Quality',
-            author: 'Dr. Mohamed',
-          },
-          {
-            id: 'csc411',
-            image: class2Image,
-            title: 'CSC 411',
-            subtitle: 'Database Systems',
-            author: 'Dr. Sarah',
-          },
-          {
-            id: 'csc420',
-            image: class3Image,
-            title: 'CSC 420',
-            subtitle: 'Web Development',
-            author: 'Dr. John',
-          },
-        ],
+        registered_classes: [],
       };
+    },
+    beforeMount() {
+      let classes = this.$root.request_api_endpoint('api/registered_classrooms', 'get', null);
+
+      classes.then((data) => {
+        this.registered_classes = data;
+      });
+
     },
     methods: {
       // Method to navigate to the To-Do page

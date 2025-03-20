@@ -25,7 +25,7 @@ class ClassroomSerializer(ModelSerializer):
 class AssignmentSerializer(ModelSerializer):
     class Meta:
         model = Assignment
-        fields = '__all__'
+        exclude = ['submissions', 'comments']
 
 class CourseSerializer(ModelSerializer):
     class Meta:

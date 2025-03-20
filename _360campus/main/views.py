@@ -88,6 +88,17 @@ def classroom_list(req, course_pk):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+def classroom_join(req, pk):
+    classroom = get_object_or_404(Classroom, pk=pk)
+    if Enrollment.objects.filter(student=req.user.student, \
+                                 classroom=classroom).exists():
+        return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    Enrollment.objects.create(student=req.user.student, classroom=classroom)
+    return Response(data={}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def event_register(req, pk):
     evt = get_object_or_404(Event, pk=pk)
 

@@ -29,6 +29,11 @@ class AssignmentSerializer(ModelSerializer):
         model = Assignment
         exclude = ['submissions', 'comments']
 
+class AssignmentSubmissionViewSerializer(ModelSerializer):
+    class Meta:
+        model = AssignmentSubmission
+        fields = ['submitted_file', 'grade']
+
 class CourseSerializer(ModelSerializer):
     class Meta:
         model = Course

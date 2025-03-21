@@ -23,6 +23,8 @@ class ClassroomSerializer(ModelSerializer):
         depth = 1
 
 class AssignmentSerializer(ModelSerializer):
+    classroom = ClassroomSerializer(read_only=True)
+
     class Meta:
         model = Assignment
         exclude = ['submissions', 'comments']

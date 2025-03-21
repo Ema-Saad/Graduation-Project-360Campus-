@@ -20,27 +20,16 @@
           </div>
         </div>
         <div v-show="isSectionOpen(section)" class="task-list">
-          <div v-for="task in tasks" :key="task.name" class="task-item">
-            <router-link v-if="task.name === 'Online Lecture'" :to="{ path: '/meeting' }" class="task-link">
+          <div v-for="task in tasks" :key="task.id" class="task-item">
+            <router-link :to="{ name: 'taskDetail', params: { taskId: task.id } }" class="task-link">
               <div class="task-icon">
-                <i :class="task.icon"></i>
+                <i class="fas fa-file-alt"></i>
               </div>
               <div class="details">
-                <div class="task-name">{{ task.name }}</div>
-                <div class="task-course">{{ task.course }}</div>
+                <div class="task-name">{{ task.title }}</div>
+                <div class="task-course">{{ task.classroom.course.title }}</div>
               </div>
-              <div class="due">{{ task.due }}</div>
-            </router-link>
-            <!-- Default task link for other tasks -->
-            <router-link v-else :to="{ name: 'taskDetail', params: { taskId: task.name } }" class="task-link">
-              <div class="task-icon">
-                <i :class="task.icon"></i>
-              </div>
-              <div class="details">
-                <div class="task-name">{{ task.name }}</div>
-                <div class="task-course">{{ task.course }}</div>
-              </div>
-              <div class="due">{{ task.due }}</div>
+              <div class="due">{{ computeDueString(task.deadline) }}</div>
             </router-link>
           </div>
         </div>
@@ -54,8 +43,17 @@
         <div v-if="tasksBySection.missing.length === 0" class="missing-image">
           <img src="@/assets/nothing.png" alt="No Tasks Image" />
         </div>
-        <div v-else>
-          <p>Your missing tasks will be listed here...</p>
+        <div v-else v-for="task in tasksBySection.missing">
+          <router-link :to="{ name: 'taskDetail', params: { taskId: task.id } }" class="task-link">
+              <div class="task-icon">
+                <i class="fas fa-file-alt"></i>
+              </div>
+              <div class="details">
+                <div class="task-name">{{ task.title }}</div>
+                <div class="task-course">{{ task.classroom.course.title }}</div>
+              </div>
+              <div class="due">Missed</div>
+          </router-link>
         </div>
       </div>
     </div>
@@ -64,21 +62,21 @@
     <div v-if="activeTab === 'done'" class="task-sections">
       <div class="task-box" v-for="(tasks, section) in tasksBySection.done" :key="section">
         <div class="section-header" @click="toggleSection(section)">
-          <span>{{ sectionTitles[section] }}</span>
+          <span>{{ sectionTitles[`done${section[0].toUpperCase()}${section.substring(1)}`] }}</span>
           <div class="expand-icon-wrapper">
             <span class="task-count">{{ tasks.length }}</span>
             <span class="expand-icon" :class="{ open: isSectionOpen(section) }">⌄</span>
           </div>
         </div>
         <div v-show="isSectionOpen(section)" class="task-list">
-          <div v-for="task in tasks" :key="task.name" class="task-item">
-            <router-link :to="{ name: 'taskDetail', params: { taskId: task.name } }" class="task-link">
+          <div v-for="task in tasks" :key="task.id" class="task-item">
+            <router-link :to="{ name: 'taskDetail', params: { taskId: task.id } }" class="task-link">
               <div class="task-icon">
-                <i :class="task.icon"></i>
+                <i class="fas fa-file-alt"></i>
               </div>
               <div class="details">
-                <div class="task-name">{{ task.name }}</div>
-                <div class="task-course">{{ task.course }}</div>
+                <div class="task-name">{{ task.title }}</div>
+                <div class="task-course">{{ task.classroom.course.title }}</div>
               </div>
               <div class="due">Turned In</div>
             </router-link>
@@ -103,38 +101,122 @@
           doneLater: false,
         },
         sectionTitles: {
+          noDueDate: "No Due Date",
           thisWeek: "This Week",
           nextWeek: "Next Week",
           later: "Later",
-          doneThisWeek: "Done This Week",
-          doneNextWeek: "Done Next Week",
-          doneLater: "Done Later",
+          doneNoDueDate: "No Due Date",
+          doneEarly: "Done Early",
+          doneThisWeek: "This Week",
+          donePreviousWeek: "Last Week",
+          doneEarlier: "Done Earlier",
         },
         tasksBySection: {
           assigned: {
-            thisWeek: [
-              { name: "Assignment 1", course: "CSC 410 Software Quality", due: "Today, 11:59 pm", icon: "fas fa-file-alt" },
-              { name: "Online Lecture", course: "CSC 412 Software Security", due: "Tomorrow, 1:00 pm", icon: "fas fa-video" },
-            ],
-            nextWeek: [
-              { name: "Assignment 2", course: "CSC 410 Software Quality", due: "Monday, 11:59 pm", icon: "fas fa-file-alt" },
-            ],
-            later: [
-              { name: "Assignment 3", course: "CSC 411 Machine Learning", due: "Next Month, 11:59 pm", icon: "fas fa-file-alt" },
-            ],
+            noDueDate: [],
+            thisWeek: [],
+            nextWeek: [],
+            later: [],
           },
           missing: [],
           done: {
-            thisWeek: [
-              { name: "Assignment 1", course: "CSC 410 Software Quality", due: "Turned In", icon: "fas fa-file-alt" },
-            ],
-            nextWeek: [],
-            later: [],
+            noDueDate: [],
+            early: [],
+            thisWeek: [],
+            previousWeek: [],
+            earlier: [],
           },
         },
       };
     },
+    beforeMount() {
+      let registered_classroom = this.$root.request_api_endpoint('api/registered_classrooms', 'get', null);
+
+      registered_classroom.then((data) => {
+        for (let classroom of data) {
+          let assignments = this.$root.request_api_endpoint(`api/classroom/${classroom.id}/assignments`, 'get', null);
+          let submitted_assignments = this.$root.request_api_endpoint(`api/classroom/${classroom.id}/assignments/submitted`, 'get', null);
+
+          Promise.all([assignments, submitted_assignments]).then((data) => {
+            let transform_date = (d) => ({ ...d, deadline: d.deadline ? new Date(d.deadline) : null });
+            let submitted_assignments = data[1].map(transform_date);
+            let unsubmitted_assignments = data[0]
+              .filter((d) => undefined === submitted_assignments.find((e) => e.id === d.id))
+              .map(transform_date);
+
+            let deadlined_submitted_assignments = submitted_assignments.filter((e) => e.deadline);
+            let deadlined_unsubmitted_assignments = unsubmitted_assignments.filter((e) => e.deadline);
+
+            let assigned_noDueDate = this.tasksBySection.assigned.noDueDate;
+            let assigned_thisWeek = this.tasksBySection.assigned.thisWeek;
+            let assigned_nextWeek = this.tasksBySection.assigned.nextWeek;
+            let assigned_later = this.tasksBySection.assigned.later;
+            let missing = this.tasksBySection.missing;
+            let done_noDueDate = this.tasksBySection.done.noDueDate;
+            let done_early = this.tasksBySection.done.early;
+            let done_thisWeek = this.tasksBySection.done.thisWeek;
+            let done_previousWeek = this.tasksBySection.done.previousWeek;
+            let done_earlier = this.tasksBySection.done.earlier;
+
+            const MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
+
+            let is_missing = (d) => Date.now() > d.deadline;
+            let is_due_this_week = (d) => !is_missing(d) && d.deadline - Date.now() <= 7 * MILLISECONDS_IN_DAY;
+            let is_due_next_week = (d) => !is_missing(d) && !is_due_this_week(d) && d.deadline - Date.now() <= 14 * MILLISECONDS_IN_DAY;
+            let is_due_later = (d) => !is_missing(d) && d.deadline - Date.now() > 14 * MILLISECONDS_IN_DAY;
+
+            this.tasksBySection.assigned.noDueDate = [...assigned_noDueDate, ...unsubmitted_assignments.filter((e) => !e.deadline)];
+            this.tasksBySection.assigned.thisWeek = [...assigned_thisWeek, ...deadlined_unsubmitted_assignments.filter(is_due_this_week)]
+            this.tasksBySection.assigned.nextWeek = [...assigned_nextWeek, ...deadlined_unsubmitted_assignments.filter(is_due_next_week)]
+            this.tasksBySection.assigned.later = [...assigned_later, ...deadlined_unsubmitted_assignments.filter(is_due_later)]
+
+            this.tasksBySection.missing = [...missing, ...unsubmitted_assignments.filter(is_missing)];
+
+            let is_done_early = (d) => d.deadline > Date.now();
+            let is_done_this_week = (d) => !is_done_early(d) && Date.now() - d.deadline <= 7 * MILLISECONDS_IN_DAY;
+            let is_done_previous_week = (d) => !is_done_early(d) && !is_done_this_week(d) && Date.now() - d.deadline <= 14 * MILLISECONDS_IN_DAY;
+            let is_done_earlier = (d) => !is_done_early(d) && Date.now() - d.deadline > 14 * MILLISECONDS_IN_DAY;
+
+            this.tasksBySection.done.noDueDate = [...done_noDueDate, ...submitted_assignments.filter((e) => !e.deadline)];
+            this.tasksBySection.done.early = [...done_early, ...deadlined_submitted_assignments.filter(is_done_early)];
+            this.tasksBySection.done.thisWeek = [...done_thisWeek, ...deadlined_submitted_assignments.filter(is_done_this_week)]
+            this.tasksBySection.done.previousWeek = [...done_previousWeek, ...deadlined_submitted_assignments.filter(is_done_previous_week)]
+            this.tasksBySection.done.earlier = [...done_earlier, ...deadlined_submitted_assignments.filter(is_done_earlier)]
+          });
+        }
+      });
+
+    },
     methods: {
+      computeDueString(date) {
+        const MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
+        const DAYS = [
+          "Sunday", "Monday", "Tuesday", 
+          "Wednesday", "Thursday", "Friday", "Saturday"
+        ];
+        const MONTHS = [
+          "Jan", "Feb", "Mar", "Apr",
+          "May", "Jun", "Jul", "Aug",
+          "Sep", "Oct", "Nov", "Dec",
+        ];
+
+        let hour = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
+        if (Date.now() > date) {
+          return "Missed";
+
+        } else if (date - Date.now() <= MILLISECONDS_IN_DAY) {
+          return `Due Today at ${hour}`;
+
+        } else if (date - Date.now() <= 2 * MILLISECONDS_IN_DAY) {
+          return `Due Tomorrow at ${hour}`;
+
+        } else if (date - Date.now() <= 7 * MILLISECONDS_IN_DAY) {
+          return `Due ${DAYS[date.getDay()]} at ${hour}`;
+        } else {
+          return `Due ${MONTHS[date.getMonth()]}. ${date.getDate().toString().padStart(2, "0")} at ${hour}`;
+        }
+
+      },
       setActiveTab(tab) {
         this.activeTab = tab;
       },

@@ -72,9 +72,7 @@
         this.registered_classes = data;
 
         // after fetching registered classes, fetch all courses
-        let courses_promise = this.$root.request_api_endpoint('api/courses', 'get', null);
-
-        return courses_promise;
+        return this.$root.request_api_endpoint('api/courses?list_registrable', 'get', null);
       }).then((data) => {
         // show only unenrolled courses
         this.courses = data.filter((d) =>

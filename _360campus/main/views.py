@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from django.urls import reverse
 from .models import *
 from .serializers import *
-import datetime
+from django.utils import timezone
 from django.http import HttpResponseNotFound
 
 
@@ -105,7 +105,7 @@ def event_register(req, pk):
     if EventRegistration.objects.filter(student=req.user.student, event=evt).exists():
         return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-    today = datetime.datetime.now(tz=datetime.timezone.utc)
+    today = timezone.now()
     if today > evt.date:
         return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 

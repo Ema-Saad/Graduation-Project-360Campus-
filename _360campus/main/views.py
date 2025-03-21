@@ -44,6 +44,9 @@ def course_list(req):
         options['title__icontains'] = req.query_params['search_query']
         options['description__icontains'] = req.query_params['search_query']
 
+    if 'list_registrable' in req.query_params:
+        options['pk__in'] = Classroom.objects.filter(semester=Semester.objects.last()).values('course')
+
     courses = get_list_or_404(Course, **options)
     serializer = CourseSerializer(courses, many=True)
 

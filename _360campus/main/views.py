@@ -242,8 +242,10 @@ def assignment_view(req, assignment_pk):
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     serializer = AssignmentSerializer(assignment)
-
-    return Response(serializer.data)
+    data = serializer.data
+    data['submitted'] = AssignmentSubmission.objects.filter(student=req.user.student, \
+                                                            assignment=assignment).exists()
+    return Response(data)
 
 
 @api_view(['POST'])

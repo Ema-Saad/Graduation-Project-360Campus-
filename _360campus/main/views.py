@@ -234,11 +234,15 @@ def submitted_assignment_list(req, classroom_pk):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def assignment_view(req, course_pk, assignment_pk):
-    assignment = get_object_or_404(Assignment, \
-                                   classroom__course__pk=course_pk, pk=assignment_pk)
+def assignment_view(req, assignment_pk):
+    assignment = get_object_or_404(Assignment, pk=assignment_pk)
+
+    if not Enrollment.objects.filter(student=req.user.student, \
+                                     classroom=assignment.classroom).exists():
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     serializer = AssignmentSerializer(assignment)
+
     return Response(serializer.data)
 
 

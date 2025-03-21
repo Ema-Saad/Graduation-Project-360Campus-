@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.parsers import FileUploadParser
+from rest_framework.parsers import MultiPartParser
 from rest_framework import status
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.urls import reverse
@@ -265,7 +265,7 @@ def assignment_submission_view(req, pk):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-@parser_classes([FileUploadParser])
+@parser_classes([MultiPartParser])
 def assignment_submit(req, pk, filename):
     assignment = get_object_or_404(Assignment, pk=pk)
 
@@ -276,8 +276,8 @@ def assignment_submit(req, pk, filename):
     if assignment.deadline and assignment.deadline < timezone.now():
         return Response({'reason': 'deadline passed'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-    submitted_file = req.data['submitted_file'] if 'submitted_file' in req.data else None
-    assignment.submissions.add(req.user.student, through_defaults={'submitted_file': submitted_file})
+    assignment.submissions.add(req.user.student, through_defaults={'submitted_file': req.data.get('file')})
+    assignment.save()
 
     return Response({}, status=status.HTTP_201_CREATED)
 
@@ -290,7 +290,11 @@ def assignment_unsubmit(req, pk):
                                      classroom=assignment.classroom).exists():
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+    file = AssignmentSubmission.objects.get(student=req.user.student, assignment=assignment).submitted_file
+    file.delete()
+
     assignment.submissions.remove(req.user.student)
+    assignment.save()
 
     return Response({})
 

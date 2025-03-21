@@ -228,7 +228,7 @@ def submitted_assignment_list(req, classroom_pk):
     submitted_assignments = AssignmentSubmission.objects.filter(student=req.user.student, \
                                                                 assignment__classroom=classroom) \
                                                         .values('assignment')
-    submitted_assignments = get_list_or_404(Assignment, pk__in=submitted_assignments)
+    submitted_assignments = Assignment.objects.filter(pk__in=submitted_assignments)
     serializer = AssignmentSerializer(submitted_assignments, many=True)
 
     return Response(serializer.data)

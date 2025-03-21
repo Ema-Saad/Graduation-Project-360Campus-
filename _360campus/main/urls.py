@@ -36,5 +36,6 @@ urlpatterns = [
     path('api/classroom/<int:classroom_pk>/assignments/submitted', submitted_assignment_list, name='assignment_list'),
     path('api/assignment/<int:assignment_pk>', assignment_view, name='assignment_view'),
     path('api/assignment/<int:assignment_pk>/submit', assignment_submit, name='assignment_submit'),
+    path('api/assignment/<int:pk>/unsubmit', assignment_unsubmit, name='assignment_unsubmit'),
 ]
 

@@ -267,6 +267,21 @@ def assignment_submit(req, assignment_pk):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+def assignment_unsubmit(req, pk):
+    assignment = get_object_or_404(Assignment, pk=pk)
+
+    if not Enrollment.objects.filter(student=req.user.student, \
+                                     classroom=assignment.classroom).exists():
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    assignment_submission = get_object_or_404(assignment.submission_set, student=req.user.student)
+    assignment_submission.delete()
+
+    return Response({})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def assignment_comment(req, course_pk, assignment_pk):
     pass
 

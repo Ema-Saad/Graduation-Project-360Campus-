@@ -248,6 +248,20 @@ def assignment_view(req, assignment_pk):
                                                             assignment=assignment).exists()
     return Response(data)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def assignment_submission_view(req, pk):
+    assignment = get_object_or_404(Assignment, pk=pk)
+
+    if not Enrollment.objects.filter(student=req.user.student, \
+                                     classroom=assignment.classroom).exists():
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    submission = get_object_or_404(AssignmentSubmission, student=req.user.student, assignment=assignment)
+    serializer = AssignmentSubmissionViewSerializer(submission)
+
+    return Response(serializer.data)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

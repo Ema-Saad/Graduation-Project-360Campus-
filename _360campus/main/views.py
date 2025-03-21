@@ -250,8 +250,17 @@ def assignment_view(req, assignment_pk):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def assignment_submit(req, course_pk, assignment_pk):
-    pass
+def assignment_submit(req, assignment_pk):
+    assignment = get_object_or_404(Assignment, pk=assignment_pk)
+
+    if not Enrollment.objects.filter(student=req.user.student, \
+                                     classroom=assignment.classroom).exists():
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    submitted_file = req.data['submitted_file'] if 'submitted_file' in req.data else None
+    assignment.submission_set.create(student=req.user.student, submitted_file=submitted_file)
+
+    return Response({}, status=status.HTTP_201_CREATED)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

@@ -257,6 +257,9 @@ def assignment_submit(req, assignment_pk):
                                      classroom=assignment.classroom).exists():
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
+    if assignment.deadline and assignment.deadline >= timezone.now():
+        return Response({'reason': 'deadline passed'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
     submitted_file = req.data['submitted_file'] if 'submitted_file' in req.data else None
     assignment.submission_set.create(student=req.user.student, submitted_file=submitted_file)
 

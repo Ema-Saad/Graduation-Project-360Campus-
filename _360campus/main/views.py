@@ -138,6 +138,7 @@ def material_view(req, pk):
     filename = os.path.basename(material.file.path)
 
     return HttpResponse(data, headers={
+        'Access-Control-Expose-Headers': 'Content-Disposition',
         'Content-Disposition': f'attachment; filename="{filename}"'
     })
 

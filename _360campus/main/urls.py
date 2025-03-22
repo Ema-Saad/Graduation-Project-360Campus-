@@ -1,5 +1,5 @@
 from rest_framework.authtoken import views
-from rest_framework import generics
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from django.urls import path
 from .views import *
 from .models import *
@@ -11,10 +11,10 @@ urlpatterns = [
     path('api/courses', course_list, name='course_list'),
     path('api/registered_classrooms', registered_classroom_list, name='classroom_list'),
     path('api/colleges', \
-         generics.ListAPIView.as_view(queryset=College.objects.all(), serializer_class=CollegeSerializer), \
+         ListAPIView.as_view(queryset=College.objects.all(), serializer_class=CollegeSerializer), \
          name='college_list'),
     path('api/course/<int:pk>', \
-         generics.RetrieveAPIView.as_view(queryset=Course.objects.all(), serializer_class=CourseSerializer), \
+         RetrieveAPIView.as_view(queryset=Course.objects.all(), serializer_class=CourseSerializer), \
          name='course_view'),
     path('api/classroom/<int:pk>/join', classroom_join, name='classroom_join'),
     path('api/course/<int:course_pk>/classroom', registered_classroom_view, name='classroom_view'),

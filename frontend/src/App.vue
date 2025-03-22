@@ -29,7 +29,53 @@ export default defineComponent({
       authtoken: '',
     }
   },
+  created() {
+    let part = document.cookie
+                      .split('; ')
+                      .filter((p) => p.startsWith('authtoken='))[0];
+
+    if (part)
+      this.authtoken = part.split('=')[1];
+  },
   methods: {
+    async download_file(endpoint) {
+      try {
+        if (!this.authtoken) {
+          throw new Error("Authentication required");
+        }
+
+        const url = `http://127.0.0.1:8000/${endpoint}`;
+        let options = {
+          method: 'get',
+          mode: 'cors',
+          headers: {
+            Authorization: `Token ${this.authtoken}`
+          }
+        };
+
+        let response = await fetch(url, options);
+        if (!response.ok)
+          throw new Error(await response.text());
+
+        let data = await response.blob();
+
+        console.log(response);
+
+        let filename = response.headers.get('Content-Disposition');
+        filename = filename.split(';')[1];
+        filename = filename.split('=')[1].replaceAll('\"', '');
+
+        let dummy_element = document.createElement('a');
+        dummy_element.href = window.URL.createObjectURL(data);
+        dummy_element.download = filename;
+        document.body.appendChild(dummy_element);
+        dummy_element.click();
+        dummy_element.remove();
+
+      } catch(err) {
+        throw err;
+      }
+    },
     async request_api_endpoint(endpoint: string, method: string, data?: any): Promise<any> {
       try {
         const url = `http://127.0.0.1:8000/${endpoint}`;
@@ -75,6 +121,11 @@ export default defineComponent({
         if (response.status === 200) {
           const data = await response.json();
           this.authtoken = data['token'];
+
+          document.cookie = `authtoken=${this.authtoken}`;
+          console.log('new cookie is');
+          console.log(document.cookie);
+
           return true;
         } else {
           return false;

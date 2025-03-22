@@ -1,39 +1,34 @@
 <template>
-  <div>
-    <!-- Main Header Image inside a container -->
-    <div class="image-container">
-      <div class="overlay">
-        <div class="overlay-text">
-          <span class="course-code">{{ course.title }}</span>
-          <h1 class="course-name">{{ course.description }}</h1>
-        </div>
-      </div>
-      <!--<img src="../assets/pexels-photo.png" alt="Course Image" class="main-image" />-->
-    </div>
+  <div v-if="course">
 
-    <h1>{{ course.title }}</h1>
-    <p>{{ course.description }}</p>
+    <h1 id="course-title">{{ course.title }}</h1>
+    <p id="course-description">{{ course.description }}</p>
 
     <div class="weeks-container">
-      <div class="week-box" v-for="week in weeks" :key="week.id">
-        <!-- Week Box with Overlay -->
-        <div class="week-header" @click="toggleDropdown(week.id)">
-          <div class="week-image-container">
-            <!-- Week Overlay on top of Image -->
-            <div class="week-overlay">
-              Week {{ week.id }} <!-- Display "Week" before the Week ID -->
-            </div>
-            <!--<img src="../assets/pexels-photo.png" alt="Week Image" class="week-image" />-->
-          </div>
-          <span class="arrow" :class="{ 'rotate': isDropdownOpen(week.id) }">&#9660;</span>
-        </div>
+      <div class="week-box" v-for="week in weeks" :key="week.id" @click="toggleDropdown(week.id)">
+        <span class="week-title">Week {{ week.id }} </span>
+        <span class="arrow" :class="{ 'rotate': isDropdownOpen(week.id) }">&#9660;</span>
 
         <div v-if="isDropdownOpen(week.id)" class="dropdown-menu">
-          <router-link :to="{ name: 'Lecture', params: { weekId: week.id } }" class="dropdown-item">Lecture</router-link>
-          <router-link :to="{ name: 'Tutorial', params: { weekId: week.id } }" class="dropdown-item">Tutorial</router-link>
-          <router-link :to="{ name: 'Lab', params: { weekId: week.id } }" class="dropdown-item">Lab</router-link>
-          <!-- Navigate to 'AssignmentById' route -->
-          <router-link :to="{ name: 'AssignmentById', params: { id: course.id, week: week.id } }" class="dropdown-item">Assignment</router-link>
+          <button v-for="lab in week.labs" class="dropdown-item" @click="download(lab.id)">
+            Lab: {{ lab.name }} 
+          </button>
+
+          <button v-for="lecture in week.lectures" class="dropdown-item" @click="download(lecture.id)"> 
+            Lecture: {{ lecture.name }}
+          </button>
+
+          <button v-for="tutorial in week.tutorials" class="dropdown-item" @click="download(tutorial.id)"> 
+            Tutorial: {{ tutorial.name }} 
+          </button>
+
+          <button v-for="assignment in week.assignments" class="dropdown-item" @click="download(assignment.id)"> 
+            Assignment: {{ assignment.name }} 
+          </button>
+
+          <button v-for="problem_sheet in week.problem_sheets" class="dropdown-item" @click="download(problem_sheet.id)"> 
+            Problem Sheet: {{ problem_sheet.name }}
+          </button>
         </div>
       </div>
     </div>
@@ -41,30 +36,57 @@
 </template>
 
 <script>
+
+  /* Materials Type */
+  const LAB = 'l';
+  const LECTURE = 'L';
+  const TUTORIAL = 't';
+  const ASSIGNMENT = 'a';
+  const PROBLEM_SHEET = 's';
+  const OTHER = 'o';
+
   export default {
     props: ['id'],
     data() {
       return {
-        course: {
-          title: 'Course Title',
-          description: 'Course Description',
-        },
-        weeks: [
-          { id: 1 },
-          { id: 2 },
-          { id: 3 },
-        ],
+        course: null,
+        weeks: [],
         openDropdowns: [], // Store open dropdown states
       };
     },
-    created() {
-      this.loadCourse();
+    beforeMount() {
+      let course_promise = this.$root.request_api_endpoint(`api/course/${this.id}`, 'get', null);
+      let materials_promise = this.$root.request_api_endpoint(`api/course/${this.id}/materials`, 'get', null);
+
+      course_promise.then((data) => {
+        this.course = data;
+      });
+
+      materials_promise.then((data) => {
+        let max_weeks = data.map((d) => d.week || -1).reduce((a, v) => Math.max(a, v));
+        this.weeks = new Array(max_weeks);
+
+        for (let i = 1; i <= max_weeks; i ++) {
+          this.weeks[i] = {
+            id: i,
+            labs: data.filter((d) => d.week === i && d.material_type === LAB),
+            lectures: data.filter((d) => d.week === i && d.material_type === LECTURE),
+            tutorials: data.filter((d) => d.week === i && d.material_type === TUTORIAL),
+            assignments: data.filter((d) => d.week === i && d.material_type === ASSIGNMENT),
+            problem_sheets: data.filter((d) => d.week === i && d.material_type === PROBLEM_SHEET),
+          };
+        }
+
+        this.weeks = this.weeks.filter((d) => d.labs.length + 
+                                              d.lectures.length + 
+                                              d.tutorials.length + 
+                                              d.assignments.length + 
+                                              d.problem_sheets.length > 0);
+      });
     },
     methods: {
-      loadCourse() {
-        const courseId = this.id;
-        // You can load course details here based on the courseId
-        // Example: make an API call to fetch course details
+      download(materialId) {
+        this.$root.download_file(`api/material/${materialId}`);
       },
       toggleDropdown(weekId) {
         const index = this.openDropdowns.indexOf(weekId);
@@ -83,62 +105,11 @@
 
 
 <style scoped>
-  /* Container to constrain image */
-  .image-container {
-    width: 100%;
-    position: relative; /* Positioning context for overlay */
-  }
-  /* Styling for the main image */
-  .main-image {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    max-width: 100%;
-    display: block;
-    margin: 0 auto;
-    border-bottom: 2px solid #ddd;
-    max-height: 500px;
-  }
-
-  /* Overlay with dark background and centered text */
-  .overlay {
-    position: absolute;
-    top: 30%; /* Adjust this value to move the text upwards or downwards */
-    left: 30%; /* Horizontally center */
-    transform: translateX(-50%); /* Center the text horizontally */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: black; /* Text color */
-    font-size: 1em; /* Adjust font size as needed */
-    font-weight: bold; /* Make the text bold */
-    z-index: 1; /* Ensures the overlay text is above the image */
-  }
-
-
-
-  /* Text in the overlay */
-  .overlay-text {
-    z-index: 2; /* Ensure text appears above the overlay */
-  }
-
-  .course-code {
-    font-size: 1.5em;
-    font-weight: bold;
-  }
-
-  .course-name {
-    font-size: 2.5em;
-    font-weight: bold;
-    margin-top: 10px;
-  }
-
   .week-box {
     border: 1px solid #ccc;
     border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 15px;
+    padding: 3em;
+    padding-top: 0.5em;
     position: relative;
   }
 
@@ -146,44 +117,13 @@
       border: 1px solid #007bff;
     }
 
-  .week-header {
+  .weeks-container {
     display: flex;
-    align-items: center;
-    cursor: pointer;
-  }
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 20px;
 
-  /* Week Image with Overlay */
-  .week-image-container {
-    position: relative; /* Positioning context for overlay */
-    width: 100%; /* Ensure the container takes up full width */
   }
-
-  .week-image {
-    width: 25%;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 4px;
-  }
-  /* Week Overlay */
-  /* Week Overlay */
-  .week-overlay {
-    position: absolute;
-    top: 30%; /* Adjust the percentage to move the text upwards or downwards */
-    left: 3%; /* Horizontally center */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: black; /* Text color */
-    font-size: 2em; /* Adjust as needed */
-    font-weight: bold; /* Make the text bold */
-    z-index: 1;
-  }
-
-  .week-overlay-text {
-    z-index: 2; /* Ensure text appears above the overlay */
-  }
-
   .arrow {
     margin-left: auto;
     transition: transform 0.3s ease;
@@ -196,121 +136,24 @@
   .dropdown-menu {
     margin-top: 10px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 
   .dropdown-item {
-    text-decoration: none;
     color: black;
-    padding: 8px 0;
+    padding: 1vh;
+    margin: 3vh;
   }
 
-    .dropdown-item:hover {
-      text-decoration: underline;
-      color: #007bff; /* Optional: Change color to blue when hovered */
-    }
-  /* Responsive Styles */
-  @media screen and (max-width: 1024px) {
-    .overlay {
-      top: 20%; /* Adjust text positioning */
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.9em; /* Adjust font size for better fit */
-    }
-
-    .course-code {
-      font-size: 1.2em;
-    }
-
-    .course-name {
-      font-size: 2em;
-    }
-
-    .main-image {
-      height: 200px; /* Smaller image size for smaller screens */
-    }
-
-    .week-image {
-      width: 35%; /* Adjust image width for better fit */
-      height: 100px;
-    }
-
-    .week-overlay {
-      font-size: 1.5em; /* Reduce overlay text size */
-      left: 5%;
-    }
+  .dropdown-item:hover {
+    color: #007bff; /* Optional: Change color to blue when hovered */
   }
 
-  @media screen and (max-width: 768px) {
-    .overlay {
-      top: 15%;
-      font-size: 0.8em;
-    }
-
-    .course-code {
-      font-size: 1em;
-    }
-
-    .course-name {
-      font-size: 1.8em;
-    }
-
-    .week-box {
-      padding: 8px;
-    }
-
-    .week-header {
-      flex-direction: column; /* Stack elements vertically */
-      align-items: flex-start;
-    }
-
-    .week-image {
-      width: 100%; /* Full width */
-      height: auto;
-    }
-
-    .week-overlay {
-      font-size: 1.2em;
-      left: 10%;
-    }
-  }
-
-  @media screen and (max-width: 480px) {
-    .overlay {
-      top: 10%;
-      font-size: 0.7em;
-    }
-
-    .course-code {
-      font-size: 0.9em;
-    }
-
-    .course-name {
-      font-size: 1.5em;
-    }
-
-    .main-image {
-      height: 150px; /* Even smaller image for very small screens */
-    }
-
-    .week-box {
-      padding: 5px;
-    }
-
-    .week-image {
-      width: 100%;
-      height: auto;
-    }
-
-    .week-overlay {
-      font-size: 1em;
-      left: 15%;
-    }
-
-    .dropdown-item {
-      font-size: 14px; /* Reduce text size for smaller screens */
-      padding: 6px 0;
-    }
+  #course-title {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
   }
 
 </style>

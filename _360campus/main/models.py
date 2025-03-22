@@ -160,16 +160,27 @@ class Classroom(models.Model):
 
 
 class Material(models.Model):
-    # I added this function to avoid the SuspiciousFileOperation error
+
     def get_materials_file_location(inst, filename):
-    # Include the filename in the path so that the full path is valid
-        return f'{inst.classroom.title}/{filename}'
+        return f'{inst.course.title}/{filename}'
+
+    MATERIAL_TYPE = [
+        ('l', 'Lab'),
+        ('L', 'Lecture'),
+        ('t', 'Tutorial'),
+        ('a', 'Assignment'),
+        ('s', 'Problem Sheet'),
+        ('o', 'Other'),
+    ]
+
     course =models.ForeignKey(Course, on_delete=models.CASCADE)
-    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
     name = models.CharField(max_length=500)
     file = models.FileField(upload_to=get_materials_file_location)
-    week = models.IntegerField(null=True, blank=True)  
-    material_type = models.CharField(max_length=50, null=True, blank=True)#"Lecture", "Tutorial", "Lab", "assignment".
+    week = models.IntegerField(null=True, blank=True)
+    material_type = models.CharField(max_length=1, choices=MATERIAL_TYPE, default='o')
+
+    def __str__(self):
+        return f'{self.course.title} - {self.name}'
 
 
 # Lecture Model

@@ -19,10 +19,7 @@ urlpatterns = [
     path('api/classroom/<int:pk>/join', classroom_join, name='classroom_join'),
     path('api/course/<int:course_pk>/classroom', registered_classroom_view, name='classroom_view'),
     path('api/course/<int:course_pk>/classrooms', classroom_list, name='classroom_list'),
-    # Materials endpoints (for courses that have materials)
-    path('api/materials', material_list, name='material_list'),
-    path('api/course/<int:course_pk>/materials/weeks', course_materials_by_week, name='course_materials_by_week'),
-    path('api/course/<int:course_pk>/materials/week/<int:week>', materials_for_week, name='materials_for_week'),
+    path('api/course/<int:course_pk>/materials', material_list, name='material_list'),
     #material itself "files or content"
     path('api/course/<int:course_pk>/material/<int:week>/<int:material_pk>', material_view, name='material_view'),
     #Event

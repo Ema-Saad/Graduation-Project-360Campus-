@@ -7,7 +7,7 @@
       <div class="filter-item">
         <select id="faculty-filter" v-model="filters.faculty">
           <option value="">Faculty</option>
-          <option v-for="college in colleges" :value="college.id">{{ college.name }}</option>
+          <option v-for="college in colleges" :value="college.code">{{ college.name }}</option>
         </select>
       </div>
 
@@ -120,7 +120,7 @@
       filteredCourses() {
         return this.courses.filter(course => {
           return (
-            (!this.filters.faculty || course.college.id === this.filters.faculty) &&
+            (!this.filters.faculty || course.college.code === this.filters.faculty) &&
             (!this.filters.level || course.level === this.filters.level) &&
             (!this.filters.semester || course.semester === this.filters.semester)
           );

@@ -9,12 +9,7 @@ import EventsPage from '../components/Student/EventsPage.vue';
 import GraduationProjectPage from '../components/Student/GraduationProjectPage.vue';
 import MapPage from '../components/Student/MapPage.vue';
 import CourseDetails from '../components/Student/CourseDetails.vue';
-import LecturePage from '@/components/Student/LecturePage.vue';
-import CourseLecture from '@/components/Student/CourseLecture.vue';
-import TutorialPage from '@/components/Student/TutorialPage.vue';
 import TutorialChat from '@/components/Student/TutorialChat.vue';
-import LabPage from '@/components/Student/LabPage.vue';
-import CourseLab from "@/components/Student/CourseLab.vue";
 import AssignmentPage from '@/components/Student/AssignmentPage.vue';
 import MeetingCard from "@/components/Student/MeetingCard.vue";
 import ProjectDetails from '@/components/Student/ProjectDetails.vue';
@@ -110,12 +105,7 @@ const routes = [
   { path: '/graduation', component: GraduationProjectPage, name: 'GraduationProject' },
   { path: '/project/:id', component: ProjectDetails, name: 'ProjectDetails', props: true },
   { path: '/map', component: MapPage, name: 'Map' },
-  { path: '/lecture/:id', component: LecturePage, name: 'Lecture' },
-  { path: '/course-lecture', component: CourseLecture, name: 'CourseLecture' },
-  { path: '/tutorial/:id', component: TutorialPage, name: 'Tutorial' },
   { path: '/tutorialchat/:courseId/week/:weekId', component: TutorialChat, name: 'TutorialChat', props: true },
-  { path: '/lab/:id', component: LabPage, name: 'Lab' },
-  { path: '/course-lab/:courseId/:weekId', component: CourseLab, name: 'CourseLab', props: true },
   { path: '/assignment/:id', component: AssignmentPage, name: 'AssignmentById' },
   { path: '/assignment/number/:assignmentNumber', component: AssignmentNumberVue, name: 'AssignmentByNumber', props: true },
   { path: '/meeting', component: MeetingCard, name: 'Meeting' },

@@ -4,11 +4,11 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
 from rest_framework import status
 from django.shortcuts import get_object_or_404, get_list_or_404
-from django.urls import reverse
+from django.http import HttpResponse
+from django.utils import timezone
+import os
 from .models import *
 from .serializers import *
-from django.utils import timezone
-from django.http import HttpResponseNotFound
 
 
 @api_view(['GET'])
@@ -128,16 +128,18 @@ def material_list(req, course_pk):
     return Response(serializer.data)
 
 @api_view(['GET'])
-def material_view(request, course_pk, week, material_pk):
-    """
-    Retrieves details for a specific material that belongs to the given course and week.
-    Includes a download URL for the file.
-    """
-    material = get_object_or_404(Material, pk=material_pk, course__pk=course_pk, week=week)
-    serializer = MaterialSerializer(material)
-    data = serializer.data
-    data['download_url'] = request.build_absolute_uri(material.file.url)
-    return Response(data)
+@permission_classes([IsAuthenticated])
+def material_view(req, pk):
+    material = get_object_or_404(Material, pk=pk)
+
+    with open(material.file.path, 'rb') as f:
+        data = f.read()
+
+    filename = os.path.basename(material.file.path)
+
+    return HttpResponse(data, headers={
+        'Content-Disposition': f'attachment; filename="{filename}"'
+    })
 
 @api_view(['GET'])
 def graduation_project_list(request):

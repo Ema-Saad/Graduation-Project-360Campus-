@@ -62,7 +62,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ]
-    
 }
 
 ROOT_URLCONF = '_360campus.urls'
@@ -124,7 +123,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Cairo'
+MEDIA_ROOT = 'media/'
 
 USE_I18N = True
 

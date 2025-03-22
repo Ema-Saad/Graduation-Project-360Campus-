@@ -7,7 +7,7 @@
       <div class="filter-item">
         <select id="faculty-filter" v-model="filters.faculty">
           <option value="">Faculty</option>
-          <option v-for="college in colleges" value="{{ college.id }}">{{ college.name }}</option>
+          <option v-for="college in colleges" :value="college.id">{{ college.name }}</option>
         </select>
       </div>
 
@@ -68,8 +68,6 @@
             <p class="course-code">{{ course.id }}</p>
           </div>
         </router-link>
-
-
       </div>
     </div>
 
@@ -91,20 +89,8 @@
     data() {
       return {
         colleges: [],
-        popularCourses: [
-          { id: 1, code: 'CSC 410', title: 'Software Quality', instructor: 'Dr. Mohamed', instructorIconUrl: instructorIcon1, imageUrl: courseImage, rating: 5, faculty: 'Computer Science', level: 'First Level', semester: 'Spring' },
-          { id: 2, code: 'CSC 420', title: 'Web Development', instructor: 'Dr. Mohamed', instructorIconUrl: instructorIcon1, imageUrl: courseImage, rating: 4, faculty: 'Computer Science', level: 'Second Level', semester: 'Spring' },
-          { id: 3, code: 'CSC 430', title: 'Database Systems', instructor: 'Dr. Ayman', instructorIconUrl: instructorIcon2, imageUrl: courseImage, rating: 3, faculty: 'Computer Science', level: 'Third Level', semester: 'Fall' },
-          { id: 4, code: 'CSC 440', title: 'Artificial Intelligence', instructor: 'Dr. Mostafa', instructorIconUrl: instructorIcon3, imageUrl: courseImage, rating: 5, faculty: 'Engineering', level: 'Third Level', semester: 'Fall' },
-        ],
-
-        courses: [
-          { id: 1, code: 'CSC 410', title: 'Software Quality', instructor: 'Dr. Mohamed', instructorIconUrl: instructorIcon1, imageUrl: courseImage, rating: 5, faculty: 'Computer Science', level: 'First Level', semester: 'Spring' },
-          { id: 2, code: 'CSC 420', title: 'Web Development', instructor: 'Dr. Mohamed', instructorIconUrl: instructorIcon1, imageUrl: courseImage, rating: 4, faculty: 'Computer Science', level: 'Second Level', semester: 'Spring' },
-          { id: 3, code: 'CSC 430', title: 'Database Systems', instructor: 'Dr. Ayman', instructorIconUrl: instructorIcon2, imageUrl: courseImage, rating: 3, faculty: 'Computer Science', level: 'Third Level', semester: 'Fall' },
-          { id: 4, code: 'CSC 440', title: 'Artificial Intelligence', instructor: 'Dr. Mostafa', instructorIconUrl: instructorIcon3, imageUrl: courseImage, rating: 5, faculty: 'Engineering', level: 'Third Level', semester: 'Fall' },
-          { id: 5, code: 'CSC 450', title: 'Machine Learning', instructor: 'Dr. Ayman', instructorIconUrl: instructorIcon2, imageUrl: courseImage, rating: 4, faculty: 'Engineering', level: 'First Level', semester: 'Spring' },
-        ],
+        popularCourses: [],
+        courses: [],
 
         filters: {
           faculty: '',  // Selected faculty
@@ -123,7 +109,6 @@
 
       courses.then((data) => {
         this.popularCourses = this.courses = data;
-
       });
 
     },

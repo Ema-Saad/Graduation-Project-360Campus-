@@ -225,14 +225,48 @@ class Message(models.Model):
     class Meta:
         verbose_name = "Message"
 
-class Assignment(models.Model):
+class Task(models.Model):
+    TASK_TYPE = {
+        'o': 'Online Meeting',
+        'a': 'Assignment',
+        'q': 'Quiz',
+    }
+
     title = models.CharField(max_length=200)
-    description = models.TextField()
-    max_grade = models.IntegerField(blank=True, null=True)
-    deadline = models.DateTimeField(blank=True, null=True)
+    description = models.TextField(null=True, blank=True)
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+    kind = models.CharField(max_length=1, choices=TASK_TYPE, default='a')
+    time = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return f'{TASK_TYPE[self.kind]} - {self.title} in {self.classroom}'
+
+class Assignment(Task):
+    max_grade = models.IntegerField(blank=True, null=True)
     submissions = models.ManyToManyField(Student, through='AssignmentSubmission', related_name='submissions')
-    comments = models.ManyToManyField(Student, through='AssignmentComment', related_name='comments')
+
+    def __str__(self):
+        return super().__str__(self)
+
+class Quiz(Task):
+    max_grade = models.IntegerField(blank=True, null=True)
+
+    # Questions will be an array of objects.
+    # Each object will consist of:-
+    # title: str, the title of the question
+    # type: 'msq' | 'text', the kind of the question
+    #   'msq' is for multiple choice questions (This includes T/F questions)
+    #   'text' is for essay questions
+    # msq_data: {Array[str], int}, if the question is a MSQ
+    #   this field is an object that contains 2 fields:
+    #   choices: Array[str], the array of choices.
+    #   correct_choice: int, the index of the correct choice.
+    #   This field should be absent for essay questions.
+
+    questions = models.JSONField()
+
+    def __str__(self):
+        return super().__str__(self)
 
 class AssignmentSubmission(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -240,9 +274,3 @@ class AssignmentSubmission(models.Model):
     submitted_file = models.FileField(blank=True, null=True)
     grade = models.IntegerField(blank=True, null=True)
 
-
-class AssignmentComment(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
-    comment = models.TextField()
-    is_private = models.BooleanField(null=True)

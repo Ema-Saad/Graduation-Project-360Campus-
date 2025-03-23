@@ -303,21 +303,6 @@ class Migration(migrations.Migration):
                 ('student', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.student')),
             ],
         ),
-        migrations.CreateModel(
-            name='AssignmentComment',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('comment', models.TextField()),
-                ('is_private', models.BooleanField(null=True)),
-                ('assignment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.assignment')),
-                ('student', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.student')),
-            ],
-        ),
-        migrations.AddField(
-            model_name='assignment',
-            name='comments',
-            field=models.ManyToManyField(related_name='comments', through='main.AssignmentComment', to='main.student'),
-        ),
         migrations.AddField(
             model_name='assignment',
             name='submissions',

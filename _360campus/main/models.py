@@ -239,14 +239,15 @@ class Task(models.Model):
     time = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return f'{TASK_TYPE[self.kind]} - {self.title} in {self.classroom}'
+        return f'{self.TASK_TYPE[self.kind]} - {self.title} in {self.classroom}'
+
 
 class Assignment(Task):
     max_grade = models.IntegerField(blank=True, null=True)
     submissions = models.ManyToManyField(Student, through='AssignmentSubmission', related_name='submissions')
 
     def __str__(self):
-        return super().__str__(self)
+        return super().__str__()
 
 class Quiz(Task):
     max_grade = models.IntegerField(blank=True, null=True)

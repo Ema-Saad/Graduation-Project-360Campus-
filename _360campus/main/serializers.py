@@ -22,12 +22,19 @@ class ClassroomSerializer(ModelSerializer):
         fields = '__all__'
         depth = 1
 
-class AssignmentSerializer(ModelSerializer):
+class TaskViewSerializer(ModelSerializer):
     classroom = ClassroomSerializer(read_only=True)
 
     class Meta:
+        model = Task
+        fields = '__all__'
+
+class AssignmentSerializer(ModelSerializer):
+    task = TaskViewSerializer(read_only=True)
+
+    class Meta:
         model = Assignment
-        exclude = ['submissions', 'comments']
+        exclude = ['submissions']
 
 class AssignmentSubmissionViewSerializer(ModelSerializer):
     class Meta:

@@ -30,6 +30,7 @@ urlpatterns = [
     #Graduation Project
     path('api/graduation-projects/',graduation_project_list, name='graduation_project_list'),
     path('api/graduation-project/<int:project_id>/', graduation_project_detail, name = 'graduation_project_detail'),
+    path('api/classroom/<int:classroom_pk>/tasks', task_list, name='task_list'),
     path('api/classroom/<int:classroom_pk>/assignments', assignment_list, name='assignment_list'),
     path('api/classroom/<int:classroom_pk>/assignments/submitted', submitted_assignment_list, name='assignment_list'),
     path('api/assignment/<int:assignment_pk>', assignment_view, name='assignment_view'),

@@ -46,11 +46,6 @@ class Migration(migrations.Migration):
             model_name='assignment',
             name='title',
         ),
-        migrations.AddField(
-            model_name='assignment',
-            name='assignment',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.assignment'),
-        ),
         migrations.CreateModel(
             name='Quiz',
             fields=[
@@ -65,5 +60,10 @@ class Migration(migrations.Migration):
             name='task_ptr',
             field=models.OneToOneField(auto_created=True, default=-1, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='main.task'),
             preserve_default=False,
+        ),
+        migrations.AddField(
+           model_name='assignmentsubmission',
+           name='assignment',
+           field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='main.assignment'),
         ),
     ]

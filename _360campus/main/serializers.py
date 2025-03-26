@@ -16,18 +16,19 @@ class GraduationProjectSerializer(ModelSerializer):
         model = GraduationProject
         fields = '__all__'  # Includes all fields from the model
 
-class ClassroomSerializer(ModelSerializer):
+class ClassroomViewSerializer(ModelSerializer):
     class Meta:
         model = Classroom
-        fields = '__all__'
+        exclude = ['students']
         depth = 1
 
 class TaskViewSerializer(ModelSerializer):
-    classroom = ClassroomSerializer(read_only=True)
+    classroom = ClassroomViewSerializer(read_only=True)
 
     class Meta:
         model = Task
         fields = '__all__'
+        depth = 1
 
 class AssignmentSerializer(ModelSerializer):
     task = TaskViewSerializer(read_only=True)
@@ -35,6 +36,7 @@ class AssignmentSerializer(ModelSerializer):
     class Meta:
         model = Assignment
         exclude = ['submissions']
+        depth = 2
 
 class AssignmentSubmissionViewSerializer(ModelSerializer):
     class Meta:

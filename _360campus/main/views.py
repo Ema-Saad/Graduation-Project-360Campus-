@@ -65,7 +65,7 @@ def registered_classroom_view(req, course_pk):
 
     classroom = Classroom.objects.get(course=course, \
                                       semester=current_semester)
-    serializer = ClassroomSerializer(classroom)
+    serializer = ClassroomViewSerializer(classroom)
 
     return Response(serializer.data)
 
@@ -75,7 +75,7 @@ def registered_classroom_list(req):
     current_semester = Semester.objects.last()
     classrooms = Classroom.objects.filter(enrollment__student=req.user.student, \
                                           semester=current_semester)
-    serializer = ClassroomSerializer(classrooms, many=True)
+    serializer = ClassroomViewSerializer(classrooms, many=True)
 
     return Response(serializer.data)
 
@@ -86,7 +86,7 @@ def classroom_list(req, course_pk):
     course = get_object_or_404(Course, pk=course_pk)
     classrooms = get_list_or_404(Classroom, semester=current_semester, \
                                  course=course)
-    serializer = ClassroomSerializer(classrooms, many=True)
+    serializer = ClassroomViewSerializer(classrooms, many=True)
 
     return Response(serializer.data)
 

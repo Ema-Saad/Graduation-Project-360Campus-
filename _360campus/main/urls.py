@@ -24,8 +24,6 @@ urlpatterns = [
     path('api/course/<int:pk>/classroom/tasks', task_list, name='task_list'),
     path('api/course/<int:pk>/classroom/assignments', assignment_list, name='assignment_list'),
     path('api/course/<int:pk>/classroom/assignments/submitted', submitted_assignment_list, name='assignment_list'),
-    #material itself "files or content"
-    path('api/course/<int:course_pk>/material/<int:week>/<int:material_pk>', material_view, name='material_view'),
     #Event
     path('api/events', event_list, name='event_list'),
     path('api/events/registered', registered_event_list, name='registered_event_list'),

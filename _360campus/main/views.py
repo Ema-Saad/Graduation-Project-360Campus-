@@ -70,11 +70,11 @@ def registered_classroom_view(req, pk):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def registered_classroom_list(req):
+def registered_course_list(req):
     current_semester = Semester.objects.last()
-    classrooms = Classroom.objects.filter(enrollment__student=req.user.student, \
-                                          semester=current_semester)
-    serializer = ClassroomViewSerializer(classrooms, many=True)
+    courses = Course.objects.filter(classroom__semester=current_semester, \
+                                    classroom__students__in=[req.user.student])
+    serializer = CourseViewSerializer(courses, many=True)
 
     return Response(serializer.data)
 

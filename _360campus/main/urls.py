@@ -17,10 +17,13 @@ urlpatterns = [
          RetrieveAPIView.as_view(queryset=Course.objects.all(), serializer_class=CourseSerializer), \
          name='course_view'),
     path('api/material/<int:pk>/', material_view, name='material_view'),
-    path('api/classroom/<int:pk>/join', classroom_join, name='classroom_join'),
-    path('api/course/<int:course_pk>/classroom', registered_classroom_view, name='classroom_view'),
-    path('api/course/<int:course_pk>/classrooms', classroom_list, name='classroom_list'),
-    path('api/course/<int:course_pk>/materials', material_list, name='material_list'),
+    path('api/course/<int:pk>/classroom', registered_classroom_view, name='classroom_view'),
+    path('api/course/<int:pk>/classrooms', classroom_list, name='classroom_list'),
+    path('api/course/<int:pk>/materials', material_list, name='material_list'),
+    path('api/course/<int:pk>/classroom/join', classroom_join, name='classroom_join'),
+    path('api/course/<int:pk>/classroom/tasks', task_list, name='task_list'),
+    path('api/course/<int:pk>/classroom/assignments', assignment_list, name='assignment_list'),
+    path('api/course/<int:pk>/classroom/assignments/submitted', submitted_assignment_list, name='assignment_list'),
     #material itself "files or content"
     path('api/course/<int:course_pk>/material/<int:week>/<int:material_pk>', material_view, name='material_view'),
     #Event
@@ -30,9 +33,6 @@ urlpatterns = [
     #Graduation Project
     path('api/graduation-projects/',graduation_project_list, name='graduation_project_list'),
     path('api/graduation-project/<int:project_id>/', graduation_project_detail, name = 'graduation_project_detail'),
-    path('api/classroom/<int:classroom_pk>/tasks', task_list, name='task_list'),
-    path('api/classroom/<int:classroom_pk>/assignments', assignment_list, name='assignment_list'),
-    path('api/classroom/<int:classroom_pk>/assignments/submitted', submitted_assignment_list, name='assignment_list'),
     path('api/assignment/<int:assignment_pk>', assignment_view, name='assignment_view'),
     path('api/assignment/<int:pk>/submission', assignment_submission_view, name='assignment_submission_view'),
     path('api/assignment/<int:pk>/submit/<str:filename>', assignment_submit, name='assignment_submit'),

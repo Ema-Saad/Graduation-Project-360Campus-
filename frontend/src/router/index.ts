@@ -97,7 +97,7 @@ const routes = [
   { path: '/myclass', component: MyCourses, name: 'MyClass' },
   { path: '/task/:taskId', component: TaskDetail, name: 'taskDetail', props: true },
   { path: '/my-courses', component: MyCourses, name: 'MyCourses' },
-  { path: '/my-course/details/:id', component: MyCourseDetail, name: 'MyCourseDetail', props: true },
+  { path: '/my-course/:course_id', component: MyCourseDetail, name: 'MyCourseDetail', props: true },
   { path: '/course/details/:id', component: CourseDetails, name: 'CourseDetails', props: true },
   { path: '/events', component: EventsPage, name: 'Events' },
   { path: '/todo', component: ToDoPage, name: 'ToDoPage' },

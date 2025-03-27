@@ -6,6 +6,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.http import HttpResponse
 from django.utils import timezone
+from django.db.models import Q
 import os
 from .models import *
 from .serializers import *
@@ -189,7 +190,9 @@ def task_list(req, pk):
     classroom = get_object_or_404(Classroom, semester=current_semester, \
                                   course_id=pk)
 
-    tasks = classroom.task_set.all()
+    # filter out assignments, since they're treated differently
+    # and there's a API for them anyways
+    tasks = classroom.task_set.filter(~Q(kind='a'))
     serializer = TaskViewSerializer(tasks, many=True)
 
     return Response(serializer.data)
@@ -204,11 +207,8 @@ def assignment_list(req, pk):
                                      classroom__semester=current_semester).exists():
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-    classroom = get_object_or_404(Classroom, semester=current_semester, \
-                                  course_id=pk)
-
-    assignments = classroom.task_set.filter(kind='a').values('assignment')
-    assignments = Assignment.objects.filter(pk__in=assignments)
+    assignments = Assignment.objects.filter(task_ptr__classroom__course_id=pk, \
+                                            task_ptr__classroom__semester=current_semester)
     serializer = AssignmentSerializer(assignments, many=True)
 
     return Response(serializer.data)

@@ -216,7 +216,7 @@ def assignment_list(req, pk):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def submitted_assignment_list(req, pk):
-    current_semster = Semester.objects.last()
+    current_semester = Semester.objects.last()
 
     if not Enrollment.objects.filter(student=req.user.student, \
                                      classroom__course_id=pk, \

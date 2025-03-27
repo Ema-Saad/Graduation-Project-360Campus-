@@ -54,16 +54,15 @@ def course_list(req):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def registered_classroom_view(req, course_pk):
+def registered_classroom_view(req, pk):
     current_semester = Semester.objects.last()
-    course = get_object_or_404(Course, pk=course_pk)
 
     if not Enrollment.objects.filter(classroom__semester=current_semester, \
-                                     classroom__course=course, \
+                                     classroom__course_id=pk, \
                                      student=req.user.student).exists():
         return Response(status=status.HTTP_403_FORBIDDEN)
 
-    classroom = Classroom.objects.get(course=course, \
+    classroom = Classroom.objects.get(course_id=pk, \
                                       semester=current_semester)
     serializer = ClassroomViewSerializer(classroom)
 
@@ -81,9 +80,9 @@ def registered_classroom_list(req):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def classroom_list(req, course_pk):
+def classroom_list(req, pk):
     current_semester = Semester.objects.last()
-    course = get_object_or_404(Course, pk=course_pk)
+    course = get_object_or_404(Course, pk=pk)
     classrooms = get_list_or_404(Classroom, semester=current_semester, \
                                  course=course)
     serializer = ClassroomViewSerializer(classrooms, many=True)
@@ -93,10 +92,15 @@ def classroom_list(req, course_pk):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def classroom_join(req, pk):
-    classroom = get_object_or_404(Classroom, pk=pk)
+    current_semester = Semester.objects.last()
+
     if Enrollment.objects.filter(student=req.user.student, \
-                                 classroom=classroom).exists():
+                                 classroom__course_id=pk, \
+                                 classroom__semester=current_semester).exists():
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    classroom = get_object_or_404(Classroom, semester=current_semester, \
+                                  course_id=pk)
 
     Enrollment.objects.create(student=req.user.student, classroom=classroom)
     return Response(data={}, status=status.HTTP_200_OK)
@@ -174,12 +178,16 @@ def graduation_project_detail(request, project_id):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def task_list(req, classroom_pk):
-    classroom = get_object_or_404(Classroom, pk=classroom_pk)
+def task_list(req, pk):
+    current_semester = Semester.objects.last()
 
     if not Enrollment.objects.filter(student=req.user.student, \
-                                     classroom=classroom).exists():
-        return Respsone(status=status.HTTP_401_UNAUTHORIZED)
+                                     classroom__course_id=pk, \
+                                     classroom__semester=current_semester).exists():
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    classroom = get_object_or_404(Classroom, semester=current_semester, \
+                                  course_id=pk)
 
     tasks = classroom.task_set.all()
     serializer = TaskViewSerializer(tasks, many=True)
@@ -188,11 +196,16 @@ def task_list(req, classroom_pk):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def assignment_list(req, classroom_pk):
-    classroom = get_object_or_404(Classroom, pk=classroom_pk)
+def assignment_list(req, pk):
+    current_semester = Semester.objects.last()
 
-    if req.user.student not in classroom.students.all():
+    if not Enrollment.objects.filter(student=req.user.student, \
+                                     classroom__course_id=pk, \
+                                     classroom__semester=current_semester).exists():
         return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    classroom = get_object_or_404(Classroom, semester=current_semester, \
+                                  course_id=pk)
 
     assignments = classroom.task_set.filter(kind='a').values('assignment')
     assignments = Assignment.objects.filter(pk__in=assignments)
@@ -202,11 +215,16 @@ def assignment_list(req, classroom_pk):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def submitted_assignment_list(req, classroom_pk):
-    classroom = get_object_or_404(Classroom, pk=classroom_pk)
+def submitted_assignment_list(req, pk):
+    current_semster = Semester.objects.last()
 
-    if req.user.student not in classroom.students.all():
+    if not Enrollment.objects.filter(student=req.user.student, \
+                                     classroom__course_id=pk, \
+                                     classroom__semester=current_semester).exists():
         return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    classroom = get_object_or_404(Classroom, semester=current_semester, \
+                                  course_id=pk)
 
     submitted_assignments = AssignmentSubmission.objects.filter(student=req.user.student, \
                                                                 assignment__classroom=classroom) \

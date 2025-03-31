@@ -23,20 +23,15 @@ class ClassroomViewSerializer(ModelSerializer):
         depth = 1
 
 class TaskViewSerializer(ModelSerializer):
-    classroom = ClassroomViewSerializer(read_only=True)
-
     class Meta:
         model = Task
-        fields = '__all__'
+        exclude = ['classroom']
         depth = 1
 
 class AssignmentSerializer(ModelSerializer):
-    task = TaskViewSerializer(read_only=True)
-
     class Meta:
         model = Assignment
-        exclude = ['submissions']
-        depth = 2
+        exclude = ['submissions', 'classroom']
 
 class AssignmentSubmissionViewSerializer(ModelSerializer):
     class Meta:

@@ -23,7 +23,7 @@
           <div v-for="task in tasks" :key="task.id" class="task-item">
             <router-link :to="{ name: 'taskDetail', params: { taskId: task.id } }" class="task-link">
               <div class="task-icon">
-                <i class="fas fa-file-alt"></i>
+                <i class="fas" :class="[task.icon]"></i>
               </div>
               <div class="details">
                 <div class="task-name">{{ task.title }}</div>
@@ -88,6 +88,8 @@
 </template>
 
 <script>
+  // Task Types
+
   export default {
     data() {
       return {
@@ -132,17 +134,50 @@
     beforeMount() {
       let registered_classroom = this.$root.request_api_endpoint('api/registered_classrooms', 'get', null);
 
+      const TYPE_ASSIGNMENT = 'a', TYPE_ONLINE_MEETING = 'o', TYPE_QUIZ = 'q';
+
+      let get_icon = (t) => {
+        if (t === TYPE_ONLINE_MEETING)
+          return 'fa-video';
+        //else if (t === TYPE_QUIZ)
+        //  return ''
+        else
+          return 'fa-file-ult';
+      };
+
       registered_classroom.then((data) => {
         for (let classroom of data) {
-          let assignments = this.$root.request_api_endpoint(`api/classroom/${classroom.id}/assignments`, 'get', null);
-          let submitted_assignments = this.$root.request_api_endpoint(`api/classroom/${classroom.id}/assignments/submitted`, 'get', null);
+          let tasks = this.$root.request_api_endpoint(`api/course/${classroom.id}/classroom/tasks`, 'get', null);
+          let assignments = this.$root.request_api_endpoint(`api/course/${classroom.id}/classroom/assignments`, 'get', null);
+          let submitted_assignments = this.$root.request_api_endpoint(`api/course/${classroom.id}/classroom/assignments/submitted`, 'get', null);
+
+          tasks.then((data) => {
+            let transform = (d) => ({ ...d, deadline: d.time ? new Date(d.time) : null, classroom: classroom, icon: get_icon(d.kind) });
+            let tasks = data.map(transform);
+
+            let assigned_thisWeek = this.tasksBySection.assigned.thisWeek;
+            let assigned_nextWeek = this.tasksBySection.assigned.nextWeek;
+            let assigned_later = this.tasksBySection.assigned.later;
+
+            const MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
+
+            let is_past = (d) => Date.now() > d.deadline;
+            let is_due_this_week = (d) => !is_past(d) && d.deadline - Date.now() <= 7 * MILLISECONDS_IN_DAY;
+            let is_due_next_week = (d) => !is_past(d) && !is_due_this_week(d) && d.deadline - Date.now() <= 14 * MILLISECONDS_IN_DAY;
+            let is_due_later = (d) => !is_past(d) && d.deadline - Date.now() > 14 * MILLISECONDS_IN_DAY;
+
+            this.tasksBySection.assigned.thisWeek = [...assigned_thisWeek, ...tasks.filter(is_due_this_week)]
+            this.tasksBySection.assigned.nextWeek = [...assigned_nextWeek, ...tasks.filter(is_due_next_week)]
+            this.tasksBySection.assigned.later = [...assigned_later, ...tasks.filter(is_due_later)]
+
+          });
 
           Promise.all([assignments, submitted_assignments]).then((data) => {
-            let transform_date = (d) => ({ ...d, deadline: d.deadline ? new Date(d.deadline) : null });
-            let submitted_assignments = data[1].map(transform_date);
+            let transform = (d) => ({ ...d, deadline: d.time ? new Date(d.time) : null, classroom: classroom, icon: get_icon(d.icon) });
+            let submitted_assignments = data[1].map(transform);
             let unsubmitted_assignments = data[0]
               .filter((d) => undefined === submitted_assignments.find((e) => e.id === d.id))
-              .map(transform_date);
+              .map(transform);
 
             let deadlined_submitted_assignments = submitted_assignments.filter((e) => e.deadline);
             let deadlined_unsubmitted_assignments = unsubmitted_assignments.filter((e) => e.deadline);

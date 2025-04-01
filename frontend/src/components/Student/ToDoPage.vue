@@ -21,7 +21,7 @@
         </div>
         <div v-show="isSectionOpen(section)" class="task-list">
           <div v-for="task in tasks" :key="task.id" class="task-item">
-            <router-link :to="{ name: 'taskDetail', params: { taskId: task.id } }" class="task-link">
+            <router-link :to="task.link" class="task-link">
               <div class="task-icon">
                 <i class="fas" :class="[task.icon]"></i>
               </div>
@@ -142,7 +142,14 @@
         //else if (t === TYPE_QUIZ)
         //  return ''
         else
-          return 'fa-file-ult';
+          return 'fa-file-alt';
+      };
+
+      let get_page_link = (d) => {
+        if (d.kind === TYPE_ONLINE_MEETING)
+          return { name: 'Meeting', params: { meetingId: d.id } };
+        else
+          return { name: 'taskDetail', params: { taskId: d.id } };
       };
 
       registered_classroom.then((data) => {
@@ -152,7 +159,14 @@
           let submitted_assignments = this.$root.request_api_endpoint(`api/course/${classroom.id}/classroom/assignments/submitted`, 'get', null);
 
           tasks.then((data) => {
-            let transform = (d) => ({ ...d, deadline: d.time ? new Date(d.time) : null, classroom: classroom, icon: get_icon(d.kind) });
+            let transform = (d) => ({ 
+              ...d, 
+              deadline: d.time ? new Date(d.time) : null, 
+              classroom: classroom, 
+              icon: get_icon(d.kind),
+              link: get_page_link(d),
+            });
+
             let tasks = data.map(transform);
 
             let assigned_thisWeek = this.tasksBySection.assigned.thisWeek;
@@ -173,7 +187,14 @@
           });
 
           Promise.all([assignments, submitted_assignments]).then((data) => {
-            let transform = (d) => ({ ...d, deadline: d.time ? new Date(d.time) : null, classroom: classroom, icon: get_icon(d.icon) });
+            let transform = (d) => ({ 
+              ...d, 
+              deadline: d.time ? new Date(d.time) : null,
+              classroom: classroom,
+              icon: get_icon(d.icon),
+              link: get_page_link(d),
+            });
+
             let submitted_assignments = data[1].map(transform);
             let unsubmitted_assignments = data[0]
               .filter((d) => undefined === submitted_assignments.find((e) => e.id === d.id))

@@ -32,14 +32,14 @@
 
     <!-- The class cards or any other content here -->
     <div class="class-cards">
-      <button v-for="klass in registered_classes"
-              :key="klass.id"
-              @click="goToCourseDetail(klass.id)"
-              class="class-card">
+      <router-link v-for="classroom in registered_classes"
+                   :key="classroom.id"
+                   :to="{ name: 'MyCourseDetail', params: { course_id: classroom.course.id } }"
+                   class="class-card">
 
-        <h3>{{ klass.course.title }}</h3>
-        <p class="author">👤 {{ klass.instructor.first_name }} {{ klass.instructor.last_name }}</p>
-      </button>
+        <h3>{{ classroom.course.title }}</h3>
+        <p class="author">👤 {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}</p>
+      </router-link>
     </div>
 
   </div>

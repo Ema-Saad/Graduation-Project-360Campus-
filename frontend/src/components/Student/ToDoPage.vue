@@ -44,7 +44,7 @@
           <img src="@/assets/nothing.png" alt="No Tasks Image" />
         </div>
         <div v-else v-for="task in tasksBySection.missing">
-          <router-link :to="{ name: 'taskDetail', params: { taskId: task.id } }" class="task-link">
+          <router-link :to="task.link" class="task-link">
               <div class="task-icon">
                 <i class="fas fa-file-alt"></i>
               </div>
@@ -145,11 +145,13 @@
           return 'fa-file-alt';
       };
 
-      let get_page_link = (d) => {
+      let get_page_link = (d, ...other) => {
+        console.log(d);
+
         if (d.kind === TYPE_ONLINE_MEETING)
-          return { name: 'Meeting', params: { meetingId: d.id } };
+          return { name: 'Meeting', params: { id: d.id } };
         else
-          return { name: 'taskDetail', params: { taskId: d.id } };
+          return { name: 'taskDetail', params: { taskId: d.id, classroomId: d.classroom } };
       };
 
       registered_classroom.then((data) => {
@@ -164,7 +166,7 @@
               deadline: d.time ? new Date(d.time) : null, 
               classroom: classroom, 
               icon: get_icon(d.kind),
-              link: get_page_link(d),
+              link: get_page_link(d, classroom),
             });
 
             let tasks = data.map(transform);
@@ -192,7 +194,7 @@
               deadline: d.time ? new Date(d.time) : null,
               classroom: classroom,
               icon: get_icon(d.icon),
-              link: get_page_link(d),
+              link: get_page_link(d, classroom),
             });
 
             let submitted_assignments = data[1].map(transform);

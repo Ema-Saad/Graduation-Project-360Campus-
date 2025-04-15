@@ -125,8 +125,8 @@ def event_register(req, pk):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def material_list(req, course_pk):
-    course = get_object_or_404(Course, pk=course_pk)
+def material_list(req, pk):
+    course = get_object_or_404(Course, pk=pk)
     materials = course.material_set.all()
     serializer = MaterialSerializer(materials, many=True)
 

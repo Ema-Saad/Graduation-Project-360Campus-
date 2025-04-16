@@ -1,5 +1,5 @@
 <template>
-  <div v-if="this.assignment" class="assignment-detail">
+  <div v-if="assignment && assignment.classroom" class="assignment-detail">
     <!-- Top Image -->
     <div class="top-image">
       <img src="@/assets/pexels-photo.png" alt="Assignment Detail Image" />
@@ -10,8 +10,8 @@
         </div>
         <!-- Assignment text on the right -->
         <div class="overlay-content">
-          {{ this.assignment.title }} - {{ this.assignment.classroom.course.title }}
-          Taught by {{ this.assignment.classroom.instructor.first_name }} {{ this.assignment.classroom.instructor.last_name }}
+          {{ assignment.title }} - {{ assignment.classroom.course.title }}
+          Taught by {{ assignment.classroom.instructor.first_name }} {{ assignment.classroom.instructor.last_name }}
         </div>
       </div>
     </div>
@@ -66,7 +66,7 @@
       let assignment_promise = this.$root.request_api_endpoint(`api/assignment/${this.taskId}`, 'get', null);
 
       assignment_promise.then((data) => {
-        this.assignment = {...data, deadline: data.deadline ? new Date(data.deadline) : null };
+        this.assignment = {...data, deadline: data.time ? new Date(data.time) : null };
 
         if (this.assignment.submitted) {
           let submission_promise = this.$root.request_api_endpoint(`api/assignment/${this.taskId}/submission`, 'get', null);
@@ -76,11 +76,11 @@
             this.uploadedFileName = data.submitted_file;
             this.grade = data.grade;
           });
-
         }
-
+        return this.$root.request_api_endpoint(`api/course/${this.assignment.classroom}/classroom`, 'get', null);
+      }).then((data) => {
+        this.assignment.classroom = data;
       });
-
     },
     methods: {
       computeDueString(date) {

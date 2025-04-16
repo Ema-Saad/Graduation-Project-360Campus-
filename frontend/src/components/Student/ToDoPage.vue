@@ -151,7 +151,7 @@
         if (d.kind === TYPE_ONLINE_MEETING)
           return { name: 'Meeting', params: { id: d.id } };
         else
-          return { name: 'taskDetail', params: { taskId: d.id, classroomId: d.classroom } };
+          return { name: 'taskDetail', params: { taskId: d.id } };
       };
 
       registered_classroom.then((data) => {

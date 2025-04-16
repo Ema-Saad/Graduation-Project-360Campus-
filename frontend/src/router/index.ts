@@ -95,7 +95,7 @@ const routes = [
   { name: 'Settings', path: '/settings', component: SettingsSection,  },
   { name: 'Materials', path: '/materials', component: MaterialsPage,  },
   { name: 'MyClass', path: '/myclass', component: MyCourses,  },
-  { name: 'taskDetail', props: true, path: '/task/:classroomId/:taskId', component: TaskDetail,  },
+  { name: 'taskDetail', props: true, path: '/task/:taskId', component: TaskDetail,  },
   { name: 'MyCourses', path: '/my-courses', component: MyCourses,  },
   { name: 'MyCourseDetail', props: true, path: '/my-course/:course_id', component: MyCourseDetail,  },
   { name: 'CourseDetails', props: true, path: '/course/details/:id', component: CourseDetails,  },

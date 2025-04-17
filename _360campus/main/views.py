@@ -14,6 +14,11 @@ from .serializers import *
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+def role_view(req):
+    return Response(req.user.person_type)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def event_list(req):
     limit = req.query_params['limit'] if 'limit' in req.query_params else 5
     events = Event.objects.all()[:limit]

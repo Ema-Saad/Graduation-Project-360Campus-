@@ -37,6 +37,11 @@ export default defineComponent({
 
     if (part)
       this.authtoken = part.split('=')[1];
+
+    this.$router.beforeEach((to, from) => {
+      if (to.name !== 'Login' && !this.authtoken) return { name: 'Login' };
+      else return true;
+    });
   },
   methods: {
     async download_file(endpoint) {

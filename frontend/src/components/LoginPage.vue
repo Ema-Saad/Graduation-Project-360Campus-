@@ -37,9 +37,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-import { getCurrentInstance } from 'vue';
-
 export default {
     name: 'LoginPage',
     data() {
@@ -50,15 +47,14 @@ export default {
         };
     },
     methods: {
-        handleLogin() {
-          this.$root.login(this.username, this.password)
-            .then(() => {
-              this.$router.push({ name: 'StudentHome' });
-            })
-            .catch((err) => {
+        async handleLogin() {
+          try {
+            let result = await this.$root.login(this.username, this.password);
+            if (result)
+              this.$router.push({ name: 'Home' });
+          } catch (err) {
               this.errors = `an Error occured\n${err}`;
-            });
-
+          }
         },
     },
 };

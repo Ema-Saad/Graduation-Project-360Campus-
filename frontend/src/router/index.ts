@@ -13,7 +13,7 @@ import TutorialChat from '@/components/Student/TutorialChat.vue';
 import AssignmentPage from '@/components/Student/AssignmentPage.vue';
 import MeetingCard from "@/components/Student/MeetingCard.vue";
 import ProjectDetails from '@/components/Student/ProjectDetails.vue';
-import LoginPage from '@/components/Student/LoginPage.vue';
+import LoginPage from '@/components/LoginPage.vue';
 import ForgotPasswordPage from '@/components/Student/ForgotPasswordPage.vue';
 import VerificationPage from '@/components/Student/VerificationPage.vue';
 import ResetPasswordPage from '@/components/Student/ResetPassword.vue';
@@ -30,7 +30,6 @@ import Timeline from "@/components/Student/Timeline.vue";
 import AssignmentNumberVue from '../components/Student/assignmentnumber.vue';
 
 // Doctor
-import LoginPageDOC from '../components/Doctor/LoginPageDOC.vue';
 import ForgotPasswordDOC from '@/components/Doctor/ForgotPasswordDOC.vue';
 import VerificationDOC from '@/components/Doctor/VerificationDOC.vue';
 import ResetPasswordDOC from '@/components/Doctor/ResetPasswordDOC.vue';
@@ -57,13 +56,6 @@ const routes = [
 // { path: '/', redirect: '/doctor' },
 
   // Doctor Routes
-  { path: '/doctor', component: HomePageDOC, name: 'DoctorHome' },
-  { path: '/doctor/login', component: LoginPageDOC, name: 'DoctorLogin' },
-  { path: '/doctor/verification', component: VerificationDOC, name: 'DoctorVerification' },
-  { path: '/doctor/forgot-password', component: ForgotPasswordDOC, name: 'DoctorForgotPassword' },
-  { path: '/doctor/reset-password', component: ResetPasswordDOC, name: 'DoctorResetPassword' },
-  { path: '/doctor/error', component: ErrorDOC, name: 'DoctorError' },
-  { path: '/doctor/congratulations', component: CongratulationsDOC, name: 'DoctorCongratulations' },
   { path: '/doctor-profile', component: DOCProfile, name: 'DOCProfile' },
   { path: '/doctor-settings', component: DOCSettings, name: 'DOCSettings' },
   { path: '/doctor-timeline', component: DOCTimeline, name: 'DOCTimeline' },
@@ -84,7 +76,7 @@ const routes = [
 
   // Student Routes
   { path: '/', redirect:'/home'},
-  { name: 'StudentHome', path: '/home', component: HomePage,  },
+  { name: 'Home', path: '/home', component: HomePage,  },
   { name: 'ProfilePage', path: '/profile', component: ProfilePage,  },
   { name: 'Login', path: '/login', component: LoginPage,  },
   { name: 'Verification', path: '/verification', component: VerificationPage,  },

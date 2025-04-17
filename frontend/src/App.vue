@@ -27,6 +27,7 @@ export default defineComponent({
   data() {
     return {
       authtoken: '',
+      person_kind: '',
     }
   },
   created() {
@@ -123,8 +124,14 @@ export default defineComponent({
           this.authtoken = data['token'];
 
           document.cookie = `authtoken=${this.authtoken}`;
-          console.log('new cookie is');
-          console.log(document.cookie);
+
+          const person_kind_response = await fetch('http://127.0.0.1:8000/api/role', {
+            headers: {
+              Authorization: `Token ${this.authtoken}`,
+            }
+          });
+
+          this.person_kind = await person_kind_response.text();
 
           return true;
         } else {

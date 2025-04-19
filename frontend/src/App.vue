@@ -30,13 +30,23 @@ export default defineComponent({
       person_kind: '',
     }
   },
-  created() {
+  async created() {
     let part = document.cookie
                       .split('; ')
                       .filter((p) => p.startsWith('authtoken='))[0];
 
-    if (part)
+    if (part) {
       this.authtoken = part.split('=')[1];
+
+      const person_kind_response = await fetch('http://127.0.0.1:8000/api/role', {
+        headers: {
+          Authorization: `Token ${this.authtoken}`,
+        }
+      });
+
+      const response_text = await person_kind_response.text();
+      this.person_kind = response_text.substr(1, response_text.length - 2);
+    }
 
     this.$router.beforeEach((to, from) => {
       if (to.name !== 'Login' && !this.authtoken) return { name: 'Login' };
@@ -136,7 +146,8 @@ export default defineComponent({
             }
           });
 
-          this.person_kind = await person_kind_response.text();
+          const response_text = await person_kind_response.text();
+          this.person_kind = response_text.substr(1, response_text.length - 2);
 
           return true;
         } else {

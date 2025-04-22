@@ -85,7 +85,7 @@
   import instructorIcon3 from '@/assets/doctor-img4.png'; // Icon for Dr. Mostafa
 
   export default {
-    name: 'MaterialsPage',
+    name: 'CourseList',
     data() {
       return {
         colleges: [],

@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 // Student
 import HomePage from '../components/Student/HomePage.vue';
-import MaterialsPage from '../components/Student/MaterialsPage.vue';
+import MaterialList from '../components/MaterialList.vue';
 import MyClassPage from '../components/Student/MyClassPage.vue';
 import TimeTablePage from '../components/Student/TimeTablePage.vue';
 import EventsPage from '../components/Student/EventsPage.vue';
@@ -85,7 +85,7 @@ const routes = [
   { name: 'Error', path: '/error', component: ErrorPage,  },
   { name: 'Timeline', path: '/timeline', component: Timeline,  },
   { name: 'Settings', path: '/settings', component: SettingsSection,  },
-  { name: 'Materials', path: '/materials', component: MaterialsPage,  },
+  { name: 'CourseList', path: '/course/list', component: CourseList,  },
   { name: 'MyClass', path: '/myclass', component: MyCourses,  },
   { name: 'taskDetail', props: true, path: '/task/:taskId', component: TaskDetail,  },
   { name: 'MyCourses', path: '/my-courses', component: MyCourses,  },

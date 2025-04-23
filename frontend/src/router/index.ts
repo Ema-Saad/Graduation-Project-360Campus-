@@ -2,13 +2,13 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 // Student
 import HomePage from '../components/Student/HomePage.vue';
-import MaterialList from '../components/MaterialList.vue';
+import CourseList from '../components/CourseList.vue';
 import MyClassPage from '../components/Student/MyClassPage.vue';
 import TimeTablePage from '../components/Student/TimeTablePage.vue';
 import EventsPage from '../components/Student/EventsPage.vue';
 import GraduationProjectPage from '../components/Student/GraduationProjectPage.vue';
 import MapPage from '../components/Student/MapPage.vue';
-import CourseDetails from '../components/Student/CourseDetails.vue';
+import CourseDetail from '../components/CourseDetail.vue';
 import TutorialChat from '@/components/Student/TutorialChat.vue';
 import AssignmentPage from '@/components/Student/AssignmentPage.vue';
 import MeetingCard from "@/components/Student/MeetingCard.vue";
@@ -90,7 +90,7 @@ const routes = [
   { name: 'taskDetail', props: true, path: '/task/:taskId', component: TaskDetail,  },
   { name: 'MyCourses', path: '/my-courses', component: MyCourses,  },
   { name: 'MyCourseDetail', props: true, path: '/my-course/:course_id', component: MyCourseDetail,  },
-  { name: 'CourseDetails', props: true, path: '/course/details/:id', component: CourseDetails,  },
+  { name: 'CourseDetails', props: true, path: '/course/details/:id', component: CourseDetail,  },
   { name: 'Events', path: '/events', component: EventsPage,  },
   { name: 'ToDoPage', path: '/todo', component: ToDoPage,  },
   { name: 'TimeTable', path: '/timetable', component: TimeTablePage,  },

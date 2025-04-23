@@ -1,35 +1,53 @@
 <template>
   <div v-if="course">
 
-    <h1 id="course-title">{{ course.title }}</h1>
-    <p id="course-description">{{ course.description }}</p>
+    <div v-if="!showCourseEditingWidgets">
+      <h1 id="course-title">{{ course.title }}</h1>
+      <p id="course-description">{{ course.description }}</p>
+    </div>
+    <div v-else-if="showCourseEditingWidgets && $root.person_kind === 'P'">
+      <input v-model="course.title" type="text" placeholder="Title" value="{{ course.title }}" size="50" />
+      <br />
+      <textarea v-model="course.description" cols="120" rows="10">
+        {{ course.description }}
+      </textarea>
+      <br />
+      <button @click="editCourse"> Save </button>
+    </div>
+
+    <span id="course-edit-controls" v-if="$root.person_kind === 'P' && !showCourseEditingWidgets">
+      <button> Create New Material </button>
+      <button @click="showCourseEditingWidgets = true"> Edit Course Information </button>
+      <button @click="deleteCourse"> Delete Course </button>
+    </span>
 
     <div class="weeks-container">
       <div class="week-box" v-for="week in weeks" :key="week.id" @click="toggleDropdown(week.id)">
         <span class="week-title">Week {{ week.id }} </span>
         <span class="arrow" :class="{ 'rotate': isDropdownOpen(week.id) }">&#9660;</span>
 
-        <div v-if="isDropdownOpen(week.id)" class="dropdown-menu">
-          <button v-for="lab in week.labs" class="dropdown-item" @click="download(lab.id)">
-            Lab: {{ lab.name }} 
-          </button>
+        <template v-for="materialTypeArray in week" v-if="isDropdownOpen(week.id)" class="dropdown-menu">
+          <div v-if="materialTypeArray.length > 0"> 
+            <h3> {{ stringifyMaterialType(materialTypeArray[0].material_type) }} </h3>
+            <ul>
+              <li v-for="materialInstance in materialTypeArray">
+                <a class="dropdown-item" @click="download(materialInstance.id)"> 
+                  {{ materialInstance.name }} 
+                </a>
 
-          <button v-for="lecture in week.lectures" class="dropdown-item" @click="download(lecture.id)"> 
-            Lecture: {{ lecture.name }}
-          </button>
+                <span id="material-edit-controls" v-if="$root.person_kind === 'P'">
+                  <button @click="editMaterial(materialInstance.id)">
+                    Edit
+                  </button>
 
-          <button v-for="tutorial in week.tutorials" class="dropdown-item" @click="download(tutorial.id)"> 
-            Tutorial: {{ tutorial.name }} 
-          </button>
-
-          <button v-for="assignment in week.assignments" class="dropdown-item" @click="download(assignment.id)"> 
-            Assignment: {{ assignment.name }} 
-          </button>
-
-          <button v-for="problem_sheet in week.problem_sheets" class="dropdown-item" @click="download(problem_sheet.id)"> 
-            Problem Sheet: {{ problem_sheet.name }}
-          </button>
-        </div>
+                  <button @click="deleteMaterial(materialInstance.id)">
+                    Delete
+                  </button>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </template>
       </div>
     </div>
   </div>
@@ -52,6 +70,7 @@
         course: null,
         weeks: [],
         openDropdowns: [], // Store open dropdown states
+        showCourseEditingWidgets: false,
       };
     },
     beforeMount() {
@@ -85,6 +104,26 @@
       });
     },
     methods: {
+      editCourse() {
+        this.showCourseEditingWidgets = false;
+      },
+      deleteCourse() {
+        this.$router.push({ name: 'CourseList' });
+      },
+      editMaterial(materialId) {
+      },
+      deleteMaterial(materialId) {
+      },
+      stringifyMaterialType(type) {
+        switch (type) {
+          case LECTURE: return "Lectures"; break;
+          case LAB: return "Labs"; break;
+          case TUTORIAL: return "Tutorals"; break;
+          case ASSIGNMENT: return "Assignments"; break;
+          case PROBLEM_SHEET: return "Problem Sheets"; break;
+          case OTHER: return "Other"; break;
+        }
+      },
       download(materialId) {
         this.$root.download_file(`api/material/${materialId}`);
       },

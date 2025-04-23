@@ -5,7 +5,7 @@ import HomePage from '../components/Student/HomePage.vue';
 import CourseList from '../components/CourseList.vue';
 import MyClassPage from '../components/Student/MyClassPage.vue';
 import TimeTablePage from '../components/Student/TimeTablePage.vue';
-import EventsPage from '../components/Student/EventsPage.vue';
+import EventList from '../components/EventList.vue';
 import GraduationProjectPage from '../components/Student/GraduationProjectPage.vue';
 import MapPage from '../components/Student/MapPage.vue';
 import CourseDetail from '../components/CourseDetail.vue';
@@ -91,7 +91,7 @@ const routes = [
   { name: 'MyCourses', path: '/my-courses', component: MyCourses,  },
   { name: 'MyCourseDetail', props: true, path: '/my-course/:course_id', component: MyCourseDetail,  },
   { name: 'CourseDetails', props: true, path: '/course/details/:id', component: CourseDetail,  },
-  { name: 'Events', path: '/events', component: EventsPage,  },
+  { name: 'Events', path: '/events', component: EventList,  },
   { name: 'ToDoPage', path: '/todo', component: ToDoPage,  },
   { name: 'TimeTable', path: '/timetable', component: TimeTablePage,  },
   { name: 'GraduationProject', path: '/graduation', component: GraduationProjectPage,  },

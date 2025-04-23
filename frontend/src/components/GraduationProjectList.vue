@@ -24,9 +24,13 @@
         </select>
       </div>
 
-      <button v-if="$root.person_kind === 'P'">
+      <button v-if="$root.person_kind === 'P'" @click="showPopup = true" >
         Upload New Project
       </button>
+
+      <GraduationProjectCreate v-if="$root.person_kind === 'P' && showPopup" 
+          @closed="showPopup = false"/>
+
     </div>
 
     <!-- Conditionally render filtered projects if any filter is applied -->
@@ -68,10 +72,17 @@
 </template>
 
 <script>
+
+import GraduationProjectCreate from './GraduationProjectCreate.vue'
+
 export default {
   name: "ProjectsPage",
+  components: {
+    GraduationProjectCreate,
+  },
   data() {
     return {
+      showPopup: false,
       colleges: [],
       projects: [], // Stores all graduation projects fetched from the API
       filters: {

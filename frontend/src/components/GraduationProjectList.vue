@@ -7,13 +7,9 @@
       <div class="filter-item">
         <select v-model="filters.faculty" @change="updateFilter">
           <option value="">Faculty</option>
-          <option value="Pharma D">Pharma D</option>
-          <option value="Engineering">Engineering</option>
-          <option value="Computer Science">Computer Science</option>
-          <option value="Sustainable Architecture">Sustainable Architecture</option>
-          <option value="Basic and Applied Science">Basic and Applied Science</option>
-          <option value="Art and Design">Art and Design</option>
-          <option value="International Business">International Business</option>
+          <option v-for="college in colleges" value="{{ college.id }}">
+            {{ college.name }}
+          </option>
         </select>
       </div>
 
@@ -27,10 +23,14 @@
           <option value="2025">2025</option>
         </select>
       </div>
+
+      <button v-if="$root.person_kind === 'P'">
+        Upload New Project
+      </button>
     </div>
 
     <!-- Conditionally render filtered projects if any filter is applied -->
-    <div v-if="(filters.faculty || filters.year) && filteredProjects.length > 0" class="filtered-projects">
+    <div v-if="filteredProjects.length > 0" class="filtered-projects">
       <h2 class="projects-title">Filtered Graduation Projects</h2>
       <div class="project-list">
         <div v-for="project in filteredProjects" :key="project.id" @click="goToProject(project.id)" class="project-item">
@@ -54,43 +54,14 @@
           </div>
           <div class="project-rating">
             <span v-for="n in 5" :key="n" class="star">★</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Show best projects when no filters are applied -->
-    <div v-else-if="!filters.faculty && !filters.year" class="best-projects">
-      <h2 class="projects-title">Our Best Projects</h2>
-      <div class="project-list">
-        <div v-for="project in popularProjects" :key="project.id" @click="goToProject(project.id)" class="project-item">
-          <div class="project-image">
-            <img :src="project.imageUrl" alt="Project Image" />
-            <div class="overlay">
-              <div class="overlay-text">
-                <p class="project-title-overlay">{{ project.title }}</p>
-              </div>
-            </div>
-          </div>
-          <div class="project-details">
-            <div class="project-instructor">
-              <div class="instructor-avatar-container">
-                <img class="instructor-icon" :src="project.instructorIconUrl" alt="Instructor Icon" />
-              </div>
-              <span class="instructor-name">{{ project.instructor }}</span>
-            </div>
-            <div class="project-title">{{ project.title }}</div>
-            <p class="project-major">Majors: {{ project.major }}</p>
-          </div>
-          <div class="project-rating">
-            <span v-for="n in 5" :key="n" class="star">★</span>
+            <button v-if="$root.person_kind === 'P'" class="remove-btn" @click.stop="removeProject(project.id)">Remove</button>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Show message if filters are applied but no projects match -->
-    <div v-else-if="(filters.faculty || filters.year) && filteredProjects.length === 0" class="no-projects-message">
+    <div v-else class="no-projects-message">
       <p>No projects found for the selected filters. Please adjust your filters.</p>
     </div>
   </div>
@@ -101,6 +72,7 @@ export default {
   name: "ProjectsPage",
   data() {
     return {
+      colleges: [],
       projects: [], // Stores all graduation projects fetched from the API
       filters: {
         faculty: "",
@@ -117,14 +89,15 @@ export default {
         );
       });
     },
-    popularProjects() {
-      // For demonstration, using the first 5 projects as "popular" ones.
-      return this.projects.slice(0, 5);
-    }
   },
   async mounted() {
     // Fetch all projects once when the page loads
+    this.colleges = await this.$root.request_api_endpoint("api/colleges", "get", null);
     this.projects = await this.$root.request_api_endpoint("api/graduation-projects/", "get", null);
+
+    this.projects = this.projects
+        .map(d => ({ ...d, rate: parseFloat(d.rate) }))
+        .sort((a, b) => a.rate - b.rate);
   },
   methods: {
     updateFilter() {

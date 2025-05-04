@@ -12,7 +12,7 @@ import CourseDetail from '../components/CourseDetail.vue';
 import TutorialChat from '@/components/Student/TutorialChat.vue';
 import AssignmentPage from '@/components/Student/AssignmentPage.vue';
 import MeetingCard from "@/components/Student/MeetingCard.vue";
-import ProjectDetails from '@/components/Student/ProjectDetails.vue';
+import GraduationProjectView from '@/components/GraduationProjectView.vue';
 import LoginPage from '@/components/LoginPage.vue';
 import ForgotPasswordPage from '@/components/Student/ForgotPasswordPage.vue';
 import VerificationPage from '@/components/Student/VerificationPage.vue';
@@ -95,7 +95,7 @@ const routes = [
   { name: 'ToDoPage', path: '/todo', component: ToDoPage,  },
   { name: 'TimeTable', path: '/timetable', component: TimeTablePage,  },
   { name: 'GraduationProject', path: '/graduation', component: GraduationProjectList,  },
-  { name: 'ProjectDetails', props: true, path: '/project/:id', component: ProjectDetails,  },
+  { name: 'ProjectDetails', props: true, path: '/project/:id', component: GraduationProjectView,  },
   { name: 'Map', path: '/map', component: MapView,  },
   { name: 'TutorialChat', props: true, path: '/tutorialchat/:courseId/week/:weekId', component: TutorialChat,  },
   { name: 'AssignmentById', path: '/assignment/:id', component: AssignmentPage,  },

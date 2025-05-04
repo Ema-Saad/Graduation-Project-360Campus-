@@ -2,14 +2,16 @@
   <div class="app-container">
     <header class="header">
       <!-- To Do Button that navigates to the To Do list -->
-      <div class="todo-button-container">
+      <div v-if="$root.person_kind === 'S'" class="todo-button-container">
         <button class="todo-button" @click="goToToDoPage">
           To Do
           <span class="badge">{{ taskCount }}</span>
         </button>
       </div>
+      <div v-else-if="$root.person_kind === 'P'">
+      </div>
 
-      <div id="join-controls">
+      <div v-if="$root.person_kind === 'S'" id="join-controls">
         <select id="course" v-model="enroll_in.course" @change="populateClassroomsForEnroll">
           <option value="0"> Course </option>
           <option v-for="course in courses" :value="course.id">
@@ -28,6 +30,9 @@
 
         <button class="join-button" @click="join">Join</button>
       </div>
+      <div v-else-if="$root.person_kind === 'P'">
+        <span> Da fuck is supposed to be here ?! </span>
+      </div>
     </header>
 
     <!-- The class cards or any other content here -->
@@ -38,7 +43,7 @@
                    class="class-card">
 
         <h3>{{ classroom.course.title }}</h3>
-        <p class="author">👤 {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}</p>
+        <p v-if="$root.person_kind === 'S'" class="author">👤 {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}</p>
       </router-link>
     </div>
 
@@ -52,7 +57,7 @@
   import class3Image from '@/assets/pexels-photo.png';
 
   export default {
-    name: 'MyCourses',
+    name: 'ClassroomList',
     data() {
       return {
         enroll_in: {

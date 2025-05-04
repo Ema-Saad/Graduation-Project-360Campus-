@@ -20,7 +20,7 @@ import ResetPasswordPage from '@/components/Student/ResetPassword.vue';
 import CongratulationsPage from '@/components/Student/CongratulationsPage.vue';
 import ErrorPage from '@/components/Student/ErrorPage.vue';
 import ProfilePage from "@/components/Student/ProfilePage.vue";
-import MyCourses from '@/components/Student/MyCourses.vue';
+import ClassroomList from '@/components/ClassroomList.vue';
 import ToDoPage from "@/components/Student/ToDoPage.vue";
 import MyCourseDetail from '@/components/Student/MyCourseDetail.vue';
 import TaskDetail from '@/components/Student/TaskDetail.vue';
@@ -86,9 +86,9 @@ const routes = [
   { name: 'Timeline', path: '/timeline', component: Timeline,  },
   { name: 'Settings', path: '/settings', component: SettingsSection,  },
   { name: 'CourseList', path: '/course/list', component: CourseList,  },
-  { name: 'MyClass', path: '/myclass', component: MyCourses,  },
+  { name: 'MyClass', path: '/myclass', component: ClassroomList,  },
   { name: 'taskDetail', props: true, path: '/task/:taskId', component: TaskDetail,  },
-  { name: 'MyCourses', path: '/my-courses', component: MyCourses,  },
+  { name: 'MyCourses', path: '/my-courses', component: ClassroomList,  },
   { name: 'MyCourseDetail', props: true, path: '/my-course/:course_id', component: MyCourseDetail,  },
   { name: 'CourseDetails', props: true, path: '/course/details/:id', component: CourseDetail,  },
   { name: 'Events', path: '/events', component: EventList,  },

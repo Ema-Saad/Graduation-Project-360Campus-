@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
+from django.core.exceptions import ValidationError
+
 
 class Person(AbstractUser):
     PERSON_TYPE_CHOICES = [
@@ -126,14 +128,21 @@ class Course(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     admin = models.ForeignKey(Admin, on_delete=models.SET_NULL, null=True, blank=True, related_name="courses")
+    prof = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, blank=True, related_name="courses")
     prerequisites = models.ManyToManyField('self', symmetrical=False, related_name="required_for", blank=True)
-    # I added New fields to filter matrials
     college = models.ForeignKey(College, on_delete=models.CASCADE)
-    level = models.IntegerField(choices=LEVELS)
+    level = models.IntegerField(choices=[(i, f'{i}') for i in range(1, 5)])
     semester_kind = models.CharField(max_length=1, choices=Semester.SEMESTER_TYPE)
-
+    
+    def clean(self):
+        # Ensure that either admin or professor is assigned to the course
+        if not self.admin and not self.prof:
+            raise ValidationError("A course must have either an Admin or a Professor assigned.")
+        if self.admin and self.prof:
+            raise ValidationError("A course can only have either an Admin or a Professor assigned, not both.")
+    
     def __str__(self):
-        return f'{self.title}'
+        return self.title
 
 class Enrollment(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="enrollments")
@@ -178,6 +187,8 @@ class Material(models.Model):
     file = models.FileField(upload_to=get_materials_file_location)
     week = models.IntegerField(null=True, blank=True)
     material_type = models.CharField(max_length=1, choices=MATERIAL_TYPE, default='o')
+    created_by = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, blank=True, related_name="materials")
+
 
     def __str__(self):
         return f'{self.course.title} - {self.name}'

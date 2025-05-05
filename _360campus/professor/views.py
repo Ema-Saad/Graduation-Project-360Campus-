@@ -216,3 +216,176 @@ def remove_course_materials(request, pk):
 
     Material.objects.filter(course=course, created_by=professor).delete()
     return Response({'detail': 'All materials for the course have been removed.'}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def class_list(request):
+    """
+    List all courses (classes) created by the logged-in professor.
+    """
+    try:
+        professor = Professor.objects.get(id=request.user.id)
+    except Professor.DoesNotExist:
+        return Response({'detail': 'Professor profile not found.'}, status=status.HTTP_403_FORBIDDEN)
+
+    courses = Course.objects.filter(prof=professor)
+    response_data = [
+        {
+            'id': course.id,
+            'title': course.title,
+            'description': course.description,
+            'level': course.level,
+            'semester_kind': course.semester_kind,
+        }
+        for course in courses
+    ]
+    return Response(response_data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def class_detail(request, pk):
+    """
+    Display the content of a specific class (course) organized by weeks.
+    For each week, list material types with options to preview/delete or upload if none exist.
+    """
+    course = get_object_or_404(Course, pk=pk)
+    try:
+        professor = Professor.objects.get(id=request.user.id)
+    except Professor.DoesNotExist:
+        return Response({'detail': 'Professor profile not found.'}, status=status.HTTP_403_FORBIDDEN)
+
+    if course.prof.id != professor.id:
+        return Response({'detail': 'Unauthorized access.'}, status=status.HTTP_403_FORBIDDEN)
+
+    # Define all possible material types
+    MATERIAL_TYPES = {
+        'L': 'Lecture',
+        'l': 'Lab',
+        't': 'Tutorial',
+        'a': 'Assignment',
+        's': 'Problem Sheet',
+        'o': 'Other',
+    }
+
+    # Get all materials for the course
+    materials = Material.objects.filter(course=course, created_by=professor).order_by('week')
+    materials_by_week = {}
+
+    # Group materials by week
+    for material in materials:
+        week = material.week if material.week else 0
+        if week not in materials_by_week:
+            materials_by_week[week] = {}
+
+        # Initialize material types for this week if not already present
+        for mat_type, mat_display in MATERIAL_TYPES.items():
+            if mat_type not in materials_by_week[week]:
+                materials_by_week[week][mat_type] = {
+                    'type': mat_type,
+                    'type_display': mat_display,
+                    'materials': [],
+                    'has_materials': False,
+                }
+
+        # Add the material to its type
+        material_data = {
+            'id': material.id,
+            'name': material.name,
+            'file_url': material.file.url if material.file else None,
+        }
+        materials_by_week[week][material.material_type]['materials'].append(material_data)
+        materials_by_week[week][material.material_type]['has_materials'] = True
+
+    # Ensure all weeks have all material types, even if empty
+    for week in materials_by_week:
+        for mat_type, mat_display in MATERIAL_TYPES.items():
+            if mat_type not in materials_by_week[week]:
+                materials_by_week[week][mat_type] = {
+                    'type': mat_type,
+                    'type_display': mat_display,
+                    'materials': [],
+                    'has_materials': False,
+                }
+
+    # Format response
+    response_data = {
+        'course': {
+            'id': course.id,
+            'title': course.title,
+            'description': course.description,
+        },
+        'materials_by_week': [
+            {
+                'week': week,
+                'material_types': [
+                    mat_data for mat_type, mat_data in week_materials.items()
+                ]
+            }
+            for week, week_materials in materials_by_week.items()
+        ]
+    }
+    return Response(response_data, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_material(request, pk, material_id):
+    """
+    Delete a specific material from a course.
+    """
+    course = get_object_or_404(Course, pk=pk)
+    try:
+        professor = Professor.objects.get(id=request.user.id)
+    except Professor.DoesNotExist:
+        return Response({'detail': 'Professor profile not found.'}, status=status.HTTP_403_FORBIDDEN)
+
+    if course.prof.id != professor.id:
+        return Response({'detail': 'Unauthorized access.'}, status=status.HTTP_403_FORBIDDEN)
+
+    material = get_object_or_404(Material, id=material_id, course=course, created_by=professor)
+    material.delete()
+    return Response({'detail': 'Material deleted successfully.'}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upload_material_by_type(request, pk):
+    """
+    Upload a material for a specific material type in a specific week.
+    """
+    course = get_object_or_404(Course, pk=pk)
+    try:
+        professor = Professor.objects.get(id=request.user.id)
+    except Professor.DoesNotExist:
+        return Response({'detail': 'Professor profile not found.'}, status=status.HTTP_403_FORBIDDEN)
+
+    if course.prof.id != professor.id:
+        return Response({'detail': 'Unauthorized access.'}, status=status.HTTP_403_FORBIDDEN)
+
+    week_number = request.data.get('week_number')
+    material_type = request.data.get('material_type')
+    file = request.FILES.get('file')
+
+    if not all([week_number, material_type, file]):
+        return Response({'detail': 'Week number, material type, and file are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        week_number = int(week_number)
+    except ValueError:
+        return Response({'detail': 'Invalid week number.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Validate material type
+    valid_material_types = [choice[0] for choice in Material.MATERIAL_TYPE]
+    if material_type not in valid_material_types:
+        return Response({'detail': 'Invalid material type.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    material = Material(
+        course=course,
+        name=file.name,
+        week=week_number,
+        material_type=material_type,
+        created_by=professor
+    )
+    material_save_path = os.path.join(f'Week {week_number}', file.name)
+    material.file.save(material_save_path, file)
+    material.save()
+
+    return Response({'detail': 'Material uploaded successfully.'}, status=status.HTTP_201_CREATED)

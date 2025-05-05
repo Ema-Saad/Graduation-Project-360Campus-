@@ -220,3 +220,220 @@ class UploadMaterialTestCase(APITestCase):
         self.client.credentials()
         response = self.client.delete(self.remove_materials_url)
         self.assertEqual(response.status_code, 401)
+        
+class MyClassTestCase(APITestCase):
+
+    def setUp(self):
+        self.college, _ = College.objects.get_or_create(
+            code='csit',
+            defaults={
+                'name': 'College of Science and Information Technology',
+                'description': 'CSIT description'
+            }
+        )
+
+        self.faculty, _ = Faculty.objects.get_or_create(
+            code='ENG',
+            defaults={
+                'name': 'Engineering',
+                'college': self.college,
+                'description': 'Engineering faculty'
+            }
+        )
+
+        random_suffix = get_random_string(length=5)
+        self.user = Professor.objects.create(
+            username=f'professor{random_suffix}',
+            email=f'professor{random_suffix}@example.com',
+            person_type='P',
+            faculty=self.faculty
+        )
+
+        token = Token.objects.create(user=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
+
+        self.course = Course.objects.create(
+            title='Test Course',
+            description='Test course description',
+            college=self.college,
+            level=1,
+            semester_kind='F',
+            prof=self.user
+        )
+
+        self.class_list_url = reverse('professor:class_list')
+        self.class_detail_url = reverse('professor:class_detail', kwargs={'pk': self.course.pk})
+
+    def tearDown(self):
+        Material.objects.all().delete()
+        Course.objects.all().delete()
+        Professor.objects.all().delete()
+        get_user_model().objects.all().delete()
+        Faculty.objects.all().delete()
+        College.objects.all().delete()
+        shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'Test Course'), ignore_errors=True)
+
+    def test_class_list_success(self):
+        response = self.client.get(self.class_list_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['title'], 'Test Course')
+        self.assertEqual(response.data[0]['description'], 'Test course description')
+
+    def test_class_list_unauthorized(self):
+        self.client.credentials()
+        response = self.client.get(self.class_list_url)
+        self.assertEqual(response.status_code, 401)
+
+    def test_class_detail_success(self):
+        # Upload a lecture and a lab material
+        lecture_file = SimpleUploadedFile('lecture.pdf', b'Dummy lecture content', content_type='application/pdf')
+        lab_file = SimpleUploadedFile('lab.pdf', b'Dummy lab content', content_type='application/pdf')
+        self.client.post(
+            reverse('professor:upload_material_by_type', kwargs={'pk': self.course.pk}),
+            {
+                'week_number': '1',
+                'material_type': 'L',
+                'file': lecture_file
+            },
+            format='multipart'
+        )
+        self.client.post(
+            reverse('professor:upload_material_by_type', kwargs={'pk': self.course.pk}),
+            {
+                'week_number': '1',
+                'material_type': 'l',
+                'file': lab_file
+            },
+            format='multipart'
+        )
+
+        response = self.client.get(self.class_detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('course', response.data)
+        self.assertIn('materials_by_week', response.data)
+        self.assertEqual(response.data['course']['title'], 'Test Course')
+        self.assertEqual(len(response.data['materials_by_week']), 1)
+        self.assertEqual(response.data['materials_by_week'][0]['week'], 1)
+        self.assertEqual(len(response.data['materials_by_week'][0]['material_types']), 6)  # All material types
+        lecture_type = next(mt for mt in response.data['materials_by_week'][0]['material_types'] if mt['type'] == 'L')
+        lab_type = next(mt for mt in response.data['materials_by_week'][0]['material_types'] if mt['type'] == 'l')
+        self.assertTrue(lecture_type['has_materials'])
+        self.assertTrue(lab_type['has_materials'])
+        self.assertEqual(len(lecture_type['materials']), 1)
+        self.assertEqual(len(lab_type['materials']), 1)
+        self.assertEqual(lecture_type['materials'][0]['name'], 'lecture.pdf')
+        self.assertEqual(lab_type['materials'][0]['name'], 'lab.pdf')
+
+    def test_class_detail_no_materials(self):
+        response = self.client.get(self.class_detail_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('course', response.data)
+        self.assertIn('materials_by_week', response.data)
+        self.assertEqual(len(response.data['materials_by_week']), 0)
+
+    def test_class_detail_unauthorized(self):
+        self.client.credentials()
+        response = self.client.get(self.class_detail_url)
+        self.assertEqual(response.status_code, 401)
+
+    def test_delete_material_success(self):
+        # Upload a material first
+        lecture_file = SimpleUploadedFile('lecture.pdf', b'Dummy lecture content', content_type='application/pdf')
+        self.client.post(
+            reverse('professor:upload_material_by_type', kwargs={'pk': self.course.pk}),
+            {
+                'week_number': '1',
+                'material_type': 'L',
+                'file': lecture_file
+            },
+            format='multipart'
+        )
+        material = Material.objects.get(course=self.course, name='lecture.pdf')
+
+        delete_url = reverse('professor:delete_material', kwargs={'pk': self.course.pk, 'material_id': material.id})
+        response = self.client.delete(delete_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['detail'], 'Material deleted successfully.')
+        self.assertFalse(Material.objects.filter(id=material.id).exists())
+
+    def test_delete_material_unauthorized(self):
+        lecture_file = SimpleUploadedFile('lecture.pdf', b'Dummy lecture content', content_type='application/pdf')
+        self.client.post(
+            reverse('professor:upload_material_by_type', kwargs={'pk': self.course.pk}),
+            {
+                'week_number': '1',
+                'material_type': 'L',
+                'file': lecture_file
+            },
+            format='multipart'
+        )
+        material = Material.objects.get(course=self.course, name='lecture.pdf')
+
+        self.client.credentials()
+        delete_url = reverse('professor:delete_material', kwargs={'pk': self.course.pk, 'material_id': material.id})
+        response = self.client.delete(delete_url)
+        self.assertEqual(response.status_code, 401)
+
+    def test_upload_material_by_type_success(self):
+        lecture_file = SimpleUploadedFile('lecture.pdf', b'Dummy lecture content', content_type='application/pdf')
+        response = self.client.post(
+            reverse('professor:upload_material_by_type', kwargs={'pk': self.course.pk}),
+            {
+                'week_number': '1',
+                'material_type': 'L',
+                'file': lecture_file
+            },
+            format='multipart'
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['detail'], 'Material uploaded successfully.')
+        material_exists = Material.objects.filter(
+            course=self.course,
+            name='lecture.pdf',
+            week=1,
+            material_type='L',
+            created_by=self.user
+        ).exists()
+        self.assertTrue(material_exists)
+
+    def test_upload_material_by_type_missing_data(self):
+        response = self.client.post(
+            reverse('professor:upload_material_by_type', kwargs={'pk': self.course.pk}),
+            {
+                'week_number': '1',
+                'material_type': 'L',
+                # Missing file
+            },
+            format='multipart'
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['detail'], 'Week number, material type, and file are required.')
+
+    def test_upload_material_by_type_invalid_type(self):
+        lecture_file = SimpleUploadedFile('lecture.pdf', b'Dummy lecture content', content_type='application/pdf')
+        response = self.client.post(
+            reverse('professor:upload_material_by_type', kwargs={'pk': self.course.pk}),
+            {
+                'week_number': '1',
+                'material_type': 'X',  # Invalid type
+                'file': lecture_file
+            },
+            format='multipart'
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['detail'], 'Invalid material type.')
+
+    def test_upload_material_by_type_unauthorized(self):
+        lecture_file = SimpleUploadedFile('lecture.pdf', b'Dummy lecture content', content_type='application/pdf')
+        self.client.credentials()
+        response = self.client.post(
+            reverse('professor:upload_material_by_type', kwargs={'pk': self.course.pk}),
+            {
+                'week_number': '1',
+                'material_type': 'L',
+                'file': lecture_file
+            },
+            format='multipart'
+        )
+        self.assertEqual(response.status_code, 401)

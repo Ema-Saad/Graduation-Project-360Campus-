@@ -4,6 +4,7 @@ from rest_framework.authtoken.models import Token
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from .models import *
+from main.models import *
 from django.utils.crypto import get_random_string
 import zipfile
 import os
@@ -63,7 +64,6 @@ class UploadMaterialTestCase(APITestCase):
         get_user_model().objects.all().delete()
         Faculty.objects.all().delete()
         College.objects.all().delete()
-        # Clean up uploaded files
         shutil.rmtree(os.path.join(settings.MEDIA_ROOT, 'Test Course'), ignore_errors=True)
 
     def create_test_zip(self, files):
@@ -89,7 +89,6 @@ class UploadMaterialTestCase(APITestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['detail'], 'Materials uploaded successfully.')
         
-        # Debug: Check all materials to see what was saved
         materials = Material.objects.filter(course=self.course, week=1)
         for material in materials:
             print(f"Found material: id={material.id}, name={material.name}, file={material.file.name}, course={material.course.title}, week={material.week}, created_by={material.created_by.id}")
@@ -220,7 +219,7 @@ class UploadMaterialTestCase(APITestCase):
         self.client.credentials()
         response = self.client.delete(self.remove_materials_url)
         self.assertEqual(response.status_code, 401)
-        
+
 class MyClassTestCase(APITestCase):
 
     def setUp(self):
@@ -241,33 +240,79 @@ class MyClassTestCase(APITestCase):
             }
         )
 
+        # Professor
         random_suffix = get_random_string(length=5)
-        self.user = Professor.objects.create(
+        self.professor = Professor.objects.create(
             username=f'professor{random_suffix}',
             email=f'professor{random_suffix}@example.com',
             person_type='P',
-            faculty=self.faculty
+            faculty=self.faculty,
+            department='Engineering Department'
         )
 
-        token = Token.objects.create(user=self.user)
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
+        # Student
+        random_suffix = get_random_string(length=5)
+        self.student = Student.objects.create(
+            username=f'student{random_suffix}',
+            email=f'student{random_suffix}@example.com',
+            person_type='S',
+            faculty=self.faculty,
+            department='Engineering Department'
+        )
 
+        # TA
+        random_suffix = get_random_string(length=5)
+        self.ta = TeachingAssistant.objects.create(
+            username=f'ta{random_suffix}',
+            email=f'ta{random_suffix}@example.com',
+            person_type='T',
+            department='Engineering Department'  # Use department instead of faculty
+        )
+
+        # Course
         self.course = Course.objects.create(
             title='Test Course',
             description='Test course description',
             college=self.college,
             level=1,
             semester_kind='F',
-            prof=self.user
+            prof=self.professor
         )
+
+        # Semester
+        self.semester = Semester.objects.create(
+            kind='F',
+            year=2025
+        )
+
+        # Classroom
+        self.classroom = Classroom.objects.create(
+            course=self.course,
+            instructor=self.professor,
+            semester=self.semester,
+            rating=4.0
+        )
+        self.classroom.students.add(self.student)
+        self.classroom.teaching_assistants.add(self.ta)
+
+        # Token for professor
+        token = Token.objects.create(user=self.professor)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
 
         self.class_list_url = reverse('professor:class_list')
         self.class_detail_url = reverse('professor:class_detail', kwargs={'pk': self.course.pk})
+        self.chatroom_url = reverse('professor:get_chatroom', kwargs={'pk': self.course.pk})
+        self.participants_url = reverse('professor:get_participants', kwargs={'pk': self.course.pk})
+        self.messages_url = reverse('professor:chat_messages', kwargs={'pk': self.course.pk})
 
     def tearDown(self):
         Material.objects.all().delete()
         Course.objects.all().delete()
         Professor.objects.all().delete()
+        Student.objects.all().delete()
+        TeachingAssistant.objects.all().delete()
+        Classroom.objects.all().delete()
+        Semester.objects.all().delete()
         get_user_model().objects.all().delete()
         Faculty.objects.all().delete()
         College.objects.all().delete()
@@ -286,7 +331,6 @@ class MyClassTestCase(APITestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_class_detail_success(self):
-        # Upload a lecture and a lab material
         lecture_file = SimpleUploadedFile('lecture.pdf', b'Dummy lecture content', content_type='application/pdf')
         lab_file = SimpleUploadedFile('lab.pdf', b'Dummy lab content', content_type='application/pdf')
         self.client.post(
@@ -315,7 +359,7 @@ class MyClassTestCase(APITestCase):
         self.assertEqual(response.data['course']['title'], 'Test Course')
         self.assertEqual(len(response.data['materials_by_week']), 1)
         self.assertEqual(response.data['materials_by_week'][0]['week'], 1)
-        self.assertEqual(len(response.data['materials_by_week'][0]['material_types']), 6)  # All material types
+        self.assertEqual(len(response.data['materials_by_week'][0]['material_types']), 6)
         lecture_type = next(mt for mt in response.data['materials_by_week'][0]['material_types'] if mt['type'] == 'L')
         lab_type = next(mt for mt in response.data['materials_by_week'][0]['material_types'] if mt['type'] == 'l')
         self.assertTrue(lecture_type['has_materials'])
@@ -338,7 +382,6 @@ class MyClassTestCase(APITestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_delete_material_success(self):
-        # Upload a material first
         lecture_file = SimpleUploadedFile('lecture.pdf', b'Dummy lecture content', content_type='application/pdf')
         self.client.post(
             reverse('professor:upload_material_by_type', kwargs={'pk': self.course.pk}),
@@ -393,7 +436,7 @@ class MyClassTestCase(APITestCase):
             name='lecture.pdf',
             week=1,
             material_type='L',
-            created_by=self.user
+            created_by=self.professor
         ).exists()
         self.assertTrue(material_exists)
 
@@ -403,7 +446,6 @@ class MyClassTestCase(APITestCase):
             {
                 'week_number': '1',
                 'material_type': 'L',
-                # Missing file
             },
             format='multipart'
         )
@@ -416,7 +458,7 @@ class MyClassTestCase(APITestCase):
             reverse('professor:upload_material_by_type', kwargs={'pk': self.course.pk}),
             {
                 'week_number': '1',
-                'material_type': 'X',  # Invalid type
+                'material_type': 'X',
                 'file': lecture_file
             },
             format='multipart'
@@ -437,3 +479,110 @@ class MyClassTestCase(APITestCase):
             format='multipart'
         )
         self.assertEqual(response.status_code, 401)
+
+    # Chat Tests
+
+    def test_get_chatroom_success(self):
+        response = self.client.get(self.chatroom_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('chatroom_id', response.data)
+        self.assertEqual(response.data['title'], 'Test Course Chatroom')
+        self.assertEqual(response.data['course_id'], self.course.id)
+
+    def test_get_chatroom_unauthorized(self):
+        # Create a non-participant user
+        random_suffix = get_random_string(length=5)
+        non_participant = Professor.objects.create(
+            username=f'nonparticipant{random_suffix}',
+            email=f'nonparticipant{random_suffix}@example.com',
+            person_type='P',
+            faculty=self.faculty,
+            department='Engineering Department'
+        )
+        token = Token.objects.create(user=non_participant)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
+
+        response = self.client.get(self.chatroom_url)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data['detail'], 'You are not a participant in this course.')
+
+    def test_get_participants_success(self):
+        response = self.client.get(self.participants_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 3)  # Professor, TA, Student
+        participants = sorted(response.data, key=lambda x: x['role'])
+        self.assertEqual(participants[0]['role'], 'Professor')
+        self.assertEqual(participants[0]['username'], self.professor.username)
+        self.assertEqual(participants[1]['role'], 'Student')
+        self.assertEqual(participants[1]['username'], self.student.username)
+        self.assertEqual(participants[2]['role'], 'Teaching Assistant')
+        self.assertEqual(participants[2]['username'], self.ta.username)
+
+    def test_get_participants_unauthorized(self):
+        random_suffix = get_random_string(length=5)
+        non_participant = Professor.objects.create(
+            username=f'nonparticipant{random_suffix}',
+            email=f'nonparticipant{random_suffix}@example.com',
+            person_type='P',
+            faculty=self.faculty,
+            department='Engineering Department'
+        )
+        token = Token.objects.create(user=non_participant)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
+
+        response = self.client.get(self.participants_url)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data['detail'], 'You are not a participant in this course.')
+
+    def test_get_messages_success(self):
+        # Send a message first
+        self.client.post(self.messages_url, {'content': 'Hello, class!'}, format='json')
+
+        response = self.client.get(self.messages_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['content'], 'Hello, class!')
+        self.assertEqual(response.data[0]['sender']['username'], self.professor.username)
+        self.assertEqual(response.data[0]['sender']['role'], 'P')
+
+    def test_send_message_success(self):
+        response = self.client.post(self.messages_url, {'content': 'Welcome to the course!'}, format='json')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['content'], 'Welcome to the course!')
+        self.assertEqual(response.data['sender']['username'], self.professor.username)
+        self.assertEqual(response.data['sender']['role'], 'P')
+
+        # Verify the message exists in the database
+        message_exists = Message.objects.filter(
+            chatroom__course=self.course,
+            sender=self.professor,
+            content='Welcome to the course!'
+        ).exists()
+        self.assertTrue(message_exists)
+
+    def test_send_message_missing_content(self):
+        response = self.client.post(self.messages_url, {}, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['detail'], 'Message content is required.')
+
+    def test_chat_messages_unauthorized(self):
+        random_suffix = get_random_string(length=5)
+        non_participant = Professor.objects.create(
+            username=f'nonparticipant{random_suffix}',
+            email=f'nonparticipant{random_suffix}@example.com',
+            person_type='P',
+            faculty=self.faculty,
+            department='Engineering Department'
+        )
+        token = Token.objects.create(user=non_participant)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
+
+        # Test GET
+        response = self.client.get(self.messages_url)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data['detail'], 'You are not a participant in this course.')
+
+        # Test POST
+        response = self.client.post(self.messages_url, {'content': 'Unauthorized message'}, format='json')
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.data['detail'], 'You are not a participant in this course.')

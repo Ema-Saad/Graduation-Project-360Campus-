@@ -16,6 +16,10 @@ urlpatterns = [
     path('class/<int:pk>/',class_detail, name='class_detail'),
     path('class/<int:pk>/material/<int:material_id>/delete/',delete_material, name='delete_material'),
     path('class/<int:pk>/upload-material/',upload_material_by_type, name='upload_material_by_type'),
+    #  Chat URLs
+    path('class/<int:pk>/chatroom/', get_chatroom, name='get_chatroom'),
+    path('class/<int:pk>/participants/', get_participants, name='get_participants'),
+    path('class/<int:pk>/messages/',chat_messages, name='chat_messages'),
     
     
 ]

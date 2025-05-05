@@ -1,7 +1,8 @@
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
 from django.core.exceptions import ValidationError
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Person(AbstractUser):
     PERSON_TYPE_CHOICES = [
@@ -22,8 +23,12 @@ class Person(AbstractUser):
         verbose_name = "Person"
         verbose_name_plural = "People"
 
+    def __str__(self):
+        return self.username
+
 class Professor(Person):
     faculty = models.ForeignKey('main.Faculty', on_delete=models.CASCADE)
+
     class Meta:
         verbose_name = "Professor"
 
@@ -32,8 +37,8 @@ class GraduationProject(models.Model):
     year = models.IntegerField()
     faculty = models.ForeignKey('main.Faculty', on_delete=models.CASCADE)
     description = models.TextField()
-    supervisor = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, blank=True, related_name="supervised_projects" )
-    rate = models.DecimalField(max_digits=3, decimal_places= 2 , default= 0.00)
+    supervisor = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, blank=True, related_name="supervised_projects")
+    rate = models.DecimalField(max_digits=3, decimal_places=2, default=0.00)
 
     class Meta:
         verbose_name = "Graduation Project"
@@ -42,14 +47,13 @@ class GraduationProject(models.Model):
 class Student(Person):
     faculty = models.ForeignKey('main.Faculty', on_delete=models.CASCADE)
     graduation_project = models.ForeignKey(GraduationProject, on_delete=models.SET_NULL, null=True, blank=True, related_name="students")
+
     class Meta:
         verbose_name = "Student"
-
 
 class TeachingAssistant(Person):
     class Meta:
         verbose_name = "Teaching Assistant"
-
 
 class Admin(Person):
     class Meta:
@@ -74,7 +78,6 @@ class Faculty(models.Model):
     def __str__(self):
         return self.name
 
-# Report Model
 class Report(models.Model):
     title = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -85,8 +88,6 @@ class Report(models.Model):
     class Meta:
         verbose_name = "Report"
 
-
-# Event Model
 class Event(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
@@ -95,8 +96,6 @@ class Event(models.Model):
     class Meta:
         verbose_name = "Event"
 
-
-# EventRegistration Model
 class EventRegistration(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="registrations")
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="event_registrations")
@@ -105,7 +104,6 @@ class EventRegistration(models.Model):
     class Meta:
         verbose_name = "Event Registration"
         unique_together = ('event', 'student')
-
 
 class Semester(models.Model):
     SEMESTER_TYPE = [
@@ -133,14 +131,13 @@ class Course(models.Model):
     college = models.ForeignKey(College, on_delete=models.CASCADE)
     level = models.IntegerField(choices=[(i, f'{i}') for i in range(1, 5)])
     semester_kind = models.CharField(max_length=1, choices=Semester.SEMESTER_TYPE)
-    
+
     def clean(self):
-        # Ensure that either admin or professor is assigned to the course
         if not self.admin and not self.prof:
             raise ValidationError("A course must have either an Admin or a Professor assigned.")
         if self.admin and self.prof:
             raise ValidationError("A course can only have either an Admin or a Professor assigned, not both.")
-    
+
     def __str__(self):
         return self.title
 
@@ -160,6 +157,7 @@ class Classroom(models.Model):
     semester = models.ForeignKey(Semester, on_delete=models.SET_NULL, null=True)
     rating = models.FloatField()
     students = models.ManyToManyField(Student, through=Enrollment)
+    teaching_assistants = models.ManyToManyField(TeachingAssistant, related_name="classrooms", blank=True)
 
     class Meta:
         unique_together = ('course', 'instructor', 'semester')
@@ -167,9 +165,7 @@ class Classroom(models.Model):
     def __str__(self):
         return f'{self.course.title} by {self.instructor.first_name} {self.instructor.last_name}'
 
-
 class Material(models.Model):
-
     def get_materials_file_location(inst, filename):
         return f'{inst.course.title}/{filename}'
 
@@ -182,30 +178,25 @@ class Material(models.Model):
         ('o', 'Other'),
     ]
 
-    course =models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
     name = models.CharField(max_length=500)
     file = models.FileField(upload_to=get_materials_file_location)
     week = models.IntegerField(null=True, blank=True)
     material_type = models.CharField(max_length=1, choices=MATERIAL_TYPE, default='o')
     created_by = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, blank=True, related_name="materials")
 
-
     def __str__(self):
         return f'{self.course.title} - {self.name}'
 
-
-# Lecture Model
 class Lecture(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="lectures")
     title = models.CharField(max_length=200)
     date = models.DateTimeField()
-    duration = models.IntegerField()  # Duration in minutes
+    duration = models.IntegerField()
 
     class Meta:
         verbose_name = "Lecture"
 
-
-# StaffPerformance Model
 class StaffPerformance(models.Model):
     staff = models.ForeignKey(Person, on_delete=models.CASCADE, related_name="performance_reviews")
     evaluation_score = models.FloatField()
@@ -215,8 +206,6 @@ class StaffPerformance(models.Model):
     class Meta:
         verbose_name = "Staff Performance"
 
-
-# Chatroom Model
 class Chatroom(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="chatrooms", null=True)
     title = models.CharField(max_length=200)
@@ -225,8 +214,9 @@ class Chatroom(models.Model):
     class Meta:
         verbose_name = "Chatroom"
 
+    def __str__(self):
+        return self.title
 
-# Message Model
 class Message(models.Model):
     chatroom = models.ForeignKey(Chatroom, on_delete=models.CASCADE, related_name="messages")
     sender = models.ForeignKey(Person, on_delete=models.CASCADE, related_name="messages")
@@ -235,6 +225,9 @@ class Message(models.Model):
 
     class Meta:
         verbose_name = "Message"
+
+    def __str__(self):
+        return f"{self.sender.username}: {self.content}"
 
 class Task(models.Model):
     TASK_TYPE = {
@@ -252,7 +245,6 @@ class Task(models.Model):
     def __str__(self):
         return f'{self.TASK_TYPE[self.kind]} - {self.title} in {self.classroom}'
 
-
 class Assignment(Task):
     max_grade = models.IntegerField(blank=True, null=True)
     submissions = models.ManyToManyField(Student, through='AssignmentSubmission', related_name='submissions')
@@ -262,23 +254,10 @@ class Assignment(Task):
 
 class Quiz(Task):
     max_grade = models.IntegerField(blank=True, null=True)
-
-    # Questions will be an array of objects.
-    # Each object will consist of:-
-    # title: str, the title of the question
-    # type: 'msq' | 'text', the kind of the question
-    #   'msq' is for multiple choice questions (This includes T/F questions)
-    #   'text' is for essay questions
-    # msq_data: {Array[str], int}, if the question is a MSQ
-    #   this field is an object that contains 2 fields:
-    #   choices: Array[str], the array of choices.
-    #   correct_choice: int, the index of the correct choice.
-    #   This field should be absent for essay questions.
-
     questions = models.JSONField()
 
     def __str__(self):
-        return super().__str__(self)
+        return super().__str__()
 
 class AssignmentSubmission(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -286,3 +265,11 @@ class AssignmentSubmission(models.Model):
     submitted_file = models.FileField(blank=True, null=True)
     grade = models.IntegerField(blank=True, null=True)
 
+# Signal to create a Chatroom for each Course
+@receiver(post_save, sender=Course)
+def create_course_chatroom(sender, instance, created, **kwargs):
+    if created:
+        Chatroom.objects.create(
+            course=instance,
+            title=f"{instance.title} Chatroom"
+        )

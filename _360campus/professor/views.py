@@ -389,3 +389,148 @@ def upload_material_by_type(request, pk):
     material.save()
 
     return Response({'detail': 'Material uploaded successfully.'}, status=status.HTTP_201_CREATED)
+
+# New Chat Views
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_chatroom(request, pk):
+    """
+    Retrieve the chatroom for a course.
+    """
+    course = get_object_or_404(Course, pk=pk)
+    chatroom = get_object_or_404(Chatroom, course=course)
+
+    # Check if the user is a participant (professor, student, or TA)
+    try:
+        classroom = Classroom.objects.get(course=course)
+    except Classroom.DoesNotExist:
+        return Response({'detail': 'Classroom not found for this course.'}, status=status.HTTP_404_NOT_FOUND)
+
+    user = request.user
+    is_participant = (
+        (user.person_type == 'P' and classroom.instructor.id == user.id) or
+        (user.person_type == 'S' and classroom.students.filter(id=user.id).exists()) or
+        (user.person_type == 'T' and classroom.teaching_assistants.filter(id=user.id).exists())
+    )
+
+    if not is_participant:
+        return Response({'detail': 'You are not a participant in this course.'}, status=status.HTTP_403_FORBIDDEN)
+
+    return Response({
+        'chatroom_id': chatroom.id,
+        'title': chatroom.title,
+        'course_id': course.id,
+    }, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_participants(request, pk):
+    """
+    List all participants in the course (professor, TAs, students).
+    """
+    course = get_object_or_404(Course, pk=pk)
+    try:
+        classroom = Classroom.objects.get(course=course)
+    except Classroom.DoesNotExist:
+        return Response({'detail': 'Classroom not found for this course.'}, status=status.HTTP_404_NOT_FOUND)
+
+    user = request.user
+    is_participant = (
+        (user.person_type == 'P' and classroom.instructor.id == user.id) or
+        (user.person_type == 'S' and classroom.students.filter(id=user.id).exists()) or
+        (user.person_type == 'T' and classroom.teaching_assistants.filter(id=user.id).exists())
+    )
+
+    if not is_participant:
+        return Response({'detail': 'You are not a participant in this course.'}, status=status.HTTP_403_FORBIDDEN)
+
+    participants = []
+    # Add professor
+    participants.append({
+        'id': classroom.instructor.id,
+        'username': classroom.instructor.username,
+        'role': 'Professor',
+    })
+
+    # Add TAs
+    for ta in classroom.teaching_assistants.all():
+        participants.append({
+            'id': ta.id,
+            'username': ta.username,
+            'role': 'Teaching Assistant',
+        })
+
+    # Add students
+    for student in classroom.students.all():
+        participants.append({
+            'id': student.id,
+            'username': student.username,
+            'role': 'Student',
+        })
+
+    return Response(participants, status=status.HTTP_200_OK)
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def chat_messages(request, pk):
+    """
+    GET: Retrieve all messages in the course's chatroom.
+    POST: Send a new message to the chatroom.
+    """
+    course = get_object_or_404(Course, pk=pk)
+    chatroom = get_object_or_404(Chatroom, course=course)
+
+    try:
+        classroom = Classroom.objects.get(course=course)
+    except Classroom.DoesNotExist:
+        return Response({'detail': 'Classroom not found for this course.'}, status=status.HTTP_404_NOT_FOUND)
+
+    user = request.user
+    is_participant = (
+        (user.person_type == 'P' and classroom.instructor.id == user.id) or
+        (user.person_type == 'S' and classroom.students.filter(id=user.id).exists()) or
+        (user.person_type == 'T' and classroom.teaching_assistants.filter(id=user.id).exists())
+    )
+
+    if not is_participant:
+        return Response({'detail': 'You are not a participant in this course.'}, status=status.HTTP_403_FORBIDDEN)
+
+    if request.method == 'GET':
+        messages = chatroom.messages.all().order_by('sent_at')
+        response_data = [
+            {
+                'id': message.id,
+                'sender': {
+                    'id': message.sender.id,
+                    'username': message.sender.username,
+                    'role': message.sender.person_type,
+                },
+                'content': message.content,
+                'sent_at': message.sent_at,
+            }
+            for message in messages
+        ]
+        return Response(response_data, status=status.HTTP_200_OK)
+
+    elif request.method == 'POST':
+        content = request.data.get('content')
+        if not content:
+            return Response({'detail': 'Message content is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        message = Message(
+            chatroom=chatroom,
+            sender=user,
+            content=content
+        )
+        message.save()
+        return Response({
+            'id': message.id,
+            'sender': {
+                'id': message.sender.id,
+                'username': message.sender.username,
+                'role': message.sender.person_type,
+            },
+            'content': message.content,
+            'sent_at': message.sent_at,
+        }, status=status.HTTP_201_CREATED)

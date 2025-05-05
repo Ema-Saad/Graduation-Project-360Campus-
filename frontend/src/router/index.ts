@@ -8,7 +8,7 @@ import TimeTablePage from '../components/Student/TimeTablePage.vue';
 import EventList from '../components/EventList.vue';
 import GraduationProjectList from '../components/GraduationProjectList.vue';
 import MapView from '../components/MapView.vue';
-import CourseDetail from '../components/CourseDetail.vue';
+import CourseView from '../components/CourseView.vue';
 import TutorialChat from '@/components/Student/TutorialChat.vue';
 import AssignmentPage from '@/components/Student/AssignmentPage.vue';
 import MeetingCard from "@/components/Student/MeetingCard.vue";
@@ -90,7 +90,7 @@ const routes = [
   { name: 'taskDetail', props: true, path: '/task/:taskId', component: TaskDetail,  },
   { name: 'MyCourses', path: '/my-courses', component: ClassroomList,  },
   { name: 'MyCourseDetail', props: true, path: '/my-course/:course_id', component: MyCourseDetail,  },
-  { name: 'CourseDetails', props: true, path: '/course/details/:id', component: CourseDetail,  },
+  { name: 'CourseDetails', props: true, path: '/course/details/:id', component: CourseView,  },
   { name: 'Events', path: '/events', component: EventList,  },
   { name: 'ToDoPage', path: '/todo', component: ToDoPage,  },
   { name: 'TimeTable', path: '/timetable', component: TimeTablePage,  },

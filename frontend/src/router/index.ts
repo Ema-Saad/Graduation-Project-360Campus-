@@ -19,7 +19,7 @@ import VerificationPage from '@/components/Student/VerificationPage.vue';
 import ResetPasswordPage from '@/components/Student/ResetPassword.vue';
 import CongratulationsPage from '@/components/Student/CongratulationsPage.vue';
 import ErrorPage from '@/components/Student/ErrorPage.vue';
-import ProfilePage from "@/components/Student/ProfilePage.vue";
+import ProfileView from "@/components/ProfileView.vue";
 import ClassroomList from '@/components/ClassroomList.vue';
 import ToDoPage from "@/components/Student/ToDoPage.vue";
 import ClassroomView from '@/components/ClassroomView.vue';
@@ -77,7 +77,7 @@ const routes = [
   // Student Routes
   { path: '/', redirect:'/home'},
   { name: 'Home', path: '/home', component: HomePage,  },
-  { name: 'ProfilePage', path: '/profile', component: ProfilePage,  },
+  { name: 'ProfileView', path: '/profile', component: ProfileView,  },
   { name: 'Login', path: '/login', component: LoginPage,  },
   { name: 'Verification', path: '/verification', component: VerificationPage,  },
   { name: 'ForgotPassword', path: '/forgot-password', component: ForgotPasswordPage,  },

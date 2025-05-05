@@ -5,7 +5,8 @@ from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from .models import *
 from main.models import *
-from django.utils.crypto import get_random_string
+from django.utils.crypto import get_random_string 
+from django.utils import timezone
 import zipfile
 import os
 from io import BytesIO
@@ -586,3 +587,112 @@ class MyClassTestCase(APITestCase):
         response = self.client.post(self.messages_url, {'content': 'Unauthorized message'}, format='json')
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data['detail'], 'You are not a participant in this course.')
+
+class EventTestCase(APITestCase):
+
+    def setUp(self):
+        self.college, _ = College.objects.get_or_create(
+            code='csit',
+            defaults={
+                'name': 'College of Science and Information Technology',
+                'description': 'CSIT description'
+            }
+        )
+
+        self.faculty, _ = Faculty.objects.get_or_create(
+            code='ENG',
+            defaults={
+                'name': 'Engineering',
+                'college': self.college,
+                'description': 'Engineering faculty'
+            }
+        )
+
+        # Professor
+        random_suffix = get_random_string(length=5)
+        self.professor = Professor.objects.create(
+            username=f'professor{random_suffix}',
+            email=f'professor{random_suffix}@example.com',
+            person_type='P',
+            faculty=self.faculty,
+            department='Engineering Department'
+        )
+
+        # Student
+        random_suffix = get_random_string(length=5)
+        self.student = Student.objects.create(
+            username=f'student{random_suffix}',
+            email=f'student{random_suffix}@example.com',
+            person_type='S',
+            faculty=self.faculty,
+            department='Engineering Department'
+        )
+
+        # Event
+        self.event = Event.objects.create(
+            title='AI for Good Summit 2024',
+            description='A summit on AI applications.',
+            date=timezone.now() + timezone.timedelta(days=7)  # Future date
+        )
+
+        # Token for professor
+        token = Token.objects.create(user=self.professor)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
+
+        self.events_url = reverse('professor:list_events')
+        self.register_url = reverse('professor:event_register', kwargs={'pk': self.event.pk})
+
+    def tearDown(self):
+        Event.objects.all().delete()
+        EventRegistration.objects.all().delete()
+        Professor.objects.all().delete()
+        Student.objects.all().delete()
+        get_user_model().objects.all().delete()
+        Faculty.objects.all().delete()
+        College.objects.all().delete()
+
+    def test_list_events_success(self):
+        response = self.client.get(self.events_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['title'], 'AI for Good Summit 2024')
+        self.assertFalse(response.data[0]['is_registered'])  # Not registered yet
+
+    def test_list_events_past_event(self):
+        past_event = Event.objects.create(
+            title='Past Event',
+            description='An old event.',
+            date=timezone.now() - timezone.timedelta(days=7)  # Past date
+        )
+        response = self.client.get(self.events_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)  # Only future event should appear
+        self.assertEqual(response.data[0]['title'], 'AI for Good Summit 2024')
+
+    def test_event_register_success(self):
+        response = self.client.post(self.register_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['detail'], 'Successfully registered for the event.')
+        self.assertTrue(EventRegistration.objects.filter(person=self.professor, event=self.event).exists())
+
+    def test_event_register_already_registered(self):
+        EventRegistration.objects.create(person=self.professor, event=self.event)
+        response = self.client.post(self.register_url)
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.data['detail'], 'Already registered for this event.')
+
+    def test_event_register_past_date(self):
+        past_event = Event.objects.create(
+            title='Past Event',
+            description='An old event.',
+            date=timezone.now() - timezone.timedelta(days=7)
+        )
+        past_register_url = reverse('professor:event_register', kwargs={'pk': past_event.pk})
+        response = self.client.post(past_register_url)
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.data['detail'], 'Event date has passed.')
+
+    def test_event_register_unauthorized(self):
+        self.client.credentials()  # Remove authentication
+        response = self.client.post(self.register_url)
+        self.assertEqual(response.status_code, 401)

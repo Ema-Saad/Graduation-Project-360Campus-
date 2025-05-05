@@ -7,6 +7,7 @@ from django.core.files.storage import FileSystemStorage
 import zipfile
 import os
 from django.conf import settings
+from django.utils import timezone
 from .models import *
 from main.serializers import *
 
@@ -534,3 +535,44 @@ def chat_messages(request, pk):
             'content': message.content,
             'sent_at': message.sent_at,
         }, status=status.HTTP_201_CREATED)
+        
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_events(request):
+    """
+    Retrieve a list of upcoming events.
+    """
+    today = timezone.now()
+    events = Event.objects.filter(date__gte=today).order_by('date')
+    response_data = [
+        {
+            'id': event.id,
+            'title': event.title,
+            'description': event.description,
+            'date': event.date,
+            'is_registered': EventRegistration.objects.filter(person=request.user, event=event).exists()
+        }
+        for event in events
+    ]
+    return Response(response_data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def event_register(req, pk):
+    """
+    Register a person (student, professor, TA, or Admin) for an event.
+    """
+    evt = get_object_or_404(Event, pk=pk)
+
+    # Check if the user is already registered
+    if EventRegistration.objects.filter(person=req.user, event=evt).exists():
+        return Response({'detail': 'Already registered for this event.'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+    today = timezone.now()
+    if today > evt.date:
+        return Response({'detail': 'Event date has passed.'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+    # Create registration for the person
+    EventRegistration.objects.create(event=evt, person=req.user)
+
+    return Response({'detail': 'Successfully registered for the event.'}, status=status.HTTP_200_OK)

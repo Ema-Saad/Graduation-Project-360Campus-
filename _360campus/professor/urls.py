@@ -20,6 +20,9 @@ urlpatterns = [
     path('class/<int:pk>/chatroom/', get_chatroom, name='get_chatroom'),
     path('class/<int:pk>/participants/', get_participants, name='get_participants'),
     path('class/<int:pk>/messages/',chat_messages, name='chat_messages'),
+    # New Event URLs
+    path('events/', list_events, name='list_events'),
+    path('events/<int:pk>/register/', event_register, name='event_register'),
     
     
 ]

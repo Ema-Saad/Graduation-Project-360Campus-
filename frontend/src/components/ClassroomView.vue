@@ -7,6 +7,11 @@
         <span class="course-code">Taught by {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}</span>
       </div>
       <img :src="bannerImage" alt="Course Banner" class="banner-image" />
+      <div v-if="$root.person_type === 'P'">
+        <button> Add new assignment </button>
+        <button> Add new meeting </button>
+        <button> Add new quiz </button>
+      </div>
     </div>
 
     <!-- Homework Section -->

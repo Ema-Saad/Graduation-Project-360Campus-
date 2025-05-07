@@ -206,7 +206,7 @@
   import profilePicture from '@/assets/profilepic.png';
 
   export default {
-    name: "ProfilePage",
+    name: "SettingsPage",
     data() {
       return {
         showInput: false,

@@ -24,7 +24,7 @@ import ClassroomList from '@/components/ClassroomList.vue';
 import ToDoPage from "@/components/Student/ToDoPage.vue";
 import ClassroomView from '@/components/ClassroomView.vue';
 import TaskView from '@/components/TaskView.vue';
-import SettingsSection from '@/components/Student/SettingsSection.vue';
+import SettingsPage from '@/components/SettingsPage.vue';
 import QuizPage from '@/components/Student/QuizPage.vue';
 import Timeline from "@/components/Student/Timeline.vue";
 import AssignmentNumberVue from '../components/Student/assignmentnumber.vue';
@@ -84,7 +84,7 @@ const routes = [
   { name: 'ResetPassword', path: '/reset-password', component: ResetPasswordPage,  },
   { name: 'Error', path: '/error', component: ErrorPage,  },
   { name: 'Timeline', path: '/timeline', component: Timeline,  },
-  { name: 'Settings', path: '/settings', component: SettingsSection,  },
+  { name: 'Settings', path: '/settings', component: SettingsPage,  },
   { name: 'CourseList', path: '/course/list', component: CourseList,  },
   { name: 'MyClass', path: '/myclass', component: ClassroomList,  },
   { name: 'taskDetail', props: true, path: '/task/:taskId', component: TaskView,  },

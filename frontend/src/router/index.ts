@@ -18,7 +18,7 @@ import ForgotPasswordPage from '@/components/Student/ForgotPasswordPage.vue';
 import VerificationPage from '@/components/Student/VerificationPage.vue';
 import ResetPasswordPage from '@/components/Student/ResetPassword.vue';
 import CongratulationsPage from '@/components/Student/CongratulationsPage.vue';
-import ErrorPage from '@/components/Student/ErrorPage.vue';
+import ErrorPage from '@/components/ErrorPage.vue';
 import ProfileView from "@/components/ProfileView.vue";
 import ClassroomList from '@/components/ClassroomList.vue';
 import ToDoPage from "@/components/Student/ToDoPage.vue";

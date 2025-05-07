@@ -1,8 +1,7 @@
 <template>
   <div id="app">
     <!-- Conditionally render the Navbar based on the route -->
-    <NavBarStudent v-if="!shouldHideLayout && !isDoctor" />
-    <NavBarDoctor v-if="!shouldHideLayout && isDoctor" /> <!-- Render NavBarDoctor for doctor routes -->
+    <NavBar v-if="!shouldHideLayout" />
     <!-- Main content area where routed components will be rendered -->
     <div class="main-content">
       <router-view />
@@ -17,8 +16,7 @@
 <script lang="ts">
 import { defineComponent, computed } from "vue";
 import { useRoute } from "vue-router";
-import NavBarStudent from "./components/Student/NavBar.vue";
-import NavBarDoctor from "./components/Doctor/NavBarDOC.vue";  // Import doctor's navbar
+import NavBar from "./components/NavBar.vue";
 import Footer from "./components/Student/FooterSection.vue";
 import FooterDOC from "./components/Doctor/FooterDOC.vue"; // Import doctor's footer
 
@@ -160,8 +158,7 @@ export default defineComponent({
   },
 
   components: {
-    NavBarStudent,
-    NavBarDoctor,
+    NavBar,
     Footer,
     FooterDOC,
   },

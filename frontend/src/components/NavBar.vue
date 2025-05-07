@@ -8,33 +8,33 @@
 
     <!-- Nav links (buttons) in the middle -->
     <div class="nav-links">
-      <router-link :to="'/'"
+      <router-link :to="{ name: 'Home' }"
                    @click="closeMobileMenu"
-                   :class="{ 'active-link': isActive('/') }">Home</router-link>
+                   :class="{ 'active-link': isActive('Home') }">Home</router-link>
 
-      <router-link :to="'/materials'"
+      <router-link :to="{ name: 'CourseList' }"
                    @click="closeMobileMenu"
-                   :class="{ 'active-link': isActive('/materials') }">Materials</router-link>
+                   :class="{ 'active-link': isActive('CourseList') }">Materials</router-link>
 
-      <router-link :to="'/myclass'"
+      <router-link :to="{ name: 'MyClass' }"
                    @click="closeMobileMenu"
-                   :class="{ 'active-link': isActive('/myclass') }">My Class</router-link>
+                   :class="{ 'active-link': isActive('MyClass') }">My Class</router-link>
 
-      <router-link :to="'/timeTable'"
+      <router-link :to="{ name: 'TimeTable' }"
                    @click="closeMobileMenu"
-                   :class="{ 'active-link': isActive('/timeTable') }">Time Table</router-link>
+                   :class="{ 'active-link': isActive('TimeTable') }">Time Table</router-link>
 
-      <router-link :to="'/events'"
+      <router-link :to="{ name: 'Events' }"
                    @click="closeMobileMenu"
-                   :class="{ 'active-link': isActive('/events') }">Events</router-link>
+                   :class="{ 'active-link': isActive('Events') }">Events</router-link>
 
-      <router-link :to="'/graduation'"
+      <router-link :to="{ name: 'GraduationProject' }"
                    @click="closeMobileMenu"
-                   :class="{ 'active-link': isActive('/graduation') }">Graduation Project</router-link>
+                   :class="{ 'active-link': isActive('GraduationProject') }">Graduation Project</router-link>
 
-      <router-link :to="'/map'"
+      <router-link :to="{ name: 'Map' }"
                    @click="closeMobileMenu"
-                   :class="{ 'active-link': isActive('/map') }">Map</router-link>
+                   :class="{ 'active-link': isActive('Map') }">Map</router-link>
     </div>
 
     <!-- Search bar and Profile button on the right -->
@@ -56,11 +56,6 @@
           <button @click="goTo('SettingsSection')">Settings</button>
           <button @click="logout">Logout</button> <!-- Logout button -->
         </div>
-
-      </div>
-
-      <div v-if="!this.$root.authtoken">
-        <button @click="goTo('Login')"> Login </button>
       </div>
     </div>
 
@@ -71,33 +66,33 @@
   <!-- Mobile Nav Links (visible on smaller screens) -->
   <div v-if="mobileMenuOpen" class="mobile-nav-dropdown">
     <div class="mobile-nav-links">
-      <router-link :to="'/'"
+      <router-link :to="{ name: 'Home' }"
                    @click="closeMobileMenu"
-                   :class="{ 'active-link': isActive('/') }">Home</router-link>
+                   :class="{ 'active-link': isActive('Home') }">Home</router-link>
 
-      <router-link :to="'/materials'"
+      <router-link :to="{ name: 'CourseList' }"
                    @click="closeMobileMenu"
-                   :class="{ 'active-link': isActive('/materials') }">Materials</router-link>
+                   :class="{ 'active-link': isActive('CourseList') }">Materials</router-link>
 
-      <router-link :to="'/myclass'"
+      <router-link :to="{ name: 'MyClass' }"
                    @click="closeMobileMenu"
-                   :class="{ 'active-link': isActive('/myclass') }">My Class</router-link>
+                   :class="{ 'active-link': isActive('MyClass') }">My Class</router-link>
 
-      <router-link :to="'/timeTable'"
+      <router-link :to="{ name: 'TimeTable' }"
                    @click="closeMobileMenu"
-                   :class="{ 'active-link': isActive('/timeTable') }">Time Table</router-link>
+                   :class="{ 'active-link': isActive('TimeTable') }">Time Table</router-link>
 
-      <router-link :to="'/events'"
+      <router-link :to="{ name: 'Events' }"
                    @click="closeMobileMenu"
-                   :class="{ 'active-link': isActive('/events') }">Events</router-link>
+                   :class="{ 'active-link': isActive('Events') }">Events</router-link>
 
-      <router-link :to="'/graduation'"
+      <router-link :to="{ name: 'GraduationProject' }"
                    @click="closeMobileMenu"
-                   :class="{ 'active-link': isActive('/graduation') }">Graduation Project</router-link>
+                   :class="{ 'active-link': isActive('GraduationProject') }">Graduation Project</router-link>
 
-      <router-link :to="'/map'"
+      <router-link :to="{ name: 'Map' }"
                    @click="closeMobileMenu"
-                   :class="{ 'active-link': isActive('/map') }">Map</router-link>
+                   :class="{ 'active-link': isActive('Map') }">Map</router-link>
     </div>
   </div>
 </template>

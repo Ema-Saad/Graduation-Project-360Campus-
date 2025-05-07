@@ -8,8 +8,7 @@
     </div>
 
     <!-- Conditionally render the Footer based on the route -->
-    <Footer v-if="!shouldHideLayout && !isDoctor" /> <!-- Render Footer for student routes -->
-    <FooterDOC v-if="!shouldHideLayout && isDoctor" /> <!-- Render FooterDOC for doctor routes -->
+    <Footer v-if="!shouldHideLayout" /> <!-- Render Footer for student routes -->
   </div>
 </template>
 
@@ -17,8 +16,7 @@
 import { defineComponent, computed } from "vue";
 import { useRoute } from "vue-router";
 import NavBar from "./components/NavBar.vue";
-import Footer from "./components/Student/FooterSection.vue";
-import FooterDOC from "./components/Doctor/FooterDOC.vue"; // Import doctor's footer
+import Footer from "./components/FooterSection.vue";
 
 export default defineComponent({
   name: "App",
@@ -160,7 +158,6 @@ export default defineComponent({
   components: {
     NavBar,
     Footer,
-    FooterDOC,
   },
   setup() {
     const route = useRoute();
@@ -184,12 +181,8 @@ export default defineComponent({
     // Compute whether to hide the navbar and footer based on the current route
     const shouldHideLayout = computed(() => pagesWithoutLayout.has(route.path));
 
-    // Logic to choose the correct navbar based on the route
-    const isDoctor = computed(() => route.path.startsWith('/doctor'));
-
     return {
       shouldHideLayout,
-      isDoctor
     };
   },
 });

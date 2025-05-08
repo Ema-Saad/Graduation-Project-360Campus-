@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 // Student
-import HomePage from '../components/Student/HomePage.vue';
+import HomePage from '../components/HomePage.vue';
 import CourseList from '../components/CourseList.vue';
 import MyClassPage from '../components/Student/MyClassPage.vue';
 import TimeTablePage from '../components/Student/TimeTablePage.vue';

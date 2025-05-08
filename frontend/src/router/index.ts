@@ -4,7 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomePage from '../components/HomePage.vue';
 import CourseList from '../components/CourseList.vue';
 import MyClassPage from '../components/Student/MyClassPage.vue';
-import TimeTablePage from '../components/Student/TimeTablePage.vue';
+import TimetableView from '../components/TimeTablePage.vue';
 import EventList from '../components/EventList.vue';
 import GraduationProjectList from '../components/GraduationProjectList.vue';
 import MapView from '../components/MapView.vue';
@@ -93,7 +93,7 @@ const routes = [
   { name: 'CourseDetails', props: true, path: '/course/details/:id', component: CourseView,  },
   { name: 'Events', path: '/events', component: EventList,  },
   { name: 'ToDoPage', path: '/todo', component: ToDoPage,  },
-  { name: 'TimeTable', path: '/timetable', component: TimeTablePage,  },
+  { name: 'TimeTable', path: '/timetable', component: TimetableView,  },
   { name: 'GraduationProject', path: '/graduation', component: GraduationProjectList,  },
   { name: 'ProjectDetails', props: true, path: '/project/:id', component: GraduationProjectView,  },
   { name: 'Map', path: '/map', component: MapView,  },

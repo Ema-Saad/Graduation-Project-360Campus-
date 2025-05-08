@@ -16,7 +16,7 @@ import GraduationProjectView from '@/components/GraduationProjectView.vue';
 import LoginPage from '@/components/LoginPage.vue';
 import ForgotPasswordPage from '@/components/ForgotPasswordPage.vue';
 import VerificationPage from '@/components/Student/VerificationPage.vue';
-import ResetPasswordPage from '@/components/Student/ResetPassword.vue';
+import ResetPasswordPage from '@/components/ResetPasswordPage.vue';
 import CongratulationsPage from '@/components/CongratulationsPage.vue';
 import ErrorPage from '@/components/ErrorPage.vue';
 import ProfileView from "@/components/ProfileView.vue";

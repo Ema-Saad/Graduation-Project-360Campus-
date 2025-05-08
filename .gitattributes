@@ -1,1 +1,2 @@
+*.ppt filter=lfs diff=lfs merge=lfs -text
 _360campus/media/Intelligent[[:space:]]Systems/Lecture_1.ppt filter=lfs diff=lfs merge=lfs -text

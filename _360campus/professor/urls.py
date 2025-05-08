@@ -23,6 +23,9 @@ urlpatterns = [
     # New Event URLs
     path('events/', list_events, name='list_events'),
     path('events/<int:pk>/register/', event_register, name='event_register'),
-    
-    
+    # Graduation Projects URLs
+    path('projects/', list_projects, name='list_projects'),
+    path('projects/add/', add_project, name='add_project'),
+    path('projects/<int:pk>/delete/', delete_project, name='delete_project'),
 ]
+    

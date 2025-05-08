@@ -696,3 +696,151 @@ class EventTestCase(APITestCase):
         self.client.credentials()  # Remove authentication
         response = self.client.post(self.register_url)
         self.assertEqual(response.status_code, 401)
+        
+class GraduationProjectTestCase(APITestCase):
+
+    def setUp(self):
+        self.college, _ = College.objects.get_or_create(
+            code='csit',
+            defaults={
+                'name': 'College of Science and Information Technology',
+                'description': 'CSIT description'
+            }
+        )
+
+        self.faculty, _ = Faculty.objects.get_or_create(
+            code='ENG',
+            defaults={
+                'name': 'Engineering',
+                'college': self.college,
+                'description': 'Engineering faculty'
+            }
+        )
+
+        # Professor
+        random_suffix = get_random_string(length=5)
+        self.professor = Professor.objects.create(
+            username=f'professor{random_suffix}',
+            email=f'professor{random_suffix}@example.com',
+            person_type='P',
+            faculty=self.faculty,
+            department='Engineering Department'
+        )
+
+        # Token for professor
+        token = Token.objects.create(user=self.professor)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
+
+        self.projects_url = reverse('professor:list_projects')
+        self.add_project_url = reverse('professor:add_project')
+        self.delete_project_url = lambda pk: reverse('professor:delete_project', kwargs={'pk': pk})
+
+    def tearDown(self):
+        GraduationProject.objects.all().delete()
+        Professor.objects.all().delete()
+        Faculty.objects.all().delete()
+        College.objects.all().delete()
+        get_user_model().objects.all().delete()
+
+    def test_list_projects_empty(self):
+        response = self.client.get(self.projects_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['empty'], True)
+        self.assertEqual(len(response.data['projects']), 0)
+
+    def test_list_projects_success(self):
+        GraduationProject.objects.create(
+            name='Campus-360',
+            year=2025,
+            faculty=self.faculty,
+            description='Major: Computer Science with Artificial Intelligence',
+            supervisor=self.professor,
+            rate=3.75
+        )
+        response = self.client.get(self.projects_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['empty'], False)
+        self.assertEqual(len(response.data['projects']), 1)
+        self.assertEqual(response.data['projects'][0]['name'], 'Campus-360')
+        self.assertEqual(response.data['projects'][0]['rate'], 3.75)
+
+    def test_add_project_success(self):
+        data = {
+            'name': 'New Project',
+            'year': 2025,
+            'faculty': self.faculty.code,
+            'description': 'A new graduation project',
+            'rate': 3.90
+        }
+        response = self.client.post(self.add_project_url, data, format='json')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['detail'], 'Project added successfully.')
+        self.assertEqual(GraduationProject.objects.count(), 1)
+        project = GraduationProject.objects.first()
+        self.assertEqual(project.name, 'New Project')
+        self.assertEqual(project.rate, 3.90)
+
+    def test_add_project_missing_fields(self):
+        data = {'name': 'Incomplete Project'}
+        response = self.client.post(self.add_project_url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['detail'], 'All fields except rate are required.')
+
+    def test_add_project_invalid_rate_range(self):
+        data = {
+            'name': 'Invalid Rate Project',
+            'year': 2025,
+            'faculty': self.faculty.code,
+            'description': 'Invalid rate',
+            'rate': 4.50
+        }
+        response = self.client.post(self.add_project_url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['detail'], 'Rate must be between 0.00 and 4.00.')
+
+    def test_add_project_negative_rate(self):
+        data = {
+            'name': 'Negative Rate Project',
+            'year': 2025,
+            'faculty': self.faculty.code,
+            'description': 'Negative rate',
+            'rate': -1.00
+        }
+        response = self.client.post(self.add_project_url, data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['detail'], 'Rate must be between 0.00 and 4.00.')
+
+    def test_add_project_success(self):
+        data = {
+            'name': 'New Project',
+            'year': 2025,
+            'faculty': self.faculty.code,
+            'description': 'A new graduation project',
+            'rate': 3.90
+        }
+        response = self.client.post(self.add_project_url, data, format='json')
+        print("Response data:", response.data)  # Debug print
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['detail'], 'Project added successfully.')
+        self.assertEqual(GraduationProject.objects.count(), 1)
+        project = GraduationProject.objects.first()
+        self.assertEqual(project.name, 'New Project')
+        self.assertEqual(project.rate, 3.90)
+
+    def test_delete_project_unauthorized(self):
+        other_professor = Professor.objects.create(
+            username='other_prof',
+            email='other@example.com',
+            person_type='P',
+            faculty=self.faculty,
+            department='Engineering Department'
+        )
+        project = GraduationProject.objects.create(
+            name='Other Project',
+            year=2025,
+            faculty=self.faculty,
+            description='Other project',
+            supervisor=other_professor
+        )
+        response = self.client.delete(self.delete_project_url(project.id))
+        self.assertEqual(response.status_code, 404)

@@ -576,3 +576,77 @@ def event_register(req, pk):
     EventRegistration.objects.create(event=evt, person=req.user)
 
     return Response({'detail': 'Successfully registered for the event.'}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_projects(request):
+    """
+    List all graduation projects supervised by the authenticated professor.
+    """
+    projects = GraduationProject.objects.filter(supervisor=request.user)
+    data = [
+        {
+            'id': project.id,
+            'name': project.name,
+            'year': project.year,
+            'faculty': project.faculty.name,
+            'description': project.description,
+            'rate': float(project.rate),  # Represents the grade (0.00 to 4.00)
+        }
+        for project in projects
+    ]
+    return Response({'projects': data, 'empty': len(data) == 0}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_project(request):
+    """
+    Add a new graduation project for the authenticated professor.
+    """
+    name = request.data.get('name')
+    year = request.data.get('year')
+    faculty_code = request.data.get('faculty')
+    description = request.data.get('description')
+    rate = request.data.get('rate')
+
+    if not all([name, year, faculty_code, description]):
+        return Response({'detail': 'All fields except rate are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        faculty = Faculty.objects.get(code=faculty_code)
+    except Faculty.DoesNotExist:
+        return Response({'detail': 'Invalid faculty code.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        year_value = int(year)  # Explicitly convert year to integer
+    except (ValueError, TypeError):
+        return Response({'detail': 'Year must be a valid integer.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        rate_value = float(rate) if rate else 0.00
+        if rate_value < 0.00 or rate_value > 4.00:
+            return Response({'detail': 'Rate must be between 0.00 and 4.00.'}, status=status.HTTP_400_BAD_REQUEST)
+    except (ValueError, TypeError):
+        return Response({'detail': 'Rate must be a valid number.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        project = GraduationProject.objects.create(
+            name=name,
+            year=year_value,
+            faculty=faculty,
+            description=description,
+            supervisor=request.user,
+            rate=rate_value
+        )
+        return Response({'detail': 'Project added successfully.', 'id': project.id}, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        return Response({'detail': f'Failed to create project: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_project(request, pk):
+    """
+    Delete a graduation project supervised by the authenticated professor.
+    """
+    project = get_object_or_404(GraduationProject, pk=pk, supervisor=request.user)
+    project.delete()
+    return Response({'detail': 'Project deleted successfully.'}, status=status.HTTP_200_OK)

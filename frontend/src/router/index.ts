@@ -11,7 +11,7 @@ import MapView from '../components/MapView.vue';
 import CourseView from '../components/CourseView.vue';
 import TutorialChat from '@/components/Student/TutorialChat.vue';
 import AssignmentPage from '@/components/Student/AssignmentPage.vue';
-import MeetingCard from "@/components/Student/MeetingCard.vue";
+import MeetingCard from "@/components/MeetingCard.vue";
 import GraduationProjectView from '@/components/GraduationProjectView.vue';
 import LoginPage from '@/components/LoginPage.vue';
 import ForgotPasswordPage from '@/components/ForgotPasswordPage.vue';

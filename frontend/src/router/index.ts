@@ -25,7 +25,7 @@ import ToDoPage from "@/components/Student/ToDoPage.vue";
 import ClassroomView from '@/components/ClassroomView.vue';
 import TaskView from '@/components/TaskView.vue';
 import SettingsPage from '@/components/SettingsPage.vue';
-import QuizPage from '@/components/Student/QuizPage.vue';
+import QuizView from '@/components/QuizView.vue';
 import Timeline from "@/components/Student/Timeline.vue";
 import AssignmentNumberVue from '../components/Student/assignmentnumber.vue';
 
@@ -101,7 +101,7 @@ const routes = [
   { name: 'AssignmentById', path: '/assignment/:id', component: AssignmentPage,  },
   { name: 'AssignmentByNumber', props: true, path: '/assignment/number/:assignmentNumber', component: AssignmentNumberVue,  },
   { name: 'Meeting', path: '/meeting/:id', component: MeetingCard,  },
-  { name: 'Quiz', props: true, path: '/quiz/:weekId', component: QuizPage,  },
+  { name: 'Quiz', props: true, path: '/quiz/:weekId', component: QuizView,  },
   { name: 'Congratulations', path: '/congratulations', component: CongratulationsPage,  },
 ];
 

@@ -15,7 +15,7 @@ import MeetingCard from "@/components/MeetingCard.vue";
 import GraduationProjectView from '@/components/GraduationProjectView.vue';
 import LoginPage from '@/components/LoginPage.vue';
 import ForgotPasswordPage from '@/components/ForgotPasswordPage.vue';
-import VerificationPage from '@/components/Student/VerificationPage.vue';
+import VerificationPage from '@/components/VerificationPage.vue';
 import ResetPasswordPage from '@/components/ResetPasswordPage.vue';
 import CongratulationsPage from '@/components/CongratulationsPage.vue';
 import ErrorPage from '@/components/ErrorPage.vue';

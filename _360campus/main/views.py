@@ -29,9 +29,25 @@ def event_list(req):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def registered_event_list(req):
-    registered_events = EventRegistration.objects.filter(student=req.user.student).values("event")
+    registered_events = EventRegistration.objects.filter(person=req.user).values("event")
 
     return Response(registered_events)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def event_register(req, pk):
+    evt = get_object_or_404(Event, pk=pk)
+
+    if EventRegistration.objects.filter(person=req.user, event=evt).exists():
+        return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+    today = timezone.now()
+    if today > evt.date:
+        return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+    EventRegistration.objects.create(event=evt, person=req.user)
+
+    return Response({})
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -110,23 +126,6 @@ def classroom_join(req, pk):
 
     Enrollment.objects.create(student=req.user.student, classroom=classroom)
     return Response(data={}, status=status.HTTP_200_OK)
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def event_register(req, pk):
-    evt = get_object_or_404(Event, pk=pk)
-
-    if EventRegistration.objects.filter(student=req.user.student, event=evt).exists():
-        return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-
-    today = timezone.now()
-    if today > evt.date:
-        return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-
-    # TODO: Ensure that req.user is a student
-    EventRegistration.objects.create(event=evt, student=req.user.student)
-
-    return Response(status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

@@ -97,13 +97,12 @@ class Event(models.Model):
 # EventRegistration Model
 class EventRegistration(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="registrations")
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="event_registrations")
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, related_name="event_registrations")
     registered_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = "Event Registration"
-        unique_together = ('event', 'student')
-
+        unique_together = ('event', 'person')
 
 class Semester(models.Model):
     SEMESTER_TYPE = [

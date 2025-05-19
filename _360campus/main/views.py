@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.parsers import MultiPartParser
+from rest_framework.parsers import MultiPartParser, JSONParser
 from rest_framework import status
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.http import HttpResponse
@@ -77,6 +77,7 @@ def course_list(req):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, IsProfessor])
+@parser_classes([JSONParser])
 def course_edit(req, pk):
     course = get_object_or_404(Course, pk=pk)
     course_serializer = CourseSerializer(instance=course, data=req.data)

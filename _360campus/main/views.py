@@ -10,6 +10,7 @@ from django.db.models import Q
 import os
 from .models import *
 from .serializers import *
+from .permissions import *
 
 
 @api_view(['GET'])
@@ -73,6 +74,19 @@ def course_list(req):
     serializer = CourseSerializer(courses, many=True)
 
     return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsProfessor])
+def course_edit(req, pk):
+    course = get_object_or_404(Course, pk=pk)
+    course_serializer = CourseSerializer(instance=course, data=req.data)
+
+    if not course_serializer.is_valid():
+        return Response(course_serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    course_serializer.save()
+
+    return Response(course_serializer.data)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

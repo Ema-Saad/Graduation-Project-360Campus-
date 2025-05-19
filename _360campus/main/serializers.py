@@ -22,6 +22,11 @@ class CourseSerializer(ModelSerializer):
         exclude = ['admin']
         depth = 1
 
+class CourseEditSerializer(ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ['title', 'description']
+
 class ClassroomViewSerializer(ModelSerializer):
     course = CourseSerializer(read_only=True)
 

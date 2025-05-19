@@ -17,6 +17,7 @@ urlpatterns = [
     path('api/course/<int:pk>', \
          RetrieveAPIView.as_view(queryset=Course.objects.all(), serializer_class=CourseSerializer), \
          name='course_view'),
+    path('api/course/<int:pk>/edit', course_edit, name='course_edit'),
     path('api/material/<int:pk>/', material_view, name='material_view'),
     path('api/course/<int:pk>/classroom', registered_classroom_view, name='classroom_view'),
     path('api/course/<int:pk>/classrooms', classroom_list, name='classroom_list'),

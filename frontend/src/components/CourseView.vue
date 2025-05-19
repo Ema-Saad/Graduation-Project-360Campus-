@@ -13,11 +13,16 @@
       </textarea>
       <br />
       <button @click="editCourse"> Save </button>
+      <button @click="course = copy_of_course; showCourseEditingWidgets = false">
+        Cancel
+      </button>
     </div>
 
     <span id="course-edit-controls" v-if="$root.person_kind === 'P' && !showCourseEditingWidgets">
-      <button> Create New Material </button>
-      <button @click="showCourseEditingWidgets = true"> Edit Course Information </button>
+      <button> Create New Week </button>
+      <button @click="copy_of_course = {...course}; showCourseEditingWidgets = true"> 
+        Edit Course Information 
+      </button>
       <button @click="deleteCourse"> Delete Course </button>
     </span>
 
@@ -29,13 +34,14 @@
         <template v-for="materialTypeArray in week" v-if="isDropdownOpen(week.id)" class="dropdown-menu">
           <div v-if="materialTypeArray.length > 0"> 
             <h3> {{ stringifyMaterialType(materialTypeArray[0].material_type) }} </h3>
+            <button> Add </button>
             <ul>
               <li v-for="materialInstance in materialTypeArray">
                 <a class="dropdown-item" @click="download(materialInstance.id)"> 
                   {{ materialInstance.name }} 
                 </a>
 
-                <span id="material-edit-controls" v-if="$root.person_kind === 'P'">
+                <span class="material-edit-controls" v-if="$root.person_kind === 'P'">
                   <button @click="editMaterial(materialInstance.id)">
                     Edit
                   </button>
@@ -68,6 +74,7 @@
     data() {
       return {
         course: null,
+        copy_of_course: null,
         weeks: [],
         openDropdowns: [], // Store open dropdown states
         showCourseEditingWidgets: false,
@@ -104,8 +111,20 @@
       });
     },
     methods: {
-      editCourse() {
-        this.showCourseEditingWidgets = false;
+      async editCourse() {
+        try {
+          let editing_result = await this.$root.request_api_endpoint(
+            `api/course/${this.course.id}/edit`, 
+            'post', 
+            JSON.stringify(this.course),
+            { 'Content-Type': 'application/json' }
+          );
+
+          this.showCourseEditingWidgets = false;
+        } catch (err) {
+          console.log(err);
+
+        }
       },
       deleteCourse() {
         this.$router.push({ name: 'CourseList' });

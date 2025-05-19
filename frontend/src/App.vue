@@ -88,12 +88,12 @@ export default defineComponent({
         throw err;
       }
     },
-    async request_api_endpoint(endpoint: string, method: string, data?: any): Promise<any> {
+    async request_api_endpoint(endpoint: string, method: string, data?: any, headers?: any): Promise<any> {
       try {
         const url = `http://127.0.0.1:8000/${endpoint}`;
         
         // Only add the Authorization header if authtoken is non-empty.
-        const headers: HeadersInit = {};
+        headers = headers === null ? {} : {...headers};
         if (this.authtoken) {
           headers["Authorization"] = `Token ${this.authtoken}`;
         }

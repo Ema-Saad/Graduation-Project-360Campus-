@@ -22,6 +22,7 @@ urlpatterns = [
     path('api/course/<int:pk>/classroom', registered_classroom_view, name='classroom_view'),
     path('api/course/<int:pk>/classrooms', classroom_list, name='classroom_list'),
     path('api/course/<int:pk>/materials', material_list, name='material_list'),
+    path('api/course/<int:pk>/material/add', material_create, name='material_create'),
     path('api/course/<int:pk>/classroom/join', classroom_join, name='classroom_join'),
     path('api/course/<int:pk>/classroom/tasks', task_list, name='task_list'),
     path('api/course/<int:pk>/classroom/assignments', assignment_list, name='assignment_list'),

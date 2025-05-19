@@ -166,6 +166,20 @@ def material_view(req, pk):
         'Content-Disposition': f'attachment; filename="{filename}"'
     })
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsProfessor])
+@parser_classes([MultiPartParser])
+def material_create(req, pk):
+    req.data['course'] = pk
+    serializer = MaterialSerializer(data=req.data)
+
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    serializer.save()
+
+    return Response(serializer.data)
+
 @api_view(['GET'])
 def graduation_project_list(request):
     """

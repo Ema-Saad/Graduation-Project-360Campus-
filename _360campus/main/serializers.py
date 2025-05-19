@@ -1,3 +1,4 @@
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from .models import *
 
@@ -7,6 +8,8 @@ class EventSerializer(ModelSerializer):
         fields = '__all__'
 
 class MaterialSerializer(ModelSerializer):
+    course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all())
+
     class Meta:
         model = Material
         fields = '__all__'

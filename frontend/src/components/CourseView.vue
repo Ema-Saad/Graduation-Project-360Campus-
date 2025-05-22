@@ -1,6 +1,12 @@
 <template>
   <div v-if="course">
 
+    <material-create 
+      v-if="showMaterialCreateDialog" 
+      :course_id="course.id"
+      @close="showMaterialCreateDialog = false"
+    />
+
     <div v-if="!showCourseEditingWidgets">
       <h1 id="course-title">{{ course.title }}</h1>
       <p id="course-description">{{ course.description }}</p>
@@ -19,7 +25,7 @@
     </div>
 
     <span id="course-edit-controls" v-if="$root.person_kind === 'P' && !showCourseEditingWidgets">
-      <button> Create New Week </button>
+      <button @click="showMaterialCreateDialog = true"> Add New Material </button>
       <button @click="copy_of_course = {...course}; showCourseEditingWidgets = true"> 
         Edit Course Information 
       </button>
@@ -34,7 +40,6 @@
         <template v-for="materialTypeArray in week" v-if="isDropdownOpen(week.id)" class="dropdown-menu">
           <div v-if="materialTypeArray.length > 0"> 
             <h3> {{ stringifyMaterialType(materialTypeArray[0].material_type) }} </h3>
-            <button> Add </button>
             <ul>
               <li v-for="materialInstance in materialTypeArray">
                 <a class="dropdown-item" @click="download(materialInstance.id)"> 
@@ -61,6 +66,8 @@
 
 <script>
 
+  import MaterialCreate from './MaterialCreate.vue';
+
   /* Materials Type */
   const LAB = 'l';
   const LECTURE = 'L';
@@ -71,6 +78,9 @@
 
   export default {
     props: ['id'],
+    components: {
+      MaterialCreate,
+    },
     data() {
       return {
         course: null,
@@ -78,6 +88,7 @@
         weeks: [],
         openDropdowns: [], // Store open dropdown states
         showCourseEditingWidgets: false,
+        showMaterialCreateDialog: false,
       };
     },
     beforeMount() {

@@ -166,12 +166,17 @@ def material_view(req, pk):
         'Content-Disposition': f'attachment; filename="{filename}"'
     })
 
-@api_view(['POST'])
+@api_view(['POST', 'PUT'])
 @permission_classes([IsAuthenticated, IsProfessor])
 @parser_classes([MultiPartParser])
-def material_create(req, pk):
-    req.data['course'] = pk
-    serializer = MaterialSerializer(data=req.data)
+def material_create_modify(req, pk):
+    if req.method == 'POST': # create new material
+        req.data['course'] = pk
+        serializer = MaterialSerializer(data=req.data)
+
+    elif req.method == 'PUT': # edit existing material
+        material = get_object_or_404(Material, pk=pk)
+        serializer = MaterialSerializer(instance=material, data=req.data, partial=True)
 
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)

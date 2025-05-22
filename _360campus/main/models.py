@@ -172,11 +172,11 @@ class Material(models.Model):
         ('o', 'Other'),
     ]
 
-    course =models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
     name = models.CharField(max_length=500)
     file = models.FileField(upload_to=get_materials_file_location)
     week = models.IntegerField(null=True, blank=True)
-    material_type = models.CharField(max_length=1, choices=MATERIAL_TYPE, default='o')
+    kind = models.CharField(max_length=1, choices=MATERIAL_TYPE)
 
     def __str__(self):
         return f'{self.course.title} - {self.name}'

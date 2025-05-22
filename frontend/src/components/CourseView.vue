@@ -39,7 +39,7 @@
 
         <template v-for="materialTypeArray in week" v-if="isDropdownOpen(week.id)" class="dropdown-menu">
           <div v-if="materialTypeArray.length > 0"> 
-            <h3> {{ stringifyMaterialType(materialTypeArray[0].material_type) }} </h3>
+            <h3> {{ stringifyMaterialType(materialTypeArray[0].kind) }} </h3>
             <ul>
               <li v-for="materialInstance in materialTypeArray">
                 <a class="dropdown-item" @click="download(materialInstance.id)"> 
@@ -106,11 +106,11 @@
         for (let i = 1; i <= max_weeks; i ++) {
           this.weeks[i] = {
             id: i,
-            labs: data.filter((d) => d.week === i && d.material_type === LAB),
-            lectures: data.filter((d) => d.week === i && d.material_type === LECTURE),
-            tutorials: data.filter((d) => d.week === i && d.material_type === TUTORIAL),
-            assignments: data.filter((d) => d.week === i && d.material_type === ASSIGNMENT),
-            problem_sheets: data.filter((d) => d.week === i && d.material_type === PROBLEM_SHEET),
+            labs: data.filter((d) => d.week === i && d.kind === LAB),
+            lectures: data.filter((d) => d.week === i && d.kind === LECTURE),
+            tutorials: data.filter((d) => d.week === i && d.kind === TUTORIAL),
+            assignments: data.filter((d) => d.week === i && d.kind === ASSIGNMENT),
+            problem_sheets: data.filter((d) => d.week === i && d.kind === PROBLEM_SHEET),
           };
         }
 

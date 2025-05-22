@@ -111,6 +111,7 @@
             tutorials: data.filter((d) => d.week === i && d.kind === TUTORIAL),
             assignments: data.filter((d) => d.week === i && d.kind === ASSIGNMENT),
             problem_sheets: data.filter((d) => d.week === i && d.kind === PROBLEM_SHEET),
+            others: data.filter((d) => d.week === i && d.kind === OTHER),
           };
         }
 
@@ -118,7 +119,8 @@
                                               d.lectures.length + 
                                               d.tutorials.length + 
                                               d.assignments.length + 
-                                              d.problem_sheets.length > 0);
+                                              d.problem_sheets.length +
+                                              d.others.length > 0);
       });
     },
     methods: {

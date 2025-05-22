@@ -106,7 +106,7 @@ export default defineComponent({
 
         if (data && method.toLowerCase() === 'get') {
           options.body = new URLSearchParams(data);
-        } else if (data && method.toLowerCase() === 'post') {
+        } else if (data) {
           options.body = data;
         }
         const response = await fetch(url, options);

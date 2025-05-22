@@ -1,7 +1,7 @@
 <template>
   <dialog ref="dialog">
     <form method="dialog" @submit="submit" >
-      <input ref="name" type="textbox" placeholder="Name" />
+      <input v-model="material.name" type="textbox" placeholder="Name" />
 
       <br />
 
@@ -12,7 +12,7 @@
 
       <label> Kind </label>
 
-      <select ref="kind">
+      <select v-model="material.kind">
         <option value="l">Lab</option>
         <option value="L">Lecture</option>
         <option value="t">Tutorial</option>
@@ -23,7 +23,7 @@
 
       <br />
 
-      <input ref="week" type="number" placeholder="Week" />
+      <input v-model="material.week" type="number" placeholder="Week" />
 
       <br />
 
@@ -36,27 +36,47 @@
 <script>
 
   export default {
-    props: ['course_id'],
+    props: ['course_id', 'instance'],
+
+    data() {
+      return {
+        method: 'post',
+        url: `api/course/${this.course_id}/material/add`,
+        material: {
+          name: '',
+          kind: 'o',
+          week: 0,
+        },
+      };
+    },
+
+    beforeMount() {
+      if (this.instance) {
+        this.url = `api/material/${this.instance.id}/edit`;
+        this.method = 'put';
+        this.material = this.instance;
+      }
+    },
 
     mounted() {
       this.$refs.dialog.showModal();
-
     },
 
     methods: {
       async submit() {
         try {
           let data = new FormData();
-          data.append('name', this.$refs.name.value);
-          data.append('week', this.$refs.week.value);
-          data.append('kind', this.$refs.kind.value);
-          data.append('file', this.$refs.file.files[0]); 
+          data.append('name', this.material.name);
+          data.append('week', this.material.week);
+          data.append('kind', this.material.kind);
 
-          let material_create = await this.$root.request_api_endpoint(
-            `api/course/${this.course_id}/material/add`,
-            'post',
-            data,
-          );
+          let file = this.$refs.file.files[0];
+
+          if (file)
+            data.append('file', file); 
+
+          let { url, method } = this;
+          let material_create = await this.$root.request_api_endpoint(url, method, data);
 
         } catch (err) {
 

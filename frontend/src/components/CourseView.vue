@@ -1,11 +1,12 @@
 <template>
-  <div v-if="course">
+  <material-create 
+    v-if="showMaterialCreateDialog" 
+    :course_id="course.id"
+    :instance="toBeEditedMaterial"
+    @close="showMaterialCreateDialog = false; toBeEditedMaterial = null"
+  />
 
-    <material-create 
-      v-if="showMaterialCreateDialog" 
-      :course_id="course.id"
-      @close="showMaterialCreateDialog = false"
-    />
+  <div v-if="course">
 
     <div v-if="!showCourseEditingWidgets">
       <h1 id="course-title">{{ course.title }}</h1>
@@ -47,7 +48,7 @@
                 </a>
 
                 <span class="material-edit-controls" v-if="$root.person_kind === 'P'">
-                  <button @click="editMaterial(materialInstance.id)">
+                  <button @click="toBeEditedMaterial = materialInstance; showMaterialCreateDialog = true">
                     Edit
                   </button>
 
@@ -89,6 +90,7 @@
         openDropdowns: [], // Store open dropdown states
         showCourseEditingWidgets: false,
         showMaterialCreateDialog: false,
+        toBeEditedMaterial: null,
       };
     },
     beforeMount() {
@@ -141,8 +143,6 @@
       },
       deleteCourse() {
         this.$router.push({ name: 'CourseList' });
-      },
-      editMaterial(materialId) {
       },
       deleteMaterial(materialId) {
       },

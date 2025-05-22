@@ -185,6 +185,15 @@ def material_create_modify(req, pk):
 
     return Response(serializer.data)
 
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsProfessor])
+def material_delete(req, pk):
+    material = get_object_or_404(Material, pk=pk)
+    material.file.delete()
+    material.delete()
+
+    return Response({})
+
 @api_view(['GET'])
 def graduation_project_list(request):
     """

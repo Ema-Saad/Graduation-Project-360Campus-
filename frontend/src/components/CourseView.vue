@@ -52,7 +52,7 @@
                     Edit
                   </button>
 
-                  <button @click="deleteMaterial(materialInstance.id)">
+                  <button @click="deleteMaterial(materialInstance)">
                     Delete
                   </button>
                 </span>
@@ -144,7 +144,13 @@
       deleteCourse() {
         this.$router.push({ name: 'CourseList' });
       },
-      deleteMaterial(materialId) {
+      async deleteMaterial(material) {
+        try {
+          await this.$root.request_api_endpoint(`api/material/${material.id}/delete`, 'delete');
+
+        } catch (err) {
+
+        }
       },
       stringifyMaterialType(type) {
         switch (type) {

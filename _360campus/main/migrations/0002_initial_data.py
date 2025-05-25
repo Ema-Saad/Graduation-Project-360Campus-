@@ -62,6 +62,13 @@ professors = [
     {'faculty_id': 'csit-bif', 'username': 'csit_bif_prof4', 'first_name': 'Test', 'last_name': 'Prof16', 'email': 'csit_bif_prof4@example.com'},
 ]
 
+students = [
+    {'faculty_id': 'csit-csc', 'username': 'student1', 'first_name': 'John', 'last_name': 'Doe', 'email': 'student1@example.com', 'password': make_password('test') },
+    {'faculty_id': 'csit-cnc', 'username': 'student2', 'first_name': 'Ahmed', 'last_name': 'AbdelHamed', 'email': 'student2@example.com', 'password': make_password('test') },
+    {'faculty_id': 'csit-aid', 'username': 'student3', 'first_name': 'Nour', 'last_name': 'Ismaeel', 'email': 'student3@example.com', 'password': make_password('test') },
+    {'faculty_id': 'csit-bif', 'username': 'student4', 'first_name': 'Akrem', 'last_name': 'Tawheed', 'email': 'student4@example.com', 'password': make_password('test') },
+]
+
 courses = [
     {'title': 'Fundamentals of Programming', 'college_id': 'csit', 'level': 1, 'semester_kind': 'F'},
     {'title': 'Data Structures and Algorithms', 'college_id': 'csit', 'level': 1, 'semester_kind': 'S'},
@@ -99,6 +106,7 @@ class Migration(migrations.Migration):
         migrations.RunPython(partial(create_initial_data, model='Professor', data=professors)),
         migrations.RunPython(partial(create_initial_data, model='Course', data=courses)),
         migrations.RunPython(partial(create_initial_data, model='Semester', data=semesters)),
+        migrations.RunPython(partial(create_initial_data, model='Student', data=students)),
         migrations.RunPython(setup_admin),
         migrations.RunPython(setup_professors),
     ]

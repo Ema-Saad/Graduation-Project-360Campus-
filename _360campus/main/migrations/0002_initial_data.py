@@ -19,6 +19,13 @@ def setup_admin(apps, schema_editor):
         adm.is_staff = adm.is_superuser = True
         adm.save()
 
+def setup_professors(apps, schema_editor):
+    Professor = apps.get_model('main', 'Professor')
+
+    for prof in Professor.objects.all():
+        prof.password = make_password('test')
+        prof.save()
+
 colleges = [
     {'code': 'csit', 'name': 'Computer Science and Information Technology Program', 'description': 'desc.'},
     {'code': 'foe', 'name': 'Faculty of Engineering', 'description': 'desc.'},
@@ -93,4 +100,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(partial(create_initial_data, model='Course', data=courses)),
         migrations.RunPython(partial(create_initial_data, model='Semester', data=semesters)),
         migrations.RunPython(setup_admin),
+        migrations.RunPython(setup_professors),
     ]

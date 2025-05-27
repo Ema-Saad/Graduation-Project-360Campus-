@@ -94,13 +94,17 @@ def course_edit(req, pk):
 def registered_classroom_view(req, pk):
     current_semester = Semester.objects.last()
 
-    if not Enrollment.objects.filter(classroom__semester=current_semester, \
+    if req.user.person_type == 'S' and not Enrollment.objects.filter(classroom__semester=current_semester, \
                                      classroom__course_id=pk, \
                                      student=req.user.student).exists():
-        return Response(status=status.HTTP_403_FORBIDDEN)
+        return Response({}, status=status.HTTP_403_FORBIDDEN)
 
     classroom = Classroom.objects.get(course_id=pk, \
                                       semester=current_semester)
+
+    if req.user.person_type == 'P' and classroom.instructor != req.user.professor:
+        return Response({}, status=status.HTTP_403_FORBIDDEN)
+
     serializer = ClassroomViewSerializer(classroom)
 
     return Response(serializer.data)
@@ -234,13 +238,16 @@ def graduation_project_detail(request, project_id):
 def task_list(req, pk):
     current_semester = Semester.objects.last()
 
-    if not Enrollment.objects.filter(student=req.user.student, \
+    if req.user.person_type == 'S' and not Enrollment.objects.filter(student=req.user.student, \
                                      classroom__course_id=pk, \
                                      classroom__semester=current_semester).exists():
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        return Response({}, status=status.HTTP_401_UNAUTHORIZED)
 
     classroom = get_object_or_404(Classroom, semester=current_semester, \
                                   course_id=pk)
+
+    if req.user.person_type == 'P' and classroom.instructor != req.user.professor:
+        return Response({}, status=status.HTTP_401_UNAUTHORIZED)
 
     # filter out assignments, since they're treated differently
     # and there's a API for them anyways

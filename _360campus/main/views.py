@@ -308,6 +308,26 @@ def assignment_view(req, assignment_pk):
                                                             assignment=assignment).exists()
     return Response(data)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsProfessor])
+@parser_classes([JSONParser])
+def assignment_create(req, pk):
+    current_semester = Semester.objects.last()
+    classroom = get_object_or_404(Classroom, semester=current_semester, course_id=pk)
+
+    if classroom.instructor != req.user.professor:
+        return Response({}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    data = {'classroom': pk, **req.data}
+    serializer = AssignmentSerializer(data=data)
+
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    serializer.save()
+
+    return Response({})
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def assignment_submission_view(req, pk):

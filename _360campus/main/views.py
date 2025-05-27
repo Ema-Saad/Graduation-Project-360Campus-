@@ -109,8 +109,13 @@ def registered_classroom_view(req, pk):
 @permission_classes([IsAuthenticated])
 def registered_classroom_list(req):
     current_semester = Semester.objects.last()
-    classrooms = Classroom.objects.filter(enrollment__student=req.user.student, \
-                                          semester=current_semester)
+    if req.user.person_type == 'S':
+        classrooms = Classroom.objects.filter(enrollment__student=req.user.student, \
+                                              semester=current_semester)
+    elif req.user.person_type == 'P':
+        classrooms = Classroom.objects.filter(instructor=req.user.professor, \
+                                              semester=current_semester)
+
     serializer = ClassroomViewSerializer(classrooms, many=True)
 
     return Response(serializer.data)

@@ -1,4 +1,11 @@
 <template>
+
+  <AssignmentCreate
+    :course_id="course_id"
+    v-if="showAssignmentCreateDialog"
+    @close="showAssignmentCreate = false"
+  />
+
   <div v-if="classroom" class="page">
     <!-- Top Banner -->
     <div class="top-banner">
@@ -7,8 +14,10 @@
         <span class="course-code">Taught by {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}</span>
       </div>
       <img :src="bannerImage" alt="Course Banner" class="banner-image" />
-      <div v-if="$root.person_type === 'P'">
-        <button> Add new assignment </button>
+      <div v-if="$root.person_kind === 'P'">
+        <button @click="showAssignmentCreateDialog = true"> 
+          Add new assignment 
+        </button>
         <button> Add new meeting </button>
         <button> Add new quiz </button>
       </div>
@@ -45,11 +54,13 @@
 
 
 <script>
-    import bannerImage from "@/assets/pexels-photo.png";
+  import bannerImage from "@/assets/pexels-photo.png";
   import week1Image from "@/assets/pexels-photo.png";
   import week2Image from "@/assets/pexels-photo.png";
   import week3Image from "@/assets/pexels-photo.png";
   import week4Image from "@/assets/pexels-photo.png";
+
+  import AssignmentCreate from "./AssignmentCreate.vue";
   export default {
     data() {
       return {
@@ -57,7 +68,11 @@
         tasks: [],
         classroom: null,
         homeworkCount: 2, // Dynamic count for homework (this can be changed based on real data)
+        showAssignmentCreateDialog: false,
       };
+    },
+    components: {
+      AssignmentCreate,
     },
     props: ['course_id'],
     beforeMount() {

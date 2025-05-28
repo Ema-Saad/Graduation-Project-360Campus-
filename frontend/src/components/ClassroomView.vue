@@ -6,6 +6,12 @@
     @close="showAssignmentCreate = false"
   />
 
+  <OnlineMeetingCreate
+    :course_id="course_id"
+    v-if="showOnlineMeetingCreateDialog"
+    @close="showOnlineMeetingCreateDialog = false"
+  />
+
   <div v-if="classroom" class="page">
     <!-- Top Banner -->
     <div class="top-banner">
@@ -18,7 +24,9 @@
         <button @click="showAssignmentCreateDialog = true"> 
           Add new assignment 
         </button>
-        <button> Add new meeting </button>
+        <button @click="showOnlineMeetingCreateDialog = true"> 
+          Add new meeting 
+        </button>
         <button> Add new quiz </button>
       </div>
     </div>
@@ -61,6 +69,8 @@
   import week4Image from "@/assets/pexels-photo.png";
 
   import AssignmentCreate from "./AssignmentCreate.vue";
+  import OnlineMeetingCreate from "./OnlineMeetingCreate.vue";
+
   export default {
     data() {
       return {
@@ -69,10 +79,12 @@
         classroom: null,
         homeworkCount: 2, // Dynamic count for homework (this can be changed based on real data)
         showAssignmentCreateDialog: false,
+        showOnlineMeetingCreateDialog: false,
       };
     },
     components: {
       AssignmentCreate,
+      OnlineMeetingCreate,
     },
     props: ['course_id'],
     async beforeMount() {

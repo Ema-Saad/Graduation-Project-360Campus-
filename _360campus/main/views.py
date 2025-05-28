@@ -261,13 +261,17 @@ def task_list(req, pk):
 def assignment_list(req, pk):
     current_semester = Semester.objects.last()
 
-    if not Enrollment.objects.filter(student=req.user.student, \
+    if req.user.person_type == 'S' and not Enrollment.objects.filter(student=req.user.student, \
                                      classroom__course_id=pk, \
                                      classroom__semester=current_semester).exists():
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        return Response({}, status=status.HTTP_401_UNAUTHORIZED)
 
-    assignments = Assignment.objects.filter(task_ptr__classroom__course_id=pk, \
-                                            task_ptr__classroom__semester=current_semester)
+    classroom = get_object_or_404(Classroom, course_id=pk, semester=current_semester)
+
+    if req.user.person_type == 'P' and classroom.instructor != req.user.professor:
+        return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+
+    assignments = classroom.task_set.filter(kind='a')
     serializer = AssignmentSerializer(assignments, many=True)
 
     return Response(serializer.data)

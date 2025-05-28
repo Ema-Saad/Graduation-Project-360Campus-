@@ -146,8 +146,6 @@
       };
 
       let get_page_link = (d, ...other) => {
-        console.log(d);
-
         if (d.kind === TYPE_ONLINE_MEETING)
           return { name: 'Meeting', params: { id: d.id } };
         else
@@ -218,7 +216,7 @@
 
             const MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
 
-            let is_missing = (d) => Date.now() > d.deadline;
+            let is_missing = (d) => d.deadline && Date.now() > d.deadline;
             let is_due_this_week = (d) => !is_missing(d) && d.deadline - Date.now() <= 7 * MILLISECONDS_IN_DAY;
             let is_due_next_week = (d) => !is_missing(d) && !is_due_this_week(d) && d.deadline - Date.now() <= 14 * MILLISECONDS_IN_DAY;
             let is_due_later = (d) => !is_missing(d) && d.deadline - Date.now() > 14 * MILLISECONDS_IN_DAY;
@@ -257,6 +255,11 @@
           "May", "Jun", "Jul", "Aug",
           "Sep", "Oct", "Nov", "Dec",
         ];
+
+        if (!date) {
+          return "No Due Date";
+
+        }
 
         let hour = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
         if (Date.now() > date) {

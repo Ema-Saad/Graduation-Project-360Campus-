@@ -20,6 +20,9 @@
       <br />
 
       <input type="Submit" value="Create" />
+      <button @click.prevent="$refs.dialog.close()">
+        Cancel
+      </button>
     </form>
   </dialog>
 </template>

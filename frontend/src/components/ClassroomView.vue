@@ -38,7 +38,7 @@
       <div id="task-list">
           <div class="task-item" v-for="task in tasks">
             <div class="task-icon">
-              <span class="fas fa-file-alt"></span>
+              <span class="fas" :class="[getIcon(task)]"></span>
             </div>
               
             <router-link class="task" :to="{ name: 'taskDetail', params: { taskId: task.id } }">
@@ -75,21 +75,27 @@
       AssignmentCreate,
     },
     props: ['course_id'],
-    beforeMount() {
-      let classroom_promise = this.$root.request_api_endpoint(`api/course/${this.course_id}/classroom`, 'get', null);
-      let tasks_promise = this.$root.request_api_endpoint(`api/course/${this.course_id}/classroom/tasks`, 'get', null);
+    async beforeMount() {
+      this.classroom = await this.$root.request_api_endpoint(`api/course/${this.course_id}/classroom`, 'get', null);
+      let tasks = await this.$root.request_api_endpoint(`api/course/${this.course_id}/classroom/tasks`, 'get', null);
+      let assignments = await this.$root.request_api_endpoint(`api/course/${this.course_id}/classroom/assignments`, 'get', null);
 
-      classroom_promise.then((data) => {
-        this.classroom = data;
-      });
+      let normalise_date = (d) => ({ ...d, time: d.time ? new Date(d.time) : null });
 
-      tasks_promise.then((data) => {
-        this.tasks = data.map((d) => ({ ...d, time: d.time ? new Date(d.time) : null }));
-      });
+      this.tasks = [
+        ...tasks.map(normalise_date),
+        ...assignments.map(normalise_date)
+      ];
     },
     methods: {
+      getIcon(task) {
+        if (task.kind === 'o') {
+          return 'fa-video';
+        }
+
+        return 'fa-file-alt';
+      },
       computeTimeString(task) {
-        
         let date = task.time;
 
         const MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
@@ -102,6 +108,10 @@
           "May", "Jun", "Jul", "Aug",
           "Sep", "Oct", "Nov", "Dec",
         ];
+
+        if (!date) {
+          return "No Due Date";
+        }
 
         let hour = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
         if (Date.now() > date) {

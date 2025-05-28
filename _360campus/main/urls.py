@@ -30,6 +30,7 @@ urlpatterns = [
     path('api/course/<int:pk>/classroom/assignments', assignment_list, name='assignment_list'),
     path('api/course/<int:pk>/classroom/assignments/submitted', submitted_assignment_list, name='assignment_list'),
     path('api/course/<int:pk>/classroom/assignments/add', assignment_create, name='assginemnt_create'),
+    path('api/course/<int:pk>/classroom/online-meeting/add', online_meeting_create_modify, name='online_meeting_create_modify'),
 
     #Event
     path('api/events', event_list, name='event_list'),

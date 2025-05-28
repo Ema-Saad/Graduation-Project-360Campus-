@@ -382,6 +382,24 @@ def assignment_unsubmit(req, pk):
 
     return Response({})
 
+@api_view(['POST', 'PATCH'])
+@permission_classes([IsAuthenticated, IsProfessor])
+@parser_classes([JSONParser])
+def online_meeting_create_modify(req, pk):
+    current_semester = Semester.objects.last()
+    classroom = get_object_or_404(Classroom, course_id=pk, semester=current_semester)
+
+    if classroom.instructor != req.user.professor:
+        return Response({}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    data = {'classroom': classroom.pk, 'kind': 'o', **req.data}
+    serializer = TaskViewSerializer(data=data)
+
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    serializer.save()
+    return Response({})
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

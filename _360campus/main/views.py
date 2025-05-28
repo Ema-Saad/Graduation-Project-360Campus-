@@ -322,7 +322,7 @@ def assignment_create(req, pk):
     if classroom.instructor != req.user.professor:
         return Response({}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-    data = {'classroom': pk, **req.data}
+    data = {'classroom': classroom.pk, **req.data}
     serializer = AssignmentSerializer(data=data)
 
     if not serializer.is_valid():

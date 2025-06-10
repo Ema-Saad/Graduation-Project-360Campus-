@@ -72,7 +72,6 @@
           let submission_promise = this.$root.request_api_endpoint(`api/assignment/${this.taskId}/submission`, 'get', null);
 
           submission_promise.then((data) => {
-            console.log(data);
             this.uploadedFileName = data.submitted_file;
             this.grade = data.grade;
           });
@@ -94,6 +93,10 @@
           "May", "Jun", "Jul", "Aug",
           "Sep", "Oct", "Nov", "Dec",
         ];
+
+        if (!date) {
+          return "No Due Date";
+        }
 
         let hour = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
         if (Date.now() > date) {

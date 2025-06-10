@@ -58,3 +58,8 @@ class CollegeSerializer(ModelSerializer):
         model = College
         fields = '__all__'
         depth = 1
+
+class SchedulePreferenceSerializer(ModelSerializer):
+    class Meta:
+        model = SchedulePreference
+        fields = '__all__'

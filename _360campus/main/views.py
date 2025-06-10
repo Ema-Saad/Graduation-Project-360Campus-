@@ -402,7 +402,17 @@ def online_meeting_create_modify(req, pk):
     return Response({})
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def assignment_comment(req, course_pk, assignment_pk):
-    pass
+@permission_classes([IsAuthenticated, IsProfessor])
+@parser_classes([JSONParser])
+def schedule_preference_create(req):
+    data = [{'professor': req.user.professor.pk, **data} for data in req.data]
+    serializer = SchedulePreferenceSerializer(data=data, many=True)
+
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    # TODO: find a better way to do
+    SchedulePreference.objects.filter(professor=req.user.professor).delete()
+    serializer.save()
+    return Response({})
 

@@ -31,17 +31,15 @@ urlpatterns = [
     path('api/course/<int:pk>/classroom/assignments/submitted', submitted_assignment_list, name='assignment_list'),
     path('api/course/<int:pk>/classroom/assignments/add', assignment_create, name='assginemnt_create'),
     path('api/course/<int:pk>/classroom/online-meeting/add', online_meeting_create_modify, name='online_meeting_create_modify'),
-
-    #Event
     path('api/events', event_list, name='event_list'),
     path('api/events/registered', registered_event_list, name='registered_event_list'),
     path('api/event/<int:pk>/register', event_register, name='event_register'),
-    #Graduation Project
     path('api/graduation-projects/',graduation_project_list, name='graduation_project_list'),
     path('api/graduation-project/<int:project_id>/', graduation_project_detail, name = 'graduation_project_detail'),
     path('api/assignment/<int:assignment_pk>', assignment_view, name='assignment_view'),
     path('api/assignment/<int:pk>/submission', assignment_submission_view, name='assignment_submission_view'),
     path('api/assignment/<int:pk>/submit/<str:filename>', assignment_submit, name='assignment_submit'),
     path('api/assignment/<int:pk>/unsubmit', assignment_unsubmit, name='assignment_unsubmit'),
+    path('api/schedule/preference/create', schedule_preference_create),
 ]
 

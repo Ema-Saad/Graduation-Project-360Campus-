@@ -421,5 +421,5 @@ def schedule_preference_create(req):
 @parser_classes([JSONParser])
 def schedule_preference_list(req):
     data = get_list_or_404(SchedulePreference, professor=req.user.professor)
-    serializer = SchedulePreferenceSerializer(data, many=True)
+    serializer = SchedulePreferenceViewSerializer(data, many=True)
     return Response(serializer.data)

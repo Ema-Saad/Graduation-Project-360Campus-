@@ -63,3 +63,8 @@ class SchedulePreferenceSerializer(ModelSerializer):
     class Meta:
         model = SchedulePreference
         fields = '__all__'
+
+class SchedulePreferenceViewSerializer(ModelSerializer):
+    class Meta:
+        model = SchedulePreference
+        fields = ['slot', 'day']

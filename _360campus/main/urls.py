@@ -41,5 +41,6 @@ urlpatterns = [
     path('api/assignment/<int:pk>/submit/<str:filename>', assignment_submit, name='assignment_submit'),
     path('api/assignment/<int:pk>/unsubmit', assignment_unsubmit, name='assignment_unsubmit'),
     path('api/schedule/preference/create', schedule_preference_create),
+    path('api/schedule/preference/list', schedule_preference_list),
 ]
 

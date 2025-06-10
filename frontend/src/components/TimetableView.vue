@@ -1,4 +1,9 @@
 <template>
+  <SchedulePreferenceDialog
+    v-if="$root.person_kind === 'P' && showSchedulePreferenceDialog"
+    @close="showSchedulePreferenceDialog = false"
+  />
+
   <div class="timetable-container">
     <!-- Filters Section -->
     <div class="filter-section">
@@ -35,6 +40,10 @@
           <option value="Spring">Spring</option>
         </select>
       </div>
+
+      <button v-if="$root.person_kind === 'P'" @click="showSchedulePreferenceDialog = true">
+        Update Schdule Preferences        
+      </button>
     </div>
 
     <!-- Display Dynamic Title based on Filters -->
@@ -64,7 +73,11 @@
 </template>
 
 <script>
+  import SchedulePreferenceDialog from './SchedulePreferenceDialog.vue'
   export default {
+    components: {
+      SchedulePreferenceDialog,
+    },
     data() {
       return {
         selectedFaculty: "",
@@ -74,6 +87,7 @@
         isLoading: false, // To manage loading state
         timetableExists: null, // Tracks if the timetable exists or not
         downloadButtonLabel: "Download selected timetable image",
+        showSchedulePreferenceDialog: false,
       };
     },
     watch: {

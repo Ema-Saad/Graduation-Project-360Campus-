@@ -274,3 +274,22 @@ class AssignmentSubmission(models.Model):
     submitted_file = models.FileField(blank=True, null=True)
     grade = models.IntegerField(blank=True, null=True)
 
+class SchedulePreference(models.Model):
+    DAYS = [
+        (0, "Sunday"),
+        (1, "Monday"),
+        (2, "Tuesday"),
+        (3, "Wedensday"),
+        (4, "Thursday"),
+    ]
+
+    SLOTS = [
+        (i, f'Period {1 + i // 2} Half {1 + i % 2}') for i in range(8)
+    ]
+
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
+    day = models.IntegerField(choices=DAYS)
+    slot = models.IntegerField(choices=SLOTS)
+
+    def __str__(self):
+        return f'{self.professor}: {self.day}, {self.slot}'

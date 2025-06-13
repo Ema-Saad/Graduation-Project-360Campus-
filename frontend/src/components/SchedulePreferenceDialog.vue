@@ -3,11 +3,13 @@
     <form method="method" @submit="submit">
       <table>
         <thead>
-          <th> Day </th>
-          <th> First Period </th>
-          <th> Second Period </th>
-          <th> Thrid Period </th>
-          <th> Fouth Period </th>
+          <tr>
+            <th> Day </th>
+            <th> First Period </th>
+            <th> Second Period </th>
+            <th> Thrid Period </th>
+            <th> Fouth Period </th>
+          </tr>
         </thead>
         <tbody>
           <tr v-for="day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu']">

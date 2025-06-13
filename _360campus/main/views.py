@@ -423,3 +423,37 @@ def schedule_preference_list(req):
     data = get_list_or_404(SchedulePreference, professor=req.user.professor)
     serializer = SchedulePreferenceViewSerializer(data, many=True)
     return Response(serializer.data)
+
+# TODO: protect this API endpoint
+@api_view(['GET'])
+def schedule_preference_dump(req):
+    data = []
+    professors = Professor.objects.all()
+
+    for professor in professors:
+        DAYS = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wedensday",
+            "Thursday",
+        ]
+
+        availability = {}
+
+        for preference in SchedulePreference.objects.filter(professor=professor):
+            day = DAYS[preference.day]
+            if day not in availability:
+                availability[day] = [preference.slot]
+            else:
+                availability[day].append(preference.slot)
+
+        data.append({
+            'id': professor.id,
+            'name': f'{professor.first_name} {professor.last_name}',
+            'type': 'Professor',
+            'availability': availability,
+        })
+
+    return Response(data)
+

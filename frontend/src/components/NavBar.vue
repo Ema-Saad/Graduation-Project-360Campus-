@@ -52,7 +52,7 @@
         <div v-if="dropdownOpen" class="dropdown-menu">
           <h4>Mo'men Ali</h4>
           <!-- Profile and Settings buttons -->
-          <button @click="goTo('profile')">Profile</button>
+          <button @click="goTo('ProfileView')">Profile</button>
           <button @click="goTo('SettingsSection')">Settings</button>
           <button @click="logout">Logout</button> <!-- Logout button -->
         </div>

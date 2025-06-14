@@ -1,5 +1,5 @@
 <template>
-  <material-create 
+  <MaterialCreate
     v-if="showMaterialCreateDialog" 
     :course_id="course.id"
     :instance="toBeEditedMaterial"

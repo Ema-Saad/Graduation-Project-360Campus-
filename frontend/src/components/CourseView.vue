@@ -68,6 +68,7 @@
 <script>
 
   import MaterialCreate from './MaterialCreate.vue';
+  import { useGlobalStore } from '@/global_store.js'
 
   /* Materials Type */
   const LAB = 'l';
@@ -78,7 +79,7 @@
   const OTHER = 'o';
 
   export default {
-    props: ['id'],
+    props: ['courseId'],
     components: {
       MaterialCreate,
     },
@@ -93,15 +94,19 @@
         toBeEditedMaterial: null,
       };
     },
-    beforeMount() {
-      let course_promise = this.$root.request_api_endpoint(`api/course/${this.id}`, 'get', null);
-      let materials_promise = this.$root.request_api_endpoint(`api/course/${this.id}/materials`, 'get', null);
+    async beforeRouteEnter(to, from, next) {
+      let store = useGlobalStore()
 
-      course_promise.then((data) => {
-        this.course = data;
+      let course = await store.request_api_endpoint(`api/course/${to.params.courseId}`);
+      let materials = await store.request_api_endpoint(`api/course/${to.params.courseId}/materials`);
+
+      next(vm => {
+        vm.course = course
+        vm.setMaterials(materials)
       });
-
-      materials_promise.then((data) => {
+    },
+    methods: {
+      setMaterials(data) {
         let max_weeks = data.map((d) => d.week || -1).reduce((a, v) => Math.max(a, v));
         this.weeks = new Array(max_weeks);
 
@@ -123,9 +128,8 @@
                                               d.assignments.length + 
                                               d.problem_sheets.length +
                                               d.others.length > 0);
-      });
-    },
-    methods: {
+
+      },
       async editCourse() {
         try {
           let editing_result = await this.$root.request_api_endpoint(

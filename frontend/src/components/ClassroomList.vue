@@ -56,6 +56,8 @@
   import class2Image from '@/assets/pexels-photo.png';
   import class3Image from '@/assets/pexels-photo.png';
 
+  import { useGlobalStore } from '@/global_store.js'
+
   export default {
     name: 'ClassroomList',
     data() {
@@ -70,21 +72,18 @@
         classrooms_of_course: [],
       };
     },
-    beforeMount() {
-      let classes = this.$root.request_api_endpoint('api/registered_classrooms', 'get', null);
+    async beforeRouteEnter(to, from, next) {
+      const store = useGlobalStore()
 
-      classes.then((data) => {
-        this.registered_classes = data;
+      let registered_classes = await store.request_api_endpoint('api/registered_classrooms');
+      let registrable_classes = await store.request_api_endpoint('api/courses?list_registrable');
 
-        // after fetching registered classes, fetch all courses
-        return this.$root.request_api_endpoint('api/courses?list_registrable', 'get', null);
-      }).then((data) => {
-        // show only unenrolled courses
-        this.courses = data.filter((d) =>
-          this.registered_classes.find((e) => e.course.id === d.id) === undefined
+      next(vm => {
+        vm.registered_classes = registered_classes
+        vm.courses = registrable_classes.filter((d) =>
+          registered_classes.find((e) => e.course.id === d.id) === undefined
         );
       });
-
     },
     methods: {
       // Method to navigate to the To-Do page

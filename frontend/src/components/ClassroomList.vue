@@ -98,9 +98,6 @@
       goToToDoPage() {
         this.$router.push({ name: 'ToDoPage' }); // 'ToDoPage' should be the name of the route for the to-do list
       },
-      goToCourseDetail(courseId) {
-        this.$router.push({ name: 'MyCourseDetail', params: { id: courseId } });
-      },
       join() {
         let join_promise = this.$root.request_api_endpoint(`api/classroom/${this.enroll_in.classroom}/join`, 'post', null);
 

@@ -7,17 +7,6 @@
 
         <span class="footer-title">360Campus</span>
       </div>
-      <!-- Navigation Links -->
-      <div class="footer-column">
-        <h3 class="footer-heading">Navigation</h3>
-        <ul>
-          <li><router-link :to="{ name: 'Home' }">Home</router-link></li>
-          <li><router-link :to="{ name: 'CourseList' }">Materials</router-link></li>
-          <li><router-link :to="{ name: 'MyClass' }">My Courses</router-link></li>
-          <li><router-link :to="{ name: 'Events' }">Events</router-link></li>
-        </ul>
-      </div>
-
       <!-- Social Links -->
       <div class="footer-column">
         <h3 class="footer-heading">Social</h3>

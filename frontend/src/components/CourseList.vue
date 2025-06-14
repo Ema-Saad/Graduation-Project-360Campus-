@@ -39,7 +39,7 @@
       <h2 class="best-courses-title">Our Popular Courses</h2>
       <div class="course-list">
         <router-link v-for="course in popularCourses" :key="course.id"
-                     :to="{ name: 'CourseDetails', params: { id: course.id } }"
+                     :to="{ name: 'CourseView', params: { courseId: course.id } }"
                      class="course-item">
           <!--<div class="course-image">
             <img :src="course.imageUrl" alt="Course Image" />
@@ -58,7 +58,7 @@
       <div class="course-list">
         <!-- Course Item -->
         <router-link v-for="course in filteredCourses" :key="course.id"
-                     :to="{ name: 'CourseDetails', params: { id: course.id } }"
+                     :to="{ name: 'CourseView', params: { courseId: course.id } }"
                      class="course-item">
           <!--<div class="course-image">
             <img :src="course.imageUrl" alt="Course Image" />

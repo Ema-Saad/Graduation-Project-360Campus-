@@ -84,6 +84,8 @@
   import instructorIcon2 from '@/assets/doctor-img4.png'; // Icon for Dr. Ayman
   import instructorIcon3 from '@/assets/doctor-img4.png'; // Icon for Dr. Mostafa
 
+  import { useGlobalStore } from '@/global_store.js'
+
   export default {
     name: 'CourseList',
     data() {
@@ -99,16 +101,15 @@
         },
       };
     },
-    beforeMount() {
-      let colleges = this.$root.request_api_endpoint('api/colleges', 'get', null);
-      let courses = this.$root.request_api_endpoint('api/courses', 'get', null);
+    async beforeRouteEnter(to, from, next) {
+      const store = useGlobalStore()
 
-      colleges.then((data) => { 
-        this.colleges = data;
-      });
+      let colleges = await store.request_api_endpoint('api/colleges');
+      let courses = await store.request_api_endpoint('api/courses');
 
-      courses.then((data) => {
-        this.popularCourses = this.courses = data;
+      next(vm => {
+        vm.colleges = colleges;
+        vm.popularCourses = vm.courses = courses;
       });
 
     },

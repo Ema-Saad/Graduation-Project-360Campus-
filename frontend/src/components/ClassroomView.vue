@@ -37,7 +37,7 @@
         <div class="badge">{{ tasks.length }}</div> <!-- Bind the badge count here -->
         <h2 class="section-title">Required Homework</h2>
         <button class="todo-button">
-          <router-link :to="{ name: 'CourseDetails', params: { id: this.course_id } }">
+          <router-link :to="{ name: 'CourseView', params: { courseId } }">
             Materials
           </router-link>
         </button>
@@ -49,7 +49,7 @@
               <span class="fas" :class="[getIcon(task)]"></span>
             </div>
               
-            <router-link class="task" :to="{ name: 'taskDetail', params: { taskId: task.id } }">
+            <router-link class="task" :to="task.url">
               <span class="task-name"> {{ task.title }} </span>
             </router-link>
 
@@ -67,6 +67,8 @@
   import week2Image from "@/assets/pexels-photo.png";
   import week3Image from "@/assets/pexels-photo.png";
   import week4Image from "@/assets/pexels-photo.png";
+
+  import { useGlobalStore } from '@/global_store.js'
 
   import AssignmentCreate from "./AssignmentCreate.vue";
   import OnlineMeetingCreate from "./OnlineMeetingCreate.vue";
@@ -86,18 +88,37 @@
       AssignmentCreate,
       OnlineMeetingCreate,
     },
-    props: ['course_id'],
-    async beforeMount() {
-      this.classroom = await this.$root.request_api_endpoint(`api/course/${this.course_id}/classroom`, 'get', null);
-      let tasks = await this.$root.request_api_endpoint(`api/course/${this.course_id}/classroom/tasks`, 'get', null);
-      let assignments = await this.$root.request_api_endpoint(`api/course/${this.course_id}/classroom/assignments`, 'get', null);
+    props: ['courseId'],
+    async beforeRouteEnter(to, from, next) {
+      try {
+        const store = useGlobalStore()
 
-      let normalise_date = (d) => ({ ...d, time: d.time ? new Date(d.time) : null });
+        let classroom = await store.request_api_endpoint(`api/course/${to.params.courseId}/classroom`);
+        let tasks = await store.request_api_endpoint(`api/course/${to.params.courseId}/classroom/tasks`);
+        let assignments = await store.request_api_endpoint(`api/course/${to.params.courseId}/classroom/assignments`);
 
-      this.tasks = [
-        ...tasks.map(normalise_date),
-        ...assignments.map(normalise_date)
-      ];
+        let normalise = (d) => ({ 
+          ...d, 
+          time: d.time ? new Date(d.time) : null,
+          url: (() => {
+            if (d.kind === 'a') return { name: 'AssignmentView', params: { assignmentId: d.id } }
+            else if (d.kind === 'o') return { name: 'OnlineMeetingView', params: { onlineMeetingId: d.id } }
+            else if (d.kind === 'q') return {} // { 'name': 'QuizView', props: { quizId: d.id } }
+            else return { }
+          })(),
+        });
+
+        next(vm => {
+          vm.classroom = classroom
+          vm.tasks = [
+            ...tasks.map(normalise),
+            ...assignments.map(normalise)
+          ];
+        })
+      } catch (err) {
+
+      }
+
     },
     methods: {
       getIcon(task) {

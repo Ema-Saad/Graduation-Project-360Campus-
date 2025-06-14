@@ -39,7 +39,7 @@
     <div class="class-cards">
       <router-link v-for="classroom in registered_classes"
                    :key="classroom.id"
-                   :to="{ name: 'MyCourseDetail', params: { course_id: classroom.course.id } }"
+                   :to="{ name: 'ClassroomView', params: { courseId: classroom.course.id } }"
                    class="class-card">
 
         <h3>{{ classroom.course.title }}</h3>

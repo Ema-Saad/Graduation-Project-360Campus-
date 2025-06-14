@@ -15,143 +15,45 @@
 <script lang="ts">
 import { defineComponent, computed } from "vue";
 import { useRoute } from "vue-router";
+import { useGlobalStore } from '@/global_store.js';
 import NavBar from "./components/NavBar.vue";
 import Footer from "./components/FooterSection.vue";
 
 export default defineComponent({
   name: "App",
+
   data() {
+    const global_store = useGlobalStore();
+
     return {
-      authtoken: '',
-      person_kind: '',
+      person_kind: computed(() => global_store.userinfo.person_kind),
     }
   },
+
   async created() {
-    let part = document.cookie
-                      .split('; ')
-                      .filter((p) => p.startsWith('authtoken='))[0];
-
-    if (part) {
-      this.authtoken = part.split('=')[1];
-
-      const person_kind_response = await fetch('http://127.0.0.1:8000/api/role', {
-        headers: {
-          Authorization: `Token ${this.authtoken}`,
-        }
-      });
-
-      const response_text = await person_kind_response.text();
-      this.person_kind = response_text.substr(1, response_text.length - 2);
-    }
+    const global_store = useGlobalStore();
 
     this.$router.beforeEach((to, from) => {
-      if (to.name !== 'Login' && !this.authtoken) return { name: 'Login' };
+      if (to.name !== 'Login' && !global_store.is_authenticated) return { name: 'Login' };
       else return true;
     });
   },
+
   methods: {
     async download_file(endpoint) {
-      try {
-        if (!this.authtoken) {
-          throw new Error("Authentication required");
-        }
+      const global_store = useGlobalStore();
+      await global_store.download_file();
 
-        const url = `http://127.0.0.1:8000/${endpoint}`;
-        let options = {
-          method: 'get',
-          mode: 'cors',
-          headers: {
-            Authorization: `Token ${this.authtoken}`
-          }
-        };
-
-        let response = await fetch(url, options);
-        if (!response.ok)
-          throw new Error(await response.text());
-
-        let data = await response.blob();
-
-        console.log(response);
-
-        let filename = response.headers.get('Content-Disposition');
-        filename = filename.split(';')[1];
-        filename = filename.split('=')[1].replaceAll('\"', '');
-
-        let dummy_element = document.createElement('a');
-        dummy_element.href = window.URL.createObjectURL(data);
-        dummy_element.download = filename;
-        document.body.appendChild(dummy_element);
-        dummy_element.click();
-        dummy_element.remove();
-
-      } catch(err) {
-        throw err;
-      }
     },
     async request_api_endpoint(endpoint: string, method: string, data?: any, headers?: any): Promise<any> {
-      try {
-        const url = `http://127.0.0.1:8000/${endpoint}`;
-        
-        // Only add the Authorization header if authtoken is non-empty.
-        headers = headers === null ? {} : {...headers};
-        if (this.authtoken) {
-          headers["Authorization"] = `Token ${this.authtoken}`;
-        }
-        
-        const options: RequestInit = {
-          method: method,
-          mode: 'cors',
-          headers: headers,
-        };
+      const global_store = useGlobalStore();
+      return await global_store.request_api_endpoint(endpoint, method, data, headers);
 
-        if (data && method.toLowerCase() === 'get') {
-          options.body = new URLSearchParams(data);
-        } else if (data) {
-          options.body = data;
-        }
-        const response = await fetch(url, options);
-        
-        // Optionally check for errors before returning the JSON.
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(JSON.stringify(errorData));
-        }
-        
-        return await response.json();
-      } catch (err) {
-        throw err;
-      }
     },
     async login(username: string, password: string): Promise<boolean> {
-      try {
-        const response = await fetch('http://127.0.0.1:8000/api/auth/login', {
-          method: 'POST',
-          mode: 'cors',
-          body: new URLSearchParams({ username, password }),
-        });
+      const global_store = useGlobalStore();
+      return await global_store.login(username, password);
 
-        if (response.status === 200) {
-          const data = await response.json();
-          this.authtoken = data['token'];
-
-          document.cookie = `authtoken=${this.authtoken}`;
-
-          const person_kind_response = await fetch('http://127.0.0.1:8000/api/role', {
-            headers: {
-              Authorization: `Token ${this.authtoken}`,
-            }
-          });
-
-          const response_text = await person_kind_response.text();
-          this.person_kind = response_text.substr(1, response_text.length - 2);
-
-          return true;
-        } else {
-          return false;
-        }
-      } catch (err) {
-        throw err;
-      }
     }
   },
 

@@ -1,5 +1,6 @@
 // src/main.ts
 import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 import App from './App.vue';
 import router from './router'; // Ensure the router path is correct
 
@@ -16,9 +17,11 @@ import '@fortawesome/fontawesome-free/css/all.css';
 library.add(faChevronUp, faChevronDown, faFileAlt, faVideo);
 */
 
+const pinia = createPinia();
 const app = createApp(App);
 
 // Use the router
+app.use(pinia);
 app.use(router);
 
 // Register FontAwesome globally

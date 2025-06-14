@@ -50,7 +50,7 @@ const routes = [
   { name: 'EventList', path: '/event/list', component: EventList,  },
   { name: 'GraduationProjectList', path: '/graduation-project/list', component: GraduationProjectList,  },
   { name: 'GraduationProjectView', props: true, path: '/graduation-project/:graduationProjectId', component: GraduationProjectView, },
-  { name: 'OnlineMeetingView', path: '/meeting/:onlineMeetingId', component: MeetingCard,  },
+  { name: 'OnlineMeetingView', path: '/meeting/:onlineMeetingId', component: MeetingCard, props: true },
   { name: 'QuizView', props: true, path: '/quiz/:quizId', component: QuizView,  },
 ];
 

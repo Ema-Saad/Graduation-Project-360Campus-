@@ -16,7 +16,7 @@
                    @click="closeMobileMenu"
                    :class="{ 'active-link': isActive('CourseList') }">Materials</router-link>
 
-      <router-link :to="{ name: 'MyClass' }"
+      <router-link :to="{ name: 'ClassroomList' }"
                    @click="closeMobileMenu"
                    :class="{ 'active-link': isActive('MyClass') }">My Class</router-link>
 
@@ -24,11 +24,11 @@
                    @click="closeMobileMenu"
                    :class="{ 'active-link': isActive('TimeTable') }">Time Table</router-link>
 
-      <router-link :to="{ name: 'Events' }"
+      <router-link :to="{ name: 'EventList' }"
                    @click="closeMobileMenu"
                    :class="{ 'active-link': isActive('Events') }">Events</router-link>
 
-      <router-link :to="{ name: 'GraduationProject' }"
+      <router-link :to="{ name: 'GraduationProjectList' }"
                    @click="closeMobileMenu"
                    :class="{ 'active-link': isActive('GraduationProject') }">Graduation Project</router-link>
 
@@ -74,7 +74,7 @@
                    @click="closeMobileMenu"
                    :class="{ 'active-link': isActive('CourseList') }">Materials</router-link>
 
-      <router-link :to="{ name: 'MyClass' }"
+      <router-link :to="{ name: 'ClassroomList' }"
                    @click="closeMobileMenu"
                    :class="{ 'active-link': isActive('MyClass') }">My Class</router-link>
 
@@ -82,11 +82,11 @@
                    @click="closeMobileMenu"
                    :class="{ 'active-link': isActive('TimeTable') }">Time Table</router-link>
 
-      <router-link :to="{ name: 'Events' }"
+      <router-link :to="{ name: 'EventList' }"
                    @click="closeMobileMenu"
                    :class="{ 'active-link': isActive('Events') }">Events</router-link>
 
-      <router-link :to="{ name: 'GraduationProject' }"
+      <router-link :to="{ name: 'GraduationProjectList' }"
                    @click="closeMobileMenu"
                    :class="{ 'active-link': isActive('GraduationProject') }">Graduation Project</router-link>
 

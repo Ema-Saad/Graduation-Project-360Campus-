@@ -51,6 +51,9 @@
 </template>
 
 <script>
+
+  import { useGlobalStore } from '@/global_store.js'
+
   export default {
     data() {
       return {
@@ -61,27 +64,27 @@
         grade: null,
       };
     },
-    props: ['taskId'],
-    beforeMount() {
-      let assignment_promise = this.$root.request_api_endpoint(`api/assignment/${this.taskId}`, 'get', null);
+    props: ['assignmentId'],
+    async beforeRouteEnter(to, from, next) {
+      const store = useGlobalStore()
 
-      assignment_promise.then((data) => {
-        this.assignment = {...data, deadline: data.time ? new Date(data.time) : null };
+      let assignment = await store.request_api_endpoint(`api/assignment/${to.params.assignmentId}`);
+      let submission = !assignment.submitted ? 
+        null : await store.request_api_endpoint(`api/assignment/${to.params.assignmentId}/submission`)
+      assignment.classroom = await store.request_api_endpoint(`api/course/${assignment.classroom}/classroom`)
 
-        if (this.assignment.submitted) {
-          let submission_promise = this.$root.request_api_endpoint(`api/assignment/${this.taskId}/submission`, 'get', null);
-
-          submission_promise.then((data) => {
-            this.uploadedFileName = data.submitted_file;
-            this.grade = data.grade;
-          });
-        }
-        return this.$root.request_api_endpoint(`api/course/${this.assignment.classroom}/classroom`, 'get', null);
-      }).then((data) => {
-        this.assignment.classroom = data;
+      next(vm => {
+        vm.setAssignment(assignment, submission)
       });
     },
     methods: {
+      setAssignment(assignment, submission = null) {
+        this.assignment = assignment
+        if (submission) {
+          this.uploadedFileName = submission.submitted_file
+          this.grade = submission.grade
+        }
+      },
       computeDueString(date) {
         const MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
         const DAYS = [

@@ -302,14 +302,20 @@ def submitted_assignment_list(req, pk):
 def assignment_view(req, assignment_pk):
     assignment = get_object_or_404(Assignment, pk=assignment_pk)
 
-    if not Enrollment.objects.filter(student=req.user.student, \
+    if req.user.person_type == 'S' and not Enrollment.objects.filter(student=req.user.student, \
                                      classroom=assignment.classroom).exists():
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+
+    elif req.user.person_type == 'P' and req.user.professor != assignment.classroom.instructor:
+        return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+
 
     serializer = AssignmentSerializer(assignment)
     data = serializer.data
-    data['submitted'] = AssignmentSubmission.objects.filter(student=req.user.student, \
-                                                            assignment=assignment).exists()
+
+    if req.user.person_type == 'S':
+        data['submitted'] = AssignmentSubmission.objects.filter(student=req.user.student, \
+                                                                assignment=assignment).exists()
     return Response(data)
 
 @api_view(['POST'])

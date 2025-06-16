@@ -39,7 +39,12 @@
     <div v-if="filteredProjects.length > 0" class="filtered-projects">
       <h2 class="projects-title">Filtered Graduation Projects</h2>
       <div class="project-list">
-        <div v-for="project in filteredProjects" :key="project.id" @click="goToProject(project.id)" class="project-item">
+        <router-link 
+          v-for="project in filteredProjects" 
+          :key="project.id" 
+          :to="{ name: 'GraduationProjectView', params: { graduationProjectId: project.id } }" 
+          class="project-item"
+        >
           <div class="project-image">
             <img :src="project.imageUrl" alt="Project Image" />
             <div class="overlay">
@@ -62,7 +67,7 @@
             <span v-for="n in Math.floor(project.rate * 0.5)" :key="n" class="star">★</span>
             <button v-if="$root.person_kind === 'P'" class="remove-btn" @click.stop="removeProject(project.id)">Remove</button>
           </div>
-        </div>
+        </router-link>
       </div>
     </div>
 
@@ -119,16 +124,6 @@ export default {
           .sort((a, b) => a.rate - b.rate);
     })
   },
-  methods: {
-    updateFilter() {
-      // Since filtering is done locally via the computed property,
-      // no API call is needed here.
-      console.log("Filters updated:", this.filters);
-    },
-    goToProject(projectId) {
-      this.$router.push({ name: "ProjectDetails", params: { id: projectId } });
-    }
-  }
 };
 </script>
 

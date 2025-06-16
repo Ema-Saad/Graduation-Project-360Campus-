@@ -1,4 +1,10 @@
 <template>
+
+  <GraduationProjectCreate 
+    v-if="$root.person_kind === 'P' && showPopup" 
+      @closed="showPopup = false"
+  />
+
   <div class="projects-page">
     <div class="filter-section">
       <h2 class="filter-title">Filter</h2>
@@ -27,10 +33,6 @@
       <button v-if="$root.person_kind === 'P'" @click="showPopup = true" >
         Upload New Project
       </button>
-
-      <GraduationProjectCreate v-if="$root.person_kind === 'P' && showPopup" 
-          @closed="showPopup = false"/>
-
     </div>
 
     <!-- Conditionally render filtered projects if any filter is applied -->
@@ -53,11 +55,11 @@
               </div>
               <span class="instructor-name">{{ project.instructor }}</span>
             </div>
-            <div class="project-title">{{ project.title }}</div>
-            <p class="project-major">Majors: {{ project.major }}</p>
+            <div class="project-title">{{ project.name}}</div>
+            <p class="project-major">Majors: {{ project.faculty }}</p>
           </div>
           <div class="project-rating">
-            <span v-for="n in 5" :key="n" class="star">★</span>
+            <span v-for="n in Math.floor(project.rate * 0.5)" :key="n" class="star">★</span>
             <button v-if="$root.person_kind === 'P'" class="remove-btn" @click.stop="removeProject(project.id)">Remove</button>
           </div>
         </div>
@@ -74,6 +76,7 @@
 <script>
 
 import GraduationProjectCreate from './GraduationProjectCreate.vue'
+import { useGlobalStore } from '@/global_store.js'
 
 export default {
   name: "ProjectsPage",
@@ -101,14 +104,20 @@ export default {
       });
     },
   },
-  async mounted() {
-    // Fetch all projects once when the page loads
-    this.colleges = await this.$root.request_api_endpoint("api/colleges", "get", null);
-    this.projects = await this.$root.request_api_endpoint("api/graduation-projects/", "get", null);
+  async beforeRouteEnter(to, from, next) {
+    const store = useGlobalStore()
 
-    this.projects = this.projects
-        .map(d => ({ ...d, rate: parseFloat(d.rate) }))
-        .sort((a, b) => a.rate - b.rate);
+    let colleges = await store.request_api_endpoint("api/colleges");
+    let projects = await store.request_api_endpoint("api/graduation-projects/");
+
+    next(vm => {
+      vm.colleges = colleges
+      vm.projects = projects
+
+      vm.projects = vm.projects
+          .map(d => ({ ...d, rate: parseFloat(d.rate) }))
+          .sort((a, b) => a.rate - b.rate);
+    })
   },
   methods: {
     updateFilter() {

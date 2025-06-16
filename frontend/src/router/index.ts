@@ -21,7 +21,7 @@ import ProfileView from "@/components/ProfileView.vue";
 import ClassroomList from '@/components/ClassroomList.vue';
 import ToDoPage from "@/components/ToDoPage.vue";
 import ClassroomView from '@/components/ClassroomView.vue';
-import TaskView from '@/components/TaskView.vue';
+import AssignmentView from '@/components/AssignmentView.vue';
 import SettingsPage from '@/components/SettingsPage.vue';
 import QuizView from '@/components/QuizView.vue';
 
@@ -44,7 +44,7 @@ const routes = [
   { name: 'Congratulations', path: '/congratulations', component: CongratulationsPage,  },
   { name: 'CourseList', path: '/course/list', component: CourseList,  },
   { name: 'ClassroomList', path: '/classroom/list', component: ClassroomList,  },
-  { name: 'AssignmentView', props: true, path: '/assignment/:assignmentId', component: TaskView,  },
+  { name: 'AssignmentView', props: true, path: '/assignment/:assignmentId', component: AssignmentView,  },
   { name: 'ClassroomView', props: true, path: '/classroom/:courseId', component: ClassroomView, },
   { name: 'CourseView', props: true, path: '/course/:courseId', component: CourseView,  },
   { name: 'EventList', path: '/event/list', component: EventList,  },

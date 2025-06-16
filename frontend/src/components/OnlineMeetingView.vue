@@ -11,8 +11,10 @@
 </template>
 
 <script>
+
+  
+
   export default {
-    name: "MeetingCard",
   };
 </script>
 

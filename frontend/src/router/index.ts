@@ -9,7 +9,7 @@ import EventList from '../components/EventList.vue';
 import GraduationProjectList from '../components/GraduationProjectList.vue';
 import MapView from '../components/MapView.vue';
 import CourseView from '../components/CourseView.vue';
-import MeetingCard from "@/components/MeetingCard.vue";
+import OnlineMeetingView from "@/components/OnlineMeetingView.vue";
 import GraduationProjectView from '@/components/GraduationProjectView.vue';
 import LoginPage from '@/components/LoginPage.vue';
 import ForgotPasswordPage from '@/components/ForgotPasswordPage.vue';
@@ -50,7 +50,7 @@ const routes = [
   { name: 'EventList', path: '/event/list', component: EventList,  },
   { name: 'GraduationProjectList', path: '/graduation-project/list', component: GraduationProjectList,  },
   { name: 'GraduationProjectView', props: true, path: '/graduation-project/:graduationProjectId', component: GraduationProjectView, },
-  { name: 'OnlineMeetingView', path: '/meeting/:onlineMeetingId', component: MeetingCard, props: true },
+  { name: 'OnlineMeetingView', path: '/meeting/:onlineMeetingId', component: OnlineMeetingView, props: true },
   { name: 'QuizView', props: true, path: '/quiz/:quizId', component: QuizView,  },
 ];
 

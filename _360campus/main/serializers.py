@@ -48,6 +48,11 @@ class AssignmentSerializer(ModelSerializer):
         model = Assignment
         exclude = ['submissions']
 
+class AssignmentModifySerializer(ModelSerializer):
+    class Meta:
+        model = Assignment
+        fields = ['title', 'description', 'max_grade', 'time']
+
 class AssignmentSubmissionViewSerializer(ModelSerializer):
     class Meta:
         model = AssignmentSubmission

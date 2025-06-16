@@ -338,6 +338,23 @@ def assignment_create(req, pk):
 
     return Response({})
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsProfessor])
+@parser_classes([JSONParser])
+def assignment_modify(req, pk):
+    assignment = get_object_or_404(Assignment, pk=pk)
+
+    if req.user.professor != assignment.classroom.instructor:
+        return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+
+    serializer = AssignmentModifySerializer(assignment, data=req.data)
+
+    if not serializer.is_valid():
+        return Response({}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    serializer.save()
+    return Response(serializer.data)
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def assignment_submission_view(req, pk):
@@ -363,7 +380,7 @@ def assignment_submit(req, pk, filename):
                                      classroom=assignment.classroom).exists():
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-    if assignment.deadline and assignment.deadline < timezone.now():
+    if assignment.time and assignment.time < timezone.now():
         return Response({'reason': 'deadline passed'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
     assignment.submissions.add(req.user.student, through_defaults={'submitted_file': req.data.get('file')})

@@ -7,7 +7,6 @@
   />
 
   <div v-if="course">
-
     <div v-if="!showCourseEditingWidgets">
       <h1 id="course-title">{{ course.title }}</h1>
       <p id="course-description">{{ course.description }}</p>
@@ -107,7 +106,7 @@
     },
     methods: {
       setMaterials(data) {
-        let max_weeks = data.map((d) => d.week || -1).reduce((a, v) => Math.max(a, v));
+        let max_weeks = data.map((d) => d.week || -1).reduce((a, v) => Math.max(a, v), 0);
         this.weeks = new Array(max_weeks);
 
         for (let i = 1; i <= max_weeks; i ++) {

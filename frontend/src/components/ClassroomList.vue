@@ -30,9 +30,6 @@
 
         <button class="join-button" @click="join">Join</button>
       </div>
-      <div v-else-if="$root.person_kind === 'P'">
-        <span> Da fuck is supposed to be here ?! </span>
-      </div>
     </header>
 
     <!-- The class cards or any other content here -->

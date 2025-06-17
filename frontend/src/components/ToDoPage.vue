@@ -70,7 +70,7 @@
         </div>
         <div v-show="isSectionOpen(section)" class="task-list">
           <div v-for="task in tasks" :key="task.id" class="task-item">
-            <router-link :to="{ name: 'taskDetail', params: { taskId: task.id } }" class="task-link">
+            <router-link :to="{ name: 'AssignmentView', params: { assignmentId: task.id } }" class="task-link">
               <div class="task-icon">
                 <i class="fas fa-file-alt"></i>
               </div>

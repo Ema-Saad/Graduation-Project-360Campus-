@@ -10,24 +10,103 @@
         </div>
         <!-- Assignment text on the right -->
         <div class="overlay-content">
-          {{ assignment.title }} - {{ assignment.classroom.course.title }}
+          <router-link :to="{ name: 'ClassroomView', params: { courseId: assignment.classroom.course.id } }">
+            {{ assignment.classroom.course.title }}
+          </router-link>
+          
+          <br />
+
+          <span v-if="!showTitleControls">
+            {{ assignment.title }} 
+          </span>
+
+          <span v-if="$root.person_kind === 'P'">
+            <button
+              v-if="!showTitleControls"
+              @click="showTitleControls = true; copy = {...assignment}"
+            >
+              Edit
+            </button>
+            <span v-else>
+              <input v-model="assignment.title" type="text" />
+              <button @click="showTitleControls = false">
+                Save
+              </button>
+              <button @click="assignment = {...copy}; copy = null; showTitleControls = false">
+                Cancel
+              </button>
+            </span>
+          </span>
+
+          <br />
+
           Taught by {{ assignment.classroom.instructor.first_name }} {{ assignment.classroom.instructor.last_name }}
+
         </div>
       </div>
     </div>
 
     <div class="sections-container">
       <div class="left-section">
-        <p>
+        <p v-if="!showDescriptionTextbox">
           {{ this.assignment.description }}
         </p>
+
+        <span v-if="$root.person_kind === 'P'">
+          <button
+            v-if="!showDescriptionTextbox"
+            @click="showDescriptionTextbox = true; copy = {...assignment}"
+          > 
+            Edit
+          </button>
+          <span v-else>
+            <textarea 
+              v-if="showDescriptionTextbox"
+              v-model="assignment.description"
+            >
+            </textarea>
+
+            <button @click="showDescriptionTextbox = false">
+              Save
+            </button>
+
+            <button @click="assignment = {...copy}; copy = null; showDescriptionTextbox = false">
+              Cancel
+            </button>
+          </span>
+        </span>
       </div>
       <!-- Right Section -->
       <div class="right-section">
         <div class="deadline-section">
           <div class="left-info">
-            <p class="due-date">{{ computeDueString(this.assignment.deadline) }}</p>
-            <div v-if="assignment.deadline > Date.now()" class="buttons">
+            <p
+              v-if="!showDeadlineControls"
+              class="due-date"
+            >
+              {{ computeDueString(assignment.deadline) }}
+            </p>
+
+            <span v-if="$root.person_kind === 'P'">
+              <button
+                v-if="!showDeadlineControls"
+                @click="copy = {...assignment}; showDeadlineControls = true"
+              >
+                Edit
+              </button>
+              <span v-else>
+                <input ref="deadlineControl" type="datetime-local" />
+                <button 
+                  @click="assignment.deadline = new Date($refs.deadlineControl.value); showDeadlineControls = false">
+                  Save
+                </button>
+                <button @click="assignment = {...copy}; copy = null; showDeadlineControls = false">
+                  Cancel
+                </button>
+              </span>
+            </span>
+
+            <div v-if="$root.person_kind === 'S' && (!assignment.deadline || assignment.deadline > Date.now())" class="buttons">
               <input type="file" id="file-input" style="display:none;" @change="handleFileUpload" />
               <button @click="triggerFileInput" class="upload-button">Upload your Work</button>
               <button v-if="!assignment.submitted" @click="submit" class="submit-button">Submit</button>
@@ -36,13 +115,33 @@
 
           </div>
 
-          <div class="right-info">
-            <span v-if="assignment.submitted" class="status-assigned">Submitted</span>
-            <span v-else-if="assignment.deadline > Date.now()" class="status-assigned">Assigned</span>
-            <span v-else class="status-missed">Missed</span>
+          <div v-if="$root.person_kind === 'S'" class="right-info">
+            <span> {{ assignment.grade ?? "???" }} / {{ assignment.max_grade }} </span>
+            <span v-if="assignment.deadline">
+              <span v-if="assignment.submitted" class="status-assigned">Submitted</span>
+              <span v-else-if="assignment.deadline > Date.now()" class="status-assigned">Assigned</span>
+              <span v-else class="status-missed">Missed</span>
+            </span>
             <div v-if="uploadedFileName" class="uploaded-file">
               <p>Uploaded File: {{ uploadedFileName }}</p>
             </div>
+          </div>
+          <div v-else>
+            <span v-if="!showMaxGradeControls"> 
+              Grade: {{ assignment.max_grade }} 
+              <button @click="copy = {...assginment}; showMaxGradeControls = true">
+                Edit
+              </button>
+            </span>
+            <span v-else>
+              <input type="number" v-model="assignment.max_grade" />
+              <button @click="showMaxGradeControls = false">
+                Save
+              </button>
+              <button @click="assignment = {...copy}; copy = null; showMaxGradeControls = false">
+                Cancel
+              </button>
+            </span>
           </div>
        </div>
       </div>
@@ -58,24 +157,52 @@
     data() {
       return {
         assignment: null,
+        copy: null,
         selectedFile: null,  // Store the selected file
         uploaded: false,  // Track upload status
         uploadedFileName: "",  // Store the name of the uploaded file
         grade: null,
+        showDescriptionTextbox: false,
+        showTitleControls: false,
+        showDeadlineControls: false,
+        showMaxGradeControls: false,
       };
     },
     props: ['assignmentId'],
     async beforeRouteEnter(to, from, next) {
       const store = useGlobalStore()
 
-      let assignment = await store.request_api_endpoint(`api/assignment/${to.params.assignmentId}`);
+      let assignment = await store.request_api_endpoint(`api/assignment/${to.params.assignmentId}`)
+      assignment = {...assignment, deadline: assignment.time ? new Date(assignment.time) : null }
       let submission = !assignment.submitted ? 
         null : await store.request_api_endpoint(`api/assignment/${to.params.assignmentId}/submission`)
-      assignment.classroom = await store.request_api_endpoint(`api/course/${assignment.classroom}/classroom`)
 
       next(vm => {
         vm.setAssignment(assignment, submission)
       });
+    },
+    async beforeRouteLeave(to, from) {
+      if (this.$root.person_kind !== 'P') {
+        return true 
+      }
+      try {
+        const store = useGlobalStore()
+        let assignment = {
+          title: this.assignment.title,
+          description: this.assignment.description,
+          time: this.assignment.deadline,
+          max_grade: this.assignment.max_grade,
+        }
+        await store.request_api_endpoint(
+          `api/assignment/${this.assignment.id}/modify`,
+          'post',
+          JSON.stringify(assignment),
+          { 'Content-Type': 'application/json' },
+        )
+      } catch (err) {
+        return false;
+      }
+
     },
     methods: {
       setAssignment(assignment, submission = null) {
@@ -123,26 +250,23 @@
         document.getElementById("file-input").click();  // Click the hidden input
       },
 
-      submit() {
+      async submit() {
+        const store = useGlobalStore()
         if (!this.selectedFile) return;
 
         let data = new FormData();
         data.append('file', this.selectedFile);
 
-        let submit_promise = this.$root.request_api_endpoint(`api/assignment/${this.taskId}/submit/${this.selectedFile.name}`, 'post', data);
-
-        submit_promise
-          .then((_) => this.$root.request_api_endpoint(`api/assignment/${this.taskId}`, 'get', null))
-          .then((data) => {
-            this.assignment = {...data, deadline: data.deadline ? new Date(data.deadline) : null };
-          });
+        let submit = await store.request_api_endpoint(`api/assignment/${this.assignmentId}/submit/${this.selectedFile.name}`, 'post', data);
+        this.assignment = await store.request_api_endpoint(`api/assignment/${this.assignmentId}`)
+        this.assignment.deadline = this.assignment.deadline ? new Date(this.assignment.deadline) : null
       },
 
       unsubmit() {
-        let unsubmit_promise = this.$root.request_api_endpoint(`api/assignment/${this.taskId}/unsubmit`, 'post', null);
+        let unsubmit_promise = this.$root.request_api_endpoint(`api/assignment/${this.assignmentId}/unsubmit`, 'post', null);
 
         unsubmit_promise
-          .then((_) => this.$root.request_api_endpoint(`api/assignment/${this.taskId}`, 'get', null))
+          .then((_) => this.$root.request_api_endpoint(`api/assignment/${this.assignmentId}`, 'get', null))
           .then((data) => {
             this.assignment = {...data, deadline: data.deadline ? new Date(data.deadline) : null };
           });

@@ -44,7 +44,7 @@
         <i class="fas fa-search search-icon"></i>
       </div>
 
-      <div v-if="this.$root.authtoken" class="profile-dropdown">
+      <div class="profile-dropdown">
         <button @click="toggleDropdown" class="profile-btn">
           <i class="fas fa-user-circle" style="font-size: 40px; color: black;"></i>
         </button>
@@ -98,12 +98,16 @@
 </template>
 
 <script>
+  
+  import { useGlobalStore } from '@/global_store.js'
+
   export default {
     data() {
       return {
         searchQuery: '',
         mobileMenuOpen: false,
-        dropdownOpen: false
+        dropdownOpen: false,
+        store: useGlobalStore()
       };
     },
     computed: {
@@ -133,7 +137,7 @@
         this.dropdownOpen = !this.dropdownOpen;
       },
       logout() {
-        this.$root.authtoken = '';
+        this.store.logout()
         this.dropdownOpen = false; // Close the dropdown menu on logout
         this.$router.push({ name: 'Home' });
       }

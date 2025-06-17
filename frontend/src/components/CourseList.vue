@@ -39,7 +39,7 @@
       <h2 class="best-courses-title">Our Popular Courses</h2>
       <div class="course-list">
         <router-link v-for="course in popularCourses" :key="course.id"
-                     :to="{ name: 'CourseDetails', params: { id: course.id } }"
+                     :to="{ name: 'CourseView', params: { courseId: course.id } }"
                      class="course-item">
           <!--<div class="course-image">
             <img :src="course.imageUrl" alt="Course Image" />
@@ -58,7 +58,7 @@
       <div class="course-list">
         <!-- Course Item -->
         <router-link v-for="course in filteredCourses" :key="course.id"
-                     :to="{ name: 'CourseDetails', params: { id: course.id } }"
+                     :to="{ name: 'CourseView', params: { courseId: course.id } }"
                      class="course-item">
           <!--<div class="course-image">
             <img :src="course.imageUrl" alt="Course Image" />
@@ -84,6 +84,8 @@
   import instructorIcon2 from '@/assets/doctor-img4.png'; // Icon for Dr. Ayman
   import instructorIcon3 from '@/assets/doctor-img4.png'; // Icon for Dr. Mostafa
 
+  import { useGlobalStore } from '@/global_store.js'
+
   export default {
     name: 'CourseList',
     data() {
@@ -99,16 +101,15 @@
         },
       };
     },
-    beforeMount() {
-      let colleges = this.$root.request_api_endpoint('api/colleges', 'get', null);
-      let courses = this.$root.request_api_endpoint('api/courses', 'get', null);
+    async beforeRouteEnter(to, from, next) {
+      const store = useGlobalStore()
 
-      colleges.then((data) => { 
-        this.colleges = data;
-      });
+      let colleges = await store.request_api_endpoint('api/colleges');
+      let courses = await store.request_api_endpoint('api/courses');
 
-      courses.then((data) => {
-        this.popularCourses = this.courses = data;
+      next(vm => {
+        vm.colleges = colleges;
+        vm.popularCourses = vm.courses = courses;
       });
 
     },

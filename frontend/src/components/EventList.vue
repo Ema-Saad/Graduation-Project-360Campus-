@@ -24,27 +24,17 @@
 </template>
 
 <script>
+  import { useGlobalStore } from '@/global_store.js'
+
   export default {
-    beforeMount() {
-      let events = this.$root.request_api_endpoint('api/events', 'get', null);
-      let registered_events = this.$root.request_api_endpoint('api/events/registered', 'get', null);
-      
-      Promise.all([events, registered_events]).then((data) => {
-        this.events = data[0].map((evt) => {
-          return { registered: false, ...evt };
-        });
+    async beforeRouteEnter(to, from, next) {
+      const store = useGlobalStore()
 
-        let registered_events = data[1].map((evt) => evt.event);
+      let events = await store.request_api_endpoint('api/events');
+      let registered_events = await store.request_api_endpoint('api/events/registered');
 
-        let event_set = new Set(this.events.map((e) => e.id));
-        let registered_event_set = new Set(registered_events);
-
-        let registerable_events = event_set.difference(registered_event_set);
-
-        for (let evt of this.events) {
-          evt.registered = !registerable_events.has(evt.id);
-        }
-
+      next(vm => {
+        vm.setEvents(events, registered_events)
       });
 
     },
@@ -54,10 +44,25 @@
       };
     },
     methods: {
+      setEvents(events, registered_events) {
+        this.events = events.map((evt) => {
+          return { registered: false, ...evt };
+        });
+
+        registered_events = registered_events.map((evt) => evt.event);
+
+        let event_set = new Set(this.events.map((e) => e.id));
+        let registered_event_set = new Set(registered_events);
+
+        let registerable_events = event_set.difference(registered_event_set);
+
+        for (let evt of this.events) {
+          evt.registered = !registerable_events.has(evt.id);
+        }
+      },
       enroll(evt) {
         this.$root.request_api_endpoint(`api/event/${evt.id}/register`, 'post', null);
         evt.registered = true;
-
       },
 
     },

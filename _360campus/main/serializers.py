@@ -1,3 +1,4 @@
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from .models import *
 
@@ -7,6 +8,8 @@ class EventSerializer(ModelSerializer):
         fields = '__all__'
 
 class MaterialSerializer(ModelSerializer):
+    course = serializers.PrimaryKeyRelatedField(queryset=Course.objects.all())
+
     class Meta:
         model = Material
         fields = '__all__'
@@ -22,6 +25,11 @@ class CourseSerializer(ModelSerializer):
         exclude = ['admin']
         depth = 1
 
+class CourseEditSerializer(ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ['title', 'description']
+
 class ClassroomViewSerializer(ModelSerializer):
     course = CourseSerializer(read_only=True)
 
@@ -31,14 +39,42 @@ class ClassroomViewSerializer(ModelSerializer):
         depth = 1
 
 class TaskViewSerializer(ModelSerializer):
+    classroom = ClassroomViewSerializer()
+
     class Meta:
         model = Task
         fields = '__all__'
 
+class TaskModifySerializer(ModelSerializer):
+    classroom = serializers.PrimaryKeyRelatedField(
+        queryset=Classroom.objects.filter(semester=Semester.objects.last())
+    )
+
+    class Meta:
+        model = Task
+        fields = '__all__'
+
+
 class AssignmentSerializer(ModelSerializer):
+    classroom = ClassroomViewSerializer()
+
     class Meta:
         model = Assignment
         exclude = ['submissions']
+
+class AssignmentCreateSerializer(ModelSerializer):
+    classroom = serializers.PrimaryKeyRelatedField(
+        queryset=Classroom.objects.filter(semester=Semester.objects.last())
+    )
+
+    class Meta:
+        model = Assignment
+        exclude = ['submissions']
+
+class AssignmentModifySerializer(ModelSerializer):
+    class Meta:
+        model = Assignment
+        fields = ['title', 'description', 'max_grade', 'time']
 
 class AssignmentSubmissionViewSerializer(ModelSerializer):
     class Meta:
@@ -50,3 +86,13 @@ class CollegeSerializer(ModelSerializer):
         model = College
         fields = '__all__'
         depth = 1
+
+class SchedulePreferenceSerializer(ModelSerializer):
+    class Meta:
+        model = SchedulePreference
+        fields = '__all__'
+
+class SchedulePreferenceViewSerializer(ModelSerializer):
+    class Meta:
+        model = SchedulePreference
+        fields = ['slot', 'day']

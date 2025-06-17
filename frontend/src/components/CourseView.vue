@@ -1,6 +1,12 @@
 <template>
-  <div v-if="course">
+  <MaterialCreate
+    v-if="showMaterialCreateDialog" 
+    :course_id="course.id"
+    :instance="toBeEditedMaterial"
+    @close="showMaterialCreateDialog = false; toBeEditedMaterial = null"
+  />
 
+  <div v-if="course">
     <div v-if="!showCourseEditingWidgets">
       <h1 id="course-title">{{ course.title }}</h1>
       <p id="course-description">{{ course.description }}</p>
@@ -13,11 +19,16 @@
       </textarea>
       <br />
       <button @click="editCourse"> Save </button>
+      <button @click="course = copy_of_course; showCourseEditingWidgets = false">
+        Cancel
+      </button>
     </div>
 
     <span id="course-edit-controls" v-if="$root.person_kind === 'P' && !showCourseEditingWidgets">
-      <button> Create New Material </button>
-      <button @click="showCourseEditingWidgets = true"> Edit Course Information </button>
+      <button @click="showMaterialCreateDialog = true"> Add New Material </button>
+      <button @click="copy_of_course = {...course}; showCourseEditingWidgets = true"> 
+        Edit Course Information 
+      </button>
       <button @click="deleteCourse"> Delete Course </button>
     </span>
 
@@ -28,19 +39,19 @@
 
         <template v-for="materialTypeArray in week" v-if="isDropdownOpen(week.id)" class="dropdown-menu">
           <div v-if="materialTypeArray.length > 0"> 
-            <h3> {{ stringifyMaterialType(materialTypeArray[0].material_type) }} </h3>
+            <h3> {{ stringifyMaterialType(materialTypeArray[0].kind) }} </h3>
             <ul>
               <li v-for="materialInstance in materialTypeArray">
                 <a class="dropdown-item" @click="download(materialInstance.id)"> 
                   {{ materialInstance.name }} 
                 </a>
 
-                <span id="material-edit-controls" v-if="$root.person_kind === 'P'">
-                  <button @click="editMaterial(materialInstance.id)">
+                <span class="material-edit-controls" v-if="$root.person_kind === 'P'">
+                  <button @click="toBeEditedMaterial = materialInstance; showMaterialCreateDialog = true">
                     Edit
                   </button>
 
-                  <button @click="deleteMaterial(materialInstance.id)">
+                  <button @click="deleteMaterial(materialInstance)">
                     Delete
                   </button>
                 </span>
@@ -55,6 +66,9 @@
 
 <script>
 
+  import MaterialCreate from './MaterialCreate.vue';
+  import { useGlobalStore } from '@/global_store.js'
+
   /* Materials Type */
   const LAB = 'l';
   const LECTURE = 'L';
@@ -64,35 +78,46 @@
   const OTHER = 'o';
 
   export default {
-    props: ['id'],
+    props: ['courseId'],
+    components: {
+      MaterialCreate,
+    },
     data() {
       return {
         course: null,
+        copy_of_course: null,
         weeks: [],
         openDropdowns: [], // Store open dropdown states
         showCourseEditingWidgets: false,
+        showMaterialCreateDialog: false,
+        toBeEditedMaterial: null,
       };
     },
-    beforeMount() {
-      let course_promise = this.$root.request_api_endpoint(`api/course/${this.id}`, 'get', null);
-      let materials_promise = this.$root.request_api_endpoint(`api/course/${this.id}/materials`, 'get', null);
+    async beforeRouteEnter(to, from, next) {
+      let store = useGlobalStore()
 
-      course_promise.then((data) => {
-        this.course = data;
+      let course = await store.request_api_endpoint(`api/course/${to.params.courseId}`);
+      let materials = await store.request_api_endpoint(`api/course/${to.params.courseId}/materials`);
+
+      next(vm => {
+        vm.course = course
+        vm.setMaterials(materials)
       });
-
-      materials_promise.then((data) => {
-        let max_weeks = data.map((d) => d.week || -1).reduce((a, v) => Math.max(a, v));
+    },
+    methods: {
+      setMaterials(data) {
+        let max_weeks = data.map((d) => d.week || -1).reduce((a, v) => Math.max(a, v), 0);
         this.weeks = new Array(max_weeks);
 
         for (let i = 1; i <= max_weeks; i ++) {
           this.weeks[i] = {
             id: i,
-            labs: data.filter((d) => d.week === i && d.material_type === LAB),
-            lectures: data.filter((d) => d.week === i && d.material_type === LECTURE),
-            tutorials: data.filter((d) => d.week === i && d.material_type === TUTORIAL),
-            assignments: data.filter((d) => d.week === i && d.material_type === ASSIGNMENT),
-            problem_sheets: data.filter((d) => d.week === i && d.material_type === PROBLEM_SHEET),
+            labs: data.filter((d) => d.week === i && d.kind === LAB),
+            lectures: data.filter((d) => d.week === i && d.kind === LECTURE),
+            tutorials: data.filter((d) => d.week === i && d.kind === TUTORIAL),
+            assignments: data.filter((d) => d.week === i && d.kind === ASSIGNMENT),
+            problem_sheets: data.filter((d) => d.week === i && d.kind === PROBLEM_SHEET),
+            others: data.filter((d) => d.week === i && d.kind === OTHER),
           };
         }
 
@@ -100,19 +125,35 @@
                                               d.lectures.length + 
                                               d.tutorials.length + 
                                               d.assignments.length + 
-                                              d.problem_sheets.length > 0);
-      });
-    },
-    methods: {
-      editCourse() {
-        this.showCourseEditingWidgets = false;
+                                              d.problem_sheets.length +
+                                              d.others.length > 0);
+
+      },
+      async editCourse() {
+        try {
+          let editing_result = await this.$root.request_api_endpoint(
+            `api/course/${this.course.id}/edit`, 
+            'post', 
+            JSON.stringify(this.course),
+            { 'Content-Type': 'application/json' }
+          );
+
+          this.showCourseEditingWidgets = false;
+        } catch (err) {
+          console.log(err);
+
+        }
       },
       deleteCourse() {
         this.$router.push({ name: 'CourseList' });
       },
-      editMaterial(materialId) {
-      },
-      deleteMaterial(materialId) {
+      async deleteMaterial(material) {
+        try {
+          await this.$root.request_api_endpoint(`api/material/${material.id}/delete`, 'delete');
+
+        } catch (err) {
+
+        }
       },
       stringifyMaterialType(type) {
         switch (type) {

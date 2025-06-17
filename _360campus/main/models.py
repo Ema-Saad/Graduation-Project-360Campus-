@@ -97,13 +97,12 @@ class Event(models.Model):
 # EventRegistration Model
 class EventRegistration(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="registrations")
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="event_registrations")
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, related_name="event_registrations")
     registered_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = "Event Registration"
-        unique_together = ('event', 'student')
-
+        unique_together = ('event', 'person')
 
 class Semester(models.Model):
     SEMESTER_TYPE = [
@@ -173,11 +172,11 @@ class Material(models.Model):
         ('o', 'Other'),
     ]
 
-    course =models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
     name = models.CharField(max_length=500)
     file = models.FileField(upload_to=get_materials_file_location)
     week = models.IntegerField(null=True, blank=True)
-    material_type = models.CharField(max_length=1, choices=MATERIAL_TYPE, default='o')
+    kind = models.CharField(max_length=1, choices=MATERIAL_TYPE)
 
     def __str__(self):
         return f'{self.course.title} - {self.name}'
@@ -275,3 +274,22 @@ class AssignmentSubmission(models.Model):
     submitted_file = models.FileField(blank=True, null=True)
     grade = models.IntegerField(blank=True, null=True)
 
+class SchedulePreference(models.Model):
+    DAYS = [
+        (0, "Sunday"),
+        (1, "Monday"),
+        (2, "Tuesday"),
+        (3, "Wedensday"),
+        (4, "Thursday"),
+    ]
+
+    SLOTS = [
+        (i, f'Period {1 + i // 2} Half {1 + i % 2}') for i in range(8)
+    ]
+
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
+    day = models.IntegerField(choices=DAYS)
+    slot = models.IntegerField(choices=SLOTS)
+
+    def __str__(self):
+        return f'{self.professor}: {self.day}, {self.slot}'

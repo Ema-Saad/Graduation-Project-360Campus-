@@ -1,4 +1,17 @@
 <template>
+
+  <AssignmentCreate
+    :course_id="courseId"
+    v-if="showAssignmentCreateDialog"
+    @close="showAssignmentCreate = false"
+  />
+
+  <OnlineMeetingCreate
+    :course_id="courseId"
+    v-if="showOnlineMeetingCreateDialog"
+    @close="showOnlineMeetingCreateDialog = false"
+  />
+
   <div v-if="classroom" class="page">
     <!-- Top Banner -->
     <div class="top-banner">
@@ -7,9 +20,13 @@
         <span class="course-code">Taught by {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}</span>
       </div>
       <img :src="bannerImage" alt="Course Banner" class="banner-image" />
-      <div v-if="$root.person_type === 'P'">
-        <button> Add new assignment </button>
-        <button> Add new meeting </button>
+      <div v-if="$root.person_kind === 'P'">
+        <button @click="showAssignmentCreateDialog = true"> 
+          Add new assignment 
+        </button>
+        <button @click="showOnlineMeetingCreateDialog = true"> 
+          Add new meeting 
+        </button>
         <button> Add new quiz </button>
       </div>
     </div>
@@ -20,7 +37,7 @@
         <div class="badge">{{ tasks.length }}</div> <!-- Bind the badge count here -->
         <h2 class="section-title">Required Homework</h2>
         <button class="todo-button">
-          <router-link :to="{ name: 'CourseDetails', params: { id: this.course_id } }">
+          <router-link :to="{ name: 'CourseView', params: { courseId } }">
             Materials
           </router-link>
         </button>
@@ -29,10 +46,10 @@
       <div id="task-list">
           <div class="task-item" v-for="task in tasks">
             <div class="task-icon">
-              <span class="fas fa-file-alt"></span>
+              <span class="fas" :class="[getIcon(task)]"></span>
             </div>
               
-            <router-link class="task" :to="{ name: 'taskDetail', params: { taskId: task.id } }">
+            <router-link class="task" :to="task.url">
               <span class="task-name"> {{ task.title }} </span>
             </router-link>
 
@@ -45,11 +62,17 @@
 
 
 <script>
-    import bannerImage from "@/assets/pexels-photo.png";
+  import bannerImage from "@/assets/pexels-photo.png";
   import week1Image from "@/assets/pexels-photo.png";
   import week2Image from "@/assets/pexels-photo.png";
   import week3Image from "@/assets/pexels-photo.png";
   import week4Image from "@/assets/pexels-photo.png";
+
+  import { useGlobalStore } from '@/global_store.js'
+
+  import AssignmentCreate from "./AssignmentCreate.vue";
+  import OnlineMeetingCreate from "./OnlineMeetingCreate.vue";
+
   export default {
     data() {
       return {
@@ -57,24 +80,55 @@
         tasks: [],
         classroom: null,
         homeworkCount: 2, // Dynamic count for homework (this can be changed based on real data)
+        showAssignmentCreateDialog: false,
+        showOnlineMeetingCreateDialog: false,
       };
     },
-    props: ['course_id'],
-    beforeMount() {
-      let classroom_promise = this.$root.request_api_endpoint(`api/course/${this.course_id}/classroom`, 'get', null);
-      let tasks_promise = this.$root.request_api_endpoint(`api/course/${this.course_id}/classroom/tasks`, 'get', null);
+    components: {
+      AssignmentCreate,
+      OnlineMeetingCreate,
+    },
+    props: ['courseId'],
+    async beforeRouteEnter(to, from, next) {
+      try {
+        const store = useGlobalStore()
 
-      classroom_promise.then((data) => {
-        this.classroom = data;
-      });
+        let classroom = await store.request_api_endpoint(`api/course/${to.params.courseId}/classroom`);
+        let tasks = await store.request_api_endpoint(`api/course/${to.params.courseId}/classroom/tasks`);
+        let assignments = await store.request_api_endpoint(`api/course/${to.params.courseId}/classroom/assignments`);
 
-      tasks_promise.then((data) => {
-        this.tasks = data.map((d) => ({ ...d, time: d.time ? new Date(d.time) : null }));
-      });
+        let normalise = (d) => ({ 
+          ...d, 
+          time: d.time ? new Date(d.time) : null,
+          url: (() => {
+            if (d.kind === 'a') return { name: 'AssignmentView', params: { assignmentId: d.id } }
+            else if (d.kind === 'o') return { name: 'OnlineMeetingView', params: { onlineMeetingId: d.id } }
+            else if (d.kind === 'q') return {} // { 'name': 'QuizView', props: { quizId: d.id } }
+            else return { }
+          })(),
+        });
+
+        next(vm => {
+          vm.classroom = classroom
+          vm.tasks = [
+            ...tasks.map(normalise),
+            ...assignments.map(normalise)
+          ];
+        })
+      } catch (err) {
+
+      }
+
     },
     methods: {
+      getIcon(task) {
+        if (task.kind === 'o') {
+          return 'fa-video';
+        }
+
+        return 'fa-file-alt';
+      },
       computeTimeString(task) {
-        
         let date = task.time;
 
         const MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
@@ -87,6 +141,10 @@
           "May", "Jun", "Jul", "Aug",
           "Sep", "Oct", "Nov", "Dec",
         ];
+
+        if (!date) {
+          return "No Due Date";
+        }
 
         let hour = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
         if (Date.now() > date) {

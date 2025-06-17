@@ -13,7 +13,7 @@
 
       <div v-if="$root.person_kind === 'S'" id="join-controls">
         <select id="course" v-model="enroll_in.course" @change="populateClassroomsForEnroll">
-          <option value="0"> Course </option>
+          <option value="0" disabled> Course </option>
           <option v-for="course in courses" :value="course.id">
             {{ course.title }}
           </option>
@@ -21,7 +21,7 @@
         
         <span> Taught by </span>
         <select id="classroom" v-model="enroll_in.classroom">
-          <option value="0"> Instructor </option>
+          <option value="0" disabled> Instructor </option>
 
           <option v-for="classroom in classrooms_of_course" :value="classroom.id">
           {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}
@@ -30,16 +30,13 @@
 
         <button class="join-button" @click="join">Join</button>
       </div>
-      <div v-else-if="$root.person_kind === 'P'">
-        <span> Da fuck is supposed to be here ?! </span>
-      </div>
     </header>
 
     <!-- The class cards or any other content here -->
     <div class="class-cards">
       <router-link v-for="classroom in registered_classes"
                    :key="classroom.id"
-                   :to="{ name: 'MyCourseDetail', params: { course_id: classroom.course.id } }"
+                   :to="{ name: 'ClassroomView', params: { courseId: classroom.course.id } }"
                    class="class-card">
 
         <h3>{{ classroom.course.title }}</h3>
@@ -56,6 +53,8 @@
   import class2Image from '@/assets/pexels-photo.png';
   import class3Image from '@/assets/pexels-photo.png';
 
+  import { useGlobalStore } from '@/global_store.js'
+
   export default {
     name: 'ClassroomList',
     data() {
@@ -70,21 +69,18 @@
         classrooms_of_course: [],
       };
     },
-    beforeMount() {
-      let classes = this.$root.request_api_endpoint('api/registered_classrooms', 'get', null);
+    async beforeRouteEnter(to, from, next) {
+      const store = useGlobalStore()
 
-      classes.then((data) => {
-        this.registered_classes = data;
+      let registered_classes = await store.request_api_endpoint('api/registered_classrooms');
+      let registrable_classes = await store.request_api_endpoint('api/courses?list_registrable');
 
-        // after fetching registered classes, fetch all courses
-        return this.$root.request_api_endpoint('api/courses?list_registrable', 'get', null);
-      }).then((data) => {
-        // show only unenrolled courses
-        this.courses = data.filter((d) =>
-          this.registered_classes.find((e) => e.course.id === d.id) === undefined
+      next(vm => {
+        vm.registered_classes = registered_classes
+        vm.courses = registrable_classes.filter((d) =>
+          registered_classes.find((e) => e.course.id === d.id) === undefined
         );
       });
-
     },
     methods: {
       // Method to navigate to the To-Do page
@@ -99,11 +95,13 @@
       goToToDoPage() {
         this.$router.push({ name: 'ToDoPage' }); // 'ToDoPage' should be the name of the route for the to-do list
       },
-      goToCourseDetail(courseId) {
-        this.$router.push({ name: 'MyCourseDetail', params: { id: courseId } });
-      },
       join() {
-        let join_promise = this.$root.request_api_endpoint(`api/classroom/${this.enroll_in.classroom}/join`, 'post', null);
+        let join_promise = this.$root.request_api_endpoint(
+        `api/course/${this.enroll_in.course}/classroom/join`, 
+          'post', 
+          JSON.stringify({ 'classroom': this.enroll_in.classroom }),
+          { 'Content-Type': 'application/json' },
+        );
 
         join_promise.then((_) => 
           this.$root.request_api_endpoint(`api/course/${this.enroll_in.course}/classroom`, 'get', null)

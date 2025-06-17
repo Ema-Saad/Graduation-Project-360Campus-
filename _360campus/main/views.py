@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.parsers import MultiPartParser
+from rest_framework.parsers import MultiPartParser, JSONParser
 from rest_framework import status
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.http import HttpResponse
@@ -10,6 +10,7 @@ from django.db.models import Q
 import os
 from .models import *
 from .serializers import *
+from .permissions import *
 
 
 @api_view(['GET'])
@@ -29,9 +30,25 @@ def event_list(req):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def registered_event_list(req):
-    registered_events = EventRegistration.objects.filter(student=req.user.student).values("event")
+    registered_events = EventRegistration.objects.filter(person=req.user).values("event")
 
     return Response(registered_events)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def event_register(req, pk):
+    evt = get_object_or_404(Event, pk=pk)
+
+    if EventRegistration.objects.filter(person=req.user, event=evt).exists():
+        return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+    today = timezone.now()
+    if today > evt.date:
+        return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+    EventRegistration.objects.create(event=evt, person=req.user)
+
+    return Response({})
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -58,18 +75,36 @@ def course_list(req):
 
     return Response(serializer.data)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsProfessor])
+@parser_classes([JSONParser])
+def course_edit(req, pk):
+    course = get_object_or_404(Course, pk=pk)
+    course_serializer = CourseSerializer(instance=course, data=req.data)
+
+    if not course_serializer.is_valid():
+        return Response(course_serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    course_serializer.save()
+
+    return Response(course_serializer.data)
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def registered_classroom_view(req, pk):
     current_semester = Semester.objects.last()
 
-    if not Enrollment.objects.filter(classroom__semester=current_semester, \
+    if req.user.person_type == 'S' and not Enrollment.objects.filter(classroom__semester=current_semester, \
                                      classroom__course_id=pk, \
                                      student=req.user.student).exists():
-        return Response(status=status.HTTP_403_FORBIDDEN)
+        return Response({}, status=status.HTTP_403_FORBIDDEN)
 
     classroom = Classroom.objects.get(course_id=pk, \
                                       semester=current_semester)
+
+    if req.user.person_type == 'P' and classroom.instructor != req.user.professor:
+        return Response({}, status=status.HTTP_403_FORBIDDEN)
+
     serializer = ClassroomViewSerializer(classroom)
 
     return Response(serializer.data)
@@ -78,8 +113,13 @@ def registered_classroom_view(req, pk):
 @permission_classes([IsAuthenticated])
 def registered_classroom_list(req):
     current_semester = Semester.objects.last()
-    classrooms = Classroom.objects.filter(enrollment__student=req.user.student, \
-                                          semester=current_semester)
+    if req.user.person_type == 'S':
+        classrooms = Classroom.objects.filter(enrollment__student=req.user.student, \
+                                              semester=current_semester)
+    elif req.user.person_type == 'P':
+        classrooms = Classroom.objects.filter(instructor=req.user.professor, \
+                                              semester=current_semester)
+
     serializer = ClassroomViewSerializer(classrooms, many=True)
 
     return Response(serializer.data)
@@ -105,28 +145,13 @@ def classroom_join(req, pk):
                                  classroom__semester=current_semester).exists():
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
-    classroom = get_object_or_404(Classroom, semester=current_semester, \
-                                  course_id=pk)
+    classroom = get_object_or_404(Classroom, pk=req.data.get('classroom'))
+
+    if classroom.semester != current_semester:
+        return Response({}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
     Enrollment.objects.create(student=req.user.student, classroom=classroom)
     return Response(data={}, status=status.HTTP_200_OK)
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def event_register(req, pk):
-    evt = get_object_or_404(Event, pk=pk)
-
-    if EventRegistration.objects.filter(student=req.user.student, event=evt).exists():
-        return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-
-    today = timezone.now()
-    if today > evt.date:
-        return Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-
-    # TODO: Ensure that req.user is a student
-    EventRegistration.objects.create(event=evt, student=req.user.student)
-
-    return Response(status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -151,6 +176,34 @@ def material_view(req, pk):
         'Access-Control-Expose-Headers': 'Content-Disposition',
         'Content-Disposition': f'attachment; filename="{filename}"'
     })
+
+@api_view(['POST', 'PUT'])
+@permission_classes([IsAuthenticated, IsProfessor])
+@parser_classes([MultiPartParser])
+def material_create_modify(req, pk):
+    if req.method == 'POST': # create new material
+        req.data['course'] = pk
+        serializer = MaterialSerializer(data=req.data)
+
+    elif req.method == 'PUT': # edit existing material
+        material = get_object_or_404(Material, pk=pk)
+        serializer = MaterialSerializer(instance=material, data=req.data, partial=True)
+
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    serializer.save()
+
+    return Response(serializer.data)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsProfessor])
+def material_delete(req, pk):
+    material = get_object_or_404(Material, pk=pk)
+    material.file.delete()
+    material.delete()
+
+    return Response({})
 
 @api_view(['GET'])
 def graduation_project_list(request):
@@ -187,13 +240,16 @@ def graduation_project_detail(request, project_id):
 def task_list(req, pk):
     current_semester = Semester.objects.last()
 
-    if not Enrollment.objects.filter(student=req.user.student, \
+    if req.user.person_type == 'S' and not Enrollment.objects.filter(student=req.user.student, \
                                      classroom__course_id=pk, \
                                      classroom__semester=current_semester).exists():
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        return Response({}, status=status.HTTP_401_UNAUTHORIZED)
 
     classroom = get_object_or_404(Classroom, semester=current_semester, \
                                   course_id=pk)
+
+    if req.user.person_type == 'P' and classroom.instructor != req.user.professor:
+        return Response({}, status=status.HTTP_401_UNAUTHORIZED)
 
     # filter out assignments, since they're treated differently
     # and there's a API for them anyways
@@ -207,13 +263,17 @@ def task_list(req, pk):
 def assignment_list(req, pk):
     current_semester = Semester.objects.last()
 
-    if not Enrollment.objects.filter(student=req.user.student, \
+    if req.user.person_type == 'S' and not Enrollment.objects.filter(student=req.user.student, \
                                      classroom__course_id=pk, \
                                      classroom__semester=current_semester).exists():
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        return Response({}, status=status.HTTP_401_UNAUTHORIZED)
 
-    assignments = Assignment.objects.filter(task_ptr__classroom__course_id=pk, \
-                                            task_ptr__classroom__semester=current_semester)
+    classroom = get_object_or_404(Classroom, course_id=pk, semester=current_semester)
+
+    if req.user.person_type == 'P' and classroom.instructor != req.user.professor:
+        return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+
+    assignments = classroom.task_set.filter(kind='a')
     serializer = AssignmentSerializer(assignments, many=True)
 
     return Response(serializer.data)
@@ -244,15 +304,58 @@ def submitted_assignment_list(req, pk):
 def assignment_view(req, assignment_pk):
     assignment = get_object_or_404(Assignment, pk=assignment_pk)
 
-    if not Enrollment.objects.filter(student=req.user.student, \
+    if req.user.person_type == 'S' and not Enrollment.objects.filter(student=req.user.student, \
                                      classroom=assignment.classroom).exists():
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+
+    elif req.user.person_type == 'P' and req.user.professor != assignment.classroom.instructor:
+        return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+
 
     serializer = AssignmentSerializer(assignment)
     data = serializer.data
-    data['submitted'] = AssignmentSubmission.objects.filter(student=req.user.student, \
-                                                            assignment=assignment).exists()
+
+    if req.user.person_type == 'S':
+        data['submitted'] = AssignmentSubmission.objects.filter(student=req.user.student, \
+                                                                assignment=assignment).exists()
     return Response(data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsProfessor])
+@parser_classes([JSONParser])
+def assignment_create(req, pk):
+    current_semester = Semester.objects.last()
+    classroom = get_object_or_404(Classroom, semester=current_semester, course_id=pk)
+
+    if classroom.instructor != req.user.professor:
+        return Response({}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    data = {'classroom': classroom.pk, **req.data}
+    serializer = AssignmentCreateSerializer(data=data)
+
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    serializer.save()
+
+    return Response({})
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsProfessor])
+@parser_classes([JSONParser])
+def assignment_modify(req, pk):
+    assignment = get_object_or_404(Assignment, pk=pk)
+
+    if req.user.professor != assignment.classroom.instructor:
+        return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+
+    serializer = AssignmentModifySerializer(assignment, data=req.data)
+
+    if not serializer.is_valid():
+        return Response({}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    serializer.save()
+    return Response(serializer.data)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -279,7 +382,7 @@ def assignment_submit(req, pk, filename):
                                      classroom=assignment.classroom).exists():
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-    if assignment.deadline and assignment.deadline < timezone.now():
+    if assignment.time and assignment.time < timezone.now():
         return Response({'reason': 'deadline passed'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
     assignment.submissions.add(req.user.student, through_defaults={'submitted_file': req.data.get('file')})
@@ -304,9 +407,78 @@ def assignment_unsubmit(req, pk):
 
     return Response({})
 
+@api_view(['POST', 'PATCH'])
+@permission_classes([IsAuthenticated, IsProfessor])
+@parser_classes([JSONParser])
+def online_meeting_create_modify(req, pk):
+    current_semester = Semester.objects.last()
+    classroom = get_object_or_404(Classroom, course_id=pk, semester=current_semester)
+
+    if classroom.instructor != req.user.professor:
+        return Response({}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    data = {'classroom': classroom.pk, 'kind': 'o', **req.data}
+    serializer = TaskModifySerializer(data=data)
+
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    serializer.save()
+    return Response({})
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def assignment_comment(req, course_pk, assignment_pk):
-    pass
+@permission_classes([IsAuthenticated, IsProfessor])
+@parser_classes([JSONParser])
+def schedule_preference_create(req):
+    data = [{'professor': req.user.professor.pk, **data} for data in req.data]
+    serializer = SchedulePreferenceSerializer(data=data, many=True)
+
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    # TODO: find a better way to do
+    SchedulePreference.objects.filter(professor=req.user.professor).delete()
+    serializer.save()
+    return Response({})
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsProfessor])
+@parser_classes([JSONParser])
+def schedule_preference_list(req):
+    data = get_list_or_404(SchedulePreference, professor=req.user.professor)
+    serializer = SchedulePreferenceViewSerializer(data, many=True)
+    return Response(serializer.data)
+
+# TODO: protect this API endpoint
+@api_view(['GET'])
+def schedule_preference_dump(req):
+    data = []
+    professors = Professor.objects.all()
+
+    for professor in professors:
+        DAYS = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wedensday",
+            "Thursday",
+        ]
+
+        availability = {}
+
+        for preference in SchedulePreference.objects.filter(professor=professor):
+            day = DAYS[preference.day]
+            if day not in availability:
+                availability[day] = [preference.slot]
+            else:
+                availability[day].append(preference.slot)
+
+        data.append({
+            'id': professor.id,
+            'name': f'{professor.first_name} {professor.last_name}',
+            'type': 'Professor',
+            'availability': availability,
+        })
+
+    return Response(data)
 

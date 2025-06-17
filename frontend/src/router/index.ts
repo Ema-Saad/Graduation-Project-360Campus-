@@ -9,7 +9,7 @@ import EventList from '../components/EventList.vue';
 import GraduationProjectList from '../components/GraduationProjectList.vue';
 import MapView from '../components/MapView.vue';
 import CourseView from '../components/CourseView.vue';
-import MeetingCard from "@/components/MeetingCard.vue";
+import OnlineMeetingView from "@/components/OnlineMeetingView.vue";
 import GraduationProjectView from '@/components/GraduationProjectView.vue';
 import LoginPage from '@/components/LoginPage.vue';
 import ForgotPasswordPage from '@/components/ForgotPasswordPage.vue';
@@ -21,7 +21,7 @@ import ProfileView from "@/components/ProfileView.vue";
 import ClassroomList from '@/components/ClassroomList.vue';
 import ToDoPage from "@/components/ToDoPage.vue";
 import ClassroomView from '@/components/ClassroomView.vue';
-import TaskView from '@/components/TaskView.vue';
+import AssignmentView from '@/components/AssignmentView.vue';
 import SettingsPage from '@/components/SettingsPage.vue';
 import QuizView from '@/components/QuizView.vue';
 
@@ -38,21 +38,20 @@ const routes = [
   { name: 'ResetPassword', path: '/reset-password', component: ResetPasswordPage,  },
   { name: 'Error', path: '/error', component: ErrorPage,  },
   { name: 'Settings', path: '/settings', component: SettingsPage,  },
-  { name: 'CourseList', path: '/course/list', component: CourseList,  },
-  { name: 'MyClass', path: '/myclass', component: ClassroomList,  },
-  { name: 'taskDetail', props: true, path: '/task/:taskId', component: TaskView,  },
-  { name: 'MyCourses', path: '/my-courses', component: ClassroomList,  },
-  { name: 'MyCourseDetail', props: true, path: '/my-course/:course_id', component: ClassroomView, },
-  { name: 'CourseDetails', props: true, path: '/course/details/:id', component: CourseView,  },
-  { name: 'Events', path: '/events', component: EventList,  },
-  { name: 'ToDoPage', path: '/todo', component: ToDoPage,  },
-  { name: 'TimeTable', path: '/timetable', component: TimetableView,  },
-  { name: 'GraduationProject', path: '/graduation', component: GraduationProjectList,  },
-  { name: 'ProjectDetails', props: true, path: '/project/:id', component: GraduationProjectView,  },
   { name: 'Map', path: '/map', component: MapView,  },
-  { name: 'Meeting', path: '/meeting/:id', component: MeetingCard,  },
-  { name: 'Quiz', props: true, path: '/quiz/:weekId', component: QuizView,  },
+  { name: 'TimeTable', path: '/timetable', component: TimetableView,  },
+  { name: 'ToDoPage', path: '/todo', component: ToDoPage,  },
   { name: 'Congratulations', path: '/congratulations', component: CongratulationsPage,  },
+  { name: 'CourseList', path: '/course/list', component: CourseList,  },
+  { name: 'ClassroomList', path: '/classroom/list', component: ClassroomList,  },
+  { name: 'AssignmentView', props: true, path: '/assignment/:assignmentId', component: AssignmentView,  },
+  { name: 'ClassroomView', props: true, path: '/classroom/:courseId', component: ClassroomView, },
+  { name: 'CourseView', props: true, path: '/course/:courseId', component: CourseView,  },
+  { name: 'EventList', path: '/event/list', component: EventList,  },
+  { name: 'GraduationProjectList', path: '/graduation-project/list', component: GraduationProjectList,  },
+  { name: 'GraduationProjectView', props: true, path: '/graduation-project/:graduationProjectId', component: GraduationProjectView, },
+  { name: 'OnlineMeetingView', path: '/meeting/:onlineMeetingId', component: OnlineMeetingView, props: true },
+  { name: 'QuizView', props: true, path: '/quiz/:quizId', component: QuizView,  },
 ];
 
 const router = createRouter({

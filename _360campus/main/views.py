@@ -70,7 +70,7 @@ def course_list(req):
     if 'list_registrable' in req.query_params:
         options['pk__in'] = Classroom.objects.filter(semester=Semester.objects.last()).values('course')
 
-    courses = get_list_or_404(Course, **options)
+    courses = Course.objects.filter(**options)
     serializer = CourseSerializer(courses, many=True)
 
     return Response(serializer.data)
@@ -129,8 +129,7 @@ def registered_classroom_list(req):
 def classroom_list(req, pk):
     current_semester = Semester.objects.last()
     course = get_object_or_404(Course, pk=pk)
-    classrooms = get_list_or_404(Classroom, semester=current_semester, \
-                                 course=course)
+    classrooms = Classroom.objects.filter(semester=current_semester, course=course)
     serializer = ClassroomViewSerializer(classrooms, many=True)
 
     return Response(serializer.data)
@@ -445,7 +444,7 @@ def schedule_preference_create(req):
 @permission_classes([IsAuthenticated, IsProfessor])
 @parser_classes([JSONParser])
 def schedule_preference_list(req):
-    data = get_list_or_404(SchedulePreference, professor=req.user.professor)
+    data = req.user.professor.schedulepreference_set.all()
     serializer = SchedulePreferenceViewSerializer(data, many=True)
     return Response(serializer.data)
 

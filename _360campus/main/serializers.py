@@ -45,6 +45,16 @@ class TaskViewSerializer(ModelSerializer):
         model = Task
         fields = '__all__'
 
+class TaskModifySerializer(ModelSerializer):
+    classroom = serializers.PrimaryKeyRelatedField(
+        queryset=Classroom.objects.filter(semester=Semester.objects.last())
+    )
+
+    class Meta:
+        model = Task
+        fields = '__all__'
+
+
 class AssignmentSerializer(ModelSerializer):
     classroom = ClassroomViewSerializer()
 

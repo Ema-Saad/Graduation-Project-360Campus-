@@ -418,7 +418,7 @@ def online_meeting_create_modify(req, pk):
         return Response({}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
     data = {'classroom': classroom.pk, 'kind': 'o', **req.data}
-    serializer = TaskViewSerializer(data=data)
+    serializer = TaskModifySerializer(data=data)
 
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)

@@ -13,7 +13,7 @@
 
       <div v-if="$root.person_kind === 'S'" id="join-controls">
         <select id="course" v-model="enroll_in.course" @change="populateClassroomsForEnroll">
-          <option value="0"> Course </option>
+          <option value="0" disabled> Course </option>
           <option v-for="course in courses" :value="course.id">
             {{ course.title }}
           </option>
@@ -21,7 +21,7 @@
         
         <span> Taught by </span>
         <select id="classroom" v-model="enroll_in.classroom">
-          <option value="0"> Instructor </option>
+          <option value="0" disabled> Instructor </option>
 
           <option v-for="classroom in classrooms_of_course" :value="classroom.id">
           {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}
@@ -96,7 +96,12 @@
         this.$router.push({ name: 'ToDoPage' }); // 'ToDoPage' should be the name of the route for the to-do list
       },
       join() {
-        let join_promise = this.$root.request_api_endpoint(`api/classroom/${this.enroll_in.classroom}/join`, 'post', null);
+        let join_promise = this.$root.request_api_endpoint(
+        `api/course/${this.enroll_in.course}/classroom/join`, 
+          'post', 
+          JSON.stringify({ 'classroom': this.enroll_in.classroom }),
+          { 'Content-Type': 'application/json' },
+        );
 
         join_promise.then((_) => 
           this.$root.request_api_endpoint(`api/course/${this.enroll_in.course}/classroom`, 'get', null)

@@ -1,13 +1,13 @@
 <template>
 
   <AssignmentCreate
-    :course_id="course_id"
+    :course_id="courseId"
     v-if="showAssignmentCreateDialog"
     @close="showAssignmentCreate = false"
   />
 
   <OnlineMeetingCreate
-    :course_id="course_id"
+    :course_id="courseId"
     v-if="showOnlineMeetingCreateDialog"
     @close="showOnlineMeetingCreateDialog = false"
   />

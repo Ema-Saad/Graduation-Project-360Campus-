@@ -331,7 +331,7 @@ def assignment_create(req, pk):
         return Response({}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
     data = {'classroom': classroom.pk, **req.data}
-    serializer = AssignmentSerializer(data=data)
+    serializer = AssignmentCreateSerializer(data=data)
 
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)

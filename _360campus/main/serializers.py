@@ -52,6 +52,15 @@ class AssignmentSerializer(ModelSerializer):
         model = Assignment
         exclude = ['submissions']
 
+class AssignmentCreateSerializer(ModelSerializer):
+    classroom = serializers.PrimaryKeyRelatedField(
+        queryset=Classroom.objects.filter(semester=Semester.objects.last())
+    )
+
+    class Meta:
+        model = Assignment
+        exclude = ['submissions']
+
 class AssignmentModifySerializer(ModelSerializer):
     class Meta:
         model = Assignment

@@ -145,8 +145,10 @@ def classroom_join(req, pk):
                                  classroom__semester=current_semester).exists():
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
 
-    classroom = get_object_or_404(Classroom, semester=current_semester, \
-                                  course_id=pk)
+    classroom = get_object_or_404(Classroom, pk=req.data.get('classroom'))
+
+    if classroom.semester != current_semester:
+        return Response({}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
     Enrollment.objects.create(student=req.user.student, classroom=classroom)
     return Response(data={}, status=status.HTTP_200_OK)

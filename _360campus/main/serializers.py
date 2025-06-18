@@ -2,6 +2,17 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from .models import *
 
+class PersonSerializer(ModelSerializer):
+    class Meta:
+        model = Person
+        fields = [
+            'first_name',
+            'last_name',
+            'department',
+            'person_type',
+            'email',
+        ]
+
 class EventSerializer(ModelSerializer):
     class Meta:
         model = Event
@@ -31,6 +42,7 @@ class CourseEditSerializer(ModelSerializer):
         fields = ['title', 'description']
 
 class ClassroomViewSerializer(ModelSerializer):
+    instructor = PersonSerializer(read_only=True)
     course = CourseSerializer(read_only=True)
 
     class Meta:

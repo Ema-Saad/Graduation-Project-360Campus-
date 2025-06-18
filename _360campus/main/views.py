@@ -15,8 +15,9 @@ from .permissions import *
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def role_view(req):
-    return Response(req.user.person_type)
+def userinfo(req):
+    serializer = PersonSerializer(req.user)
+    return Response(serializer.data)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

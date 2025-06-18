@@ -8,7 +8,7 @@ from .serializers import *
 app_name = 'main'
 urlpatterns = [
     path('api/auth/login', views.obtain_auth_token),
-    path('api/role', role_view),
+    path('api/userinfo', userinfo),
     path('api/courses', course_list, name='course_list'),
     path('api/registered_classrooms', registered_classroom_list, name='classroom_list'),
     path('api/colleges', \

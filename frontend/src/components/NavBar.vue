@@ -50,7 +50,10 @@
         </button>
 
         <div v-if="dropdownOpen" class="dropdown-menu">
-          <h4>Mo'men Ali</h4>
+          <h4>
+            {{ store.userinfo.first_name }}
+            {{ store.userinfo.last_name }} 
+          </h4>
           <!-- Profile and Settings buttons -->
           <button @click="goTo('ProfileView')">Profile</button>
           <button @click="goTo('SettingsSection')">Settings</button>
@@ -139,7 +142,7 @@
       logout() {
         this.store.logout()
         this.dropdownOpen = false; // Close the dropdown menu on logout
-        this.$router.push({ name: 'Home' });
+        this.$router.replace({ name: 'Login' });
       }
     }
   };

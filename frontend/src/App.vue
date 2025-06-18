@@ -43,7 +43,7 @@ export default defineComponent({
   methods: {
     async download_file(endpoint) {
       const global_store = useGlobalStore();
-      await global_store.download_file();
+      await global_store.download_file(endpoint);
 
     },
     async request_api_endpoint(endpoint: string, method: string, data?: any, headers?: any): Promise<any> {

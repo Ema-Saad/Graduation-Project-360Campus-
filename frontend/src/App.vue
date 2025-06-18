@@ -26,7 +26,7 @@ export default defineComponent({
     const global_store = useGlobalStore();
 
     return {
-      person_kind: computed(() => global_store.userinfo.person_type),
+      person_kind: computed(() => global_store.userinfo.person_type ?? ''),
     }
   },
 

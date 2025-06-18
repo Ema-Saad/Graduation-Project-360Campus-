@@ -11,16 +11,14 @@ export const useGlobalStore = defineStore('global', {
 
     initial_state.authtoken = part.split('=')[1];
 
-    fetch('http://127.0.0.1:8000/api/role', {
+    fetch('http://127.0.0.1:8000/api/userinfo', {
       headers: {
         Authorization: `Token ${initial_state.authtoken}`,
       }
     })
-      .then((res) => res.text())
+      .then((res) => res.json())
       .then((data) => {
-        initial_state.userinfo = {
-          person_kind: data.substr(1, data.length - 2)
-        };
+        initial_state.userinfo = data;
       })
 
     return initial_state
@@ -45,16 +43,13 @@ export const useGlobalStore = defineStore('global', {
 
           document.cookie = `authtoken=${this.authtoken}`;
 
-          const person_kind_response = await fetch('http://127.0.0.1:8000/api/role', {
+          const person_kind_response = await fetch('http://127.0.0.1:8000/api/userinfo', {
             headers: {
               Authorization: `Token ${this.authtoken}`,
             }
           });
 
-          const response_text = await person_kind_response.text();
-          this.userinfo = {
-            person_kind: response_text.substr(1, response_text.length - 2)
-          };
+          this.userinfo = await person_kind_response.json();
 
           return true;
         } else {
@@ -67,6 +62,7 @@ export const useGlobalStore = defineStore('global', {
 
     logout() {
       this.authtoken = '';
+      this.userinfo = null;
       document.cookie = '';
     },
 

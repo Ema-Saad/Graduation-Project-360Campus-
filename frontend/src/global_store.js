@@ -2,21 +2,24 @@ import { defineStore } from 'pinia'
 
 export const useGlobalStore = defineStore('global', {
   state: () => {
-    let initial_state = { authtoken: '', userinfo: {} };
+    let initial_state = { authtoken: null, userinfo: null };
     let part = document.cookie
                       .split('; ')
-                      .filter((p) => p.startsWith('authtoken='))[0];
+                      .filter((p) => p.startsWith('authtoken='));
 
-    if (!part) return initial_state;
+    if (part.length === 0) return initial_state
 
-    initial_state.authtoken = part.split('=')[1];
+    let token = part[0].split('=')[1];
+
+    if (token.trim().length === 0) return initial_state
+
+    initial_state.authtoken = token
 
     fetch('http://127.0.0.1:8000/api/userinfo', {
       headers: {
         Authorization: `Token ${initial_state.authtoken}`,
       }
-    })
-      .then((res) => res.json())
+    }).then((res) => res.json())
       .then((data) => {
         initial_state.userinfo = data;
       })
@@ -25,7 +28,7 @@ export const useGlobalStore = defineStore('global', {
   },
 
   getters: {
-    is_authenticated: (state) => state.authtoken !== '',
+    is_authenticated: (state) => state.authtoken !== null,
   },
 
   actions: {
@@ -43,13 +46,13 @@ export const useGlobalStore = defineStore('global', {
 
           document.cookie = `authtoken=${this.authtoken}`;
 
-          const person_kind_response = await fetch('http://127.0.0.1:8000/api/userinfo', {
+          const userinfo = await fetch('http://127.0.0.1:8000/api/userinfo', {
             headers: {
               Authorization: `Token ${this.authtoken}`,
             }
           });
 
-          this.userinfo = await person_kind_response.json();
+          this.userinfo = await userinfo.json();
 
           return true;
         } else {
@@ -61,9 +64,9 @@ export const useGlobalStore = defineStore('global', {
     },
 
     logout() {
-      this.authtoken = '';
+      this.authtoken = null;
       this.userinfo = null;
-      document.cookie = '';
+      document.cookie = 'authtoken=';
     },
 
     async request_api_endpoint(

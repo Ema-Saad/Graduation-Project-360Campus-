@@ -26,7 +26,7 @@ export default defineComponent({
     const global_store = useGlobalStore();
 
     return {
-      person_kind: computed(() => global_store.userinfo.person_type ?? ''),
+      person_kind: computed(() => global_store.userinfo === null ?  '' : global_store.userinfo.person_type),
     }
   },
 
@@ -35,6 +35,7 @@ export default defineComponent({
 
     this.$router.beforeEach((to, from) => {
       if (to.name !== 'Login' && !global_store.is_authenticated) return { name: 'Login' };
+      else if (to.name === 'Login' && global_store.is_authenticated) return { name: 'Home' };
       else return true;
     });
   },

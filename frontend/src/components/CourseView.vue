@@ -12,15 +12,42 @@
       <h1 id="course-title">{{ course.title }}</h1>
       <p id="course-description">{{ course.description }}</p>
     </div>
-
-    <!-- Edit Mode -->
-    <div v-else-if="showCourseEditingWidgets && $root.person_kind === 'P'">
-      <input v-model="course.title" type="text" placeholder="Title" size="50" />
-      <br />
-      <textarea v-model="course.description" cols="120" rows="10"></textarea>
-      <br />
-      <button @click="editCourse">Save</button>
-      <button @click="course = copy_of_course; showCourseEditingWidgets = false">Cancel</button>
+       <!-- Edit Mode -->
+    <div v-else-if="showCourseEditingWidgets && $root.person_kind === 'P'" class="course-edit-container">
+      <div class="edit-form-card">
+        <h2 class="edit-form-title">Edit Course Information</h2>
+        
+        <div class="form-group">
+          <label for="course-title-input" class="form-label">Course Title</label>
+          <input 
+            id="course-title-input"
+            v-model="course.title" 
+            type="text" 
+            class="form-input"
+            placeholder="Enter course title"
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="course-description-input" class="form-label">Course Description</label>
+          <textarea 
+            id="course-description-input"
+            v-model="course.description" 
+            class="form-textarea"
+            placeholder="Enter detailed course description"
+            rows="6"
+          ></textarea>
+        </div>
+        
+        <div class="form-actions">
+          <button @click="editCourse" class="save-button">
+            <span class="button-icon"></span> Save Changes
+          </button>
+          <button @click="course = copy_of_course; showCourseEditingWidgets = false" class="cancel-button">
+            <span class="button-icon"></span> Cancel
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Instructor Controls -->
@@ -29,7 +56,6 @@
   <button @click="copy_of_course = { ...course }; showCourseEditingWidgets = true">✏️ Edit Course Info</button>
   <button @click="deleteCourse">🗑️ Delete Course</button>
 </div>
-
 
     <!-- Weeks Section -->
     <div class="weeks-container">
@@ -194,12 +220,10 @@
 </script>
 
 <style>
-  /* Container to constrain image */
   .image-container {
     width: 100%;
-    position: relative; /* Positioning context for overlay */
+    position: relative;
   }
-  /* Styling for the main image */
   .main-image {
     width: 100%;
     height: 250px;
@@ -210,21 +234,19 @@
     border-bottom: 2px solid #ddd;
     max-height: 500px;
   }
-
-  /* Overlay with dark background and centered text */
   .overlay {
     position: absolute;
-    top: 30%; /* Adjust this value to move the text upwards or downwards */
-    left: 30%; /* Horizontally center */
-    transform: translateX(-50%); /* Center the text horizontally */
+    top: 30%; 
+    left: 30%; 
+    transform: translateX(-50%);
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
-    color: black; /* Text color */
-    font-size: 1em; /* Adjust font size as needed */
-    font-weight: bold; /* Make the text bold */
-    z-index: 1; /* Ensures the overlay text is above the image */
+    color: black;
+    font-size: 1em; 
+    font-weight: bold; 
+    z-index: 1; 
   }
 .week-box {
   border-radius: 12px;
@@ -249,8 +271,8 @@
 
 .week-image-container {
   position: relative;
-  width: 200px; /* increase from 120px */
-  height: 150px; /* increase from 80px */
+  width: 200px; 
+  height: 150px;
   border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
@@ -275,11 +297,9 @@
 }
 
 .week-overlay-text {
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: black;
-  padding: 4px 8px;
-  border-radius: 6px;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #000;
 }
 
 .week-header {
@@ -321,7 +341,6 @@
   color: #3b3b98;
 }
 
-/* Instructor Controls Button Styling */
 #course-edit-controls {
   display: flex;
   gap: 16px;
@@ -373,16 +392,113 @@
   background-color: darkorange;
   transform: translateY(-1px);
 }
-.arrow {
-  font-size: 2rem;
-  font-weight: bold;
-  transition: transform 0.3s ease;
+  .course-edit-container {
+    background: linear-gradient(to bottom, rgba(32, 24, 135, 1), rgba(244, 196, 98, 1));
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+.edit-form-title {
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 700; /* Make it bold */
+  text-align: center; /* Center the text */
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.75rem;
+  width: 100%; /* Ensure full width */
 }
-.arrow.rotate {
-  transform: rotate(180deg);
+.form-group {
+  margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 400px; /* Match buttons width */
+  margin-left: auto;
+  margin-right: auto;
+}
+.form-label {
+  display: block;
+  margin-bottom: 0.4rem;  
+  font-weight: 200;       
+  color: #fdfdfd;
+  font-size: 0.85rem;  
+  letter-spacing: 0.3px;
+}
+.form-input, 
+.form-textarea {
+  width: 100%;
+  max-width: 400px; /* Added max-width to match buttons */
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  display: block; /* Ensure they take full width */
+  margin: 0 auto; /* Center the inputs */
+}
+.form-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+  .form-input:focus, .form-textarea:focus {
+    outline: none;
+    border-color: #3b3b98;
+    box-shadow: 0 0 0 3px rgba(59, 59, 152, 0.1);
+  }
+
+  .form-textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 1.5rem;
+  width: 130%;
+  max-width: 400px; /* Match input field width */
+  margin-left: auto;
+  margin-right: auto;
+}
+.save-button, .cancel-button {
+  width: 110%; /* Ensure full width of container */
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-  /* Responsive Styles */
+.save-button {
+  background-color: #3b3b98;
+  color: white;
+}
+
+.save-button:hover {
+  background-color: darkorange;
+  transform: translateY(-2px);
+}
+
+.cancel-button {
+  background-color: rgb(169, 165, 165);
+  color: #ffffff;
+}
+.cancel-button:hover {
+  background-color: darkorange;
+  transform: translateY(-2px);
+}
+.form-group .course-title,
+.form-group .course-description,
+.form-group .edit-form-title {
+  font-weight: 700px bold !important;
+}
+  
   @media screen and (max-width: 1024px) {
     .overlay {
       top: 20%; /* Adjust text positioning */

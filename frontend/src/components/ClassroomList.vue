@@ -1,5 +1,6 @@
 <template>
-  <div class="app-container">
+  <div class="app-container background-page">
+    
     <header class="header">
       <!-- To Do Button that navigates to the To Do list -->
       <div v-if="$root.person_kind === 'S'" class="todo-button-container">
@@ -31,24 +32,27 @@
     </header>
 
     <!-- The class cards or any other content here -->
-    <div class="class-cards">
-      <router-link v-for="classroom in registered_classes"
-                   :key="classroom.id"
-                   :to="{ name: 'ClassroomView', params: { courseId: classroom.course.id } }"
-                   class="class-card">
-
+  <div class="class-cards">
+  <router-link
+    v-for="classroom in registered_classes"
+    :key="classroom.id"
+    :to="{ name: 'ClassroomView', params: { courseId: classroom.course.id } }"
+    class="class-card"
+  >
+    <div class="card-background">
+      <div class="class-card-overlay">
         <h3>{{ classroom.course.title }}</h3>
-        <p v-if="$root.person_kind === 'S'" class="author">👤 {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}</p>
-      </router-link>
+        <p v-if="$root.person_kind === 'S'" class="author">
+          👤 {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}
+        </p>
+      </div>
     </div>
+  </router-link>
+</div>
   </div>
 </template>
 
 <script>
-  import class1Image from '@/assets/pexels-photo.png';
-  import class2Image from '@/assets/pexels-photo.png';
-  import class3Image from '@/assets/pexels-photo.png';
-
   import { useGlobalStore } from '@/global_store.js'
 
   export default {
@@ -120,7 +124,25 @@
     padding-top: 20px;
     height: 100vh;
   }
+.background-page {
+  position: relative;
+  overflow: hidden;
+}
 
+.background-page::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('@/assets/classroom.jpg');
+  background-size: 65%;
+  background-repeat: no-repeat;
+  background-position: center top;
+  filter: blur(4px) brightness(0.8); /* 🔹 blur + dim effect */
+  z-index: 0;
+}
   .header {
     display: flex;
     justify-content: space-between;
@@ -191,29 +213,60 @@
     color: black;
   }
 
-  .class-cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
-    width: 90%;
-    max-width: 1200px;
-    margin-top: 20px;
-    padding-bottom: 20px;
-  }
+.class-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  width: 90%;
+  max-width: 1200px;
+  margin-top: 20px;
+  padding-bottom: 20px;
+  margin-left: 15%; 
+}
 
-  .class-card {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
-    cursor: pointer;
-    position: relative;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
+.class-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  padding: 0;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: transparent;
+}
+
+.card-background {
+  width: 100%;
+  height: 180px;
+  background-image: url('@/assets/pexels-photo.png');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.class-card-overlay {
+  color: white;
+  padding: 15px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.class-card h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.author {
+  font-size: 14px;
+  margin-top: 8px;
+  color: #f0f0f0;
+}
 
   .class-card:hover {
     border: 1px solid #007bff;
@@ -224,12 +277,6 @@
     height: 120px;
     object-fit: cover;
     border-radius: 5px;
-  }
-
-  .author {
-    margin-top: 10px;
-    font-size: 12px;
-    color: #555;
   }
 
   .class-image-container {

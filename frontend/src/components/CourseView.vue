@@ -24,11 +24,12 @@
     </div>
 
     <!-- Instructor Controls -->
-    <span id="course-edit-controls" v-if="$root.person_kind === 'P' && !showCourseEditingWidgets">
-      <button @click="showMaterialCreateDialog = true">Add New Material</button>
-      <button @click="copy_of_course = { ...course }; showCourseEditingWidgets = true">Edit Course Information</button>
-      <button @click="deleteCourse">Delete Course</button>
-    </span>
+<div id="course-edit-controls" v-if="$root.person_kind === 'P' && !showCourseEditingWidgets">
+  <button @click="showMaterialCreateDialog = true">➕ Add New Material</button>
+  <button @click="copy_of_course = { ...course }; showCourseEditingWidgets = true">✏️ Edit Course Info</button>
+  <button @click="deleteCourse">🗑️ Delete Course</button>
+</div>
+
 
     <!-- Weeks Section -->
     <div class="weeks-container">
@@ -43,7 +44,7 @@
           </div>
           <!-- Arrow -->
           <div class="week-header">
-            <span class="arrow" :class="{ rotate: !isDropdownOpen(week.id) }">&#9660;</span> <!-- ▼ -->
+            <span class="arrow" :class="{ rotate: isDropdownOpen(week.id) }">&#9660;</span>
           </div>
         </div>
 
@@ -192,7 +193,7 @@
   };
 </script>
 
-<style scoped>
+<style>
   /* Container to constrain image */
   .image-container {
     width: 100%;
@@ -226,24 +227,24 @@
     z-index: 1; /* Ensures the overlay text is above the image */
   }
 .week-box {
-  border: 1px solid #eee;
   border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 20px;
-  background-color: #fff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.3s ease;
+  background-color: white;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in-out;
   cursor: pointer;
+  border: 1px solid #f0f0f0;
 }
-
 .week-box:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 .week-content {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .week-image-container {
@@ -274,9 +275,11 @@
 }
 
 .week-overlay-text {
-  font-weight: bold;
-  font-size: 1rem;
-  color: #000;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: black;
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
 .week-header {
@@ -288,25 +291,95 @@
   font-size: 1.5rem;
   transition: transform 0.3s ease;
 }
+
 .arrow.rotate {
-  transform: rotate(180deg); /* ▼ rotated 180deg = ▲ */
+  transform: rotate(180deg);
 }
+
 .dropdown-menu {
   margin-top: 10px;
   padding-left: 20px;
 }
 
+.dropdown-menu h3 {
+  font-weight: 700;
+  font-size: 1.3rem;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
 .dropdown-item {
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 6px 0;
   display: block;
-  padding: 8px 0;
-  font-size: 1.2rem;
   color: #000;
-  font-weight: bold;
   text-decoration: none;
 }
 
 .dropdown-item:hover {
-  color: #007bff;
+  color: #3b3b98;
+}
+
+/* Instructor Controls Button Styling */
+#course-edit-controls {
+  display: flex;
+  gap: 16px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+#course-edit-controls button {
+  background-color: #3b3b98;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#course-edit-controls button:hover {
+  background-color: darkorange;
+  transform: translateY(-2px);
+}
+.material-edit-controls {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.material-edit-controls button {
+  background-color: #3b3b98;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.material-edit-controls button:hover {
+  background-color: darkorange;
+  transform: translateY(-1px);
+}
+.arrow {
+  font-size: 2rem;
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+.arrow.rotate {
+  transform: rotate(180deg);
 }
 
   /* Responsive Styles */

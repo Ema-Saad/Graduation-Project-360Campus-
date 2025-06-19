@@ -11,20 +11,18 @@
       <div v-else-if="$root.person_kind === 'P'">
       </div>
 
-      <div v-if="$root.person_kind === 'S'" id="join-controls">
-        <select id="course" v-model="enroll_in.course" @change="populateClassroomsForEnroll">
+      <div v-if="$root.person_kind === 'S'" id="join-controls" class="join-controls-wrapper">
+        <select id="course" v-model="enroll_in.course" @change="populateClassroomsForEnroll" class="join-select">
           <option value="0" disabled> Course </option>
           <option v-for="course in courses" :value="course.id">
             {{ course.title }}
           </option>
         </select>
-        
-        <span> Taught by </span>
-        <select id="classroom" v-model="enroll_in.classroom">
-          <option value="0" disabled> Instructor </option>
 
+        <select id="classroom" v-model="enroll_in.classroom" class="join-select">
+          <option value="0" disabled> Instructor </option>
           <option v-for="classroom in classrooms_of_course" :value="classroom.id">
-          {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}
+            {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}
           </option>
         </select>
 
@@ -43,10 +41,8 @@
         <p v-if="$root.person_kind === 'S'" class="author">👤 {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}</p>
       </router-link>
     </div>
-
   </div>
 </template>
-
 
 <script>
   import class1Image from '@/assets/pexels-photo.png';
@@ -83,21 +79,18 @@
       });
     },
     methods: {
-      // Method to navigate to the To-Do page
       populateClassroomsForEnroll() {
         let classrooms_promise = this.$root.request_api_endpoint(`api/course/${this.enroll_in.course}/classrooms`, 'get', null);
-
         classrooms_promise.then((data) => {
           this.classrooms_of_course = data;
         });
-  
       },
       goToToDoPage() {
-        this.$router.push({ name: 'ToDoPage' }); // 'ToDoPage' should be the name of the route for the to-do list
+        this.$router.push({ name: 'ToDoPage' });
       },
       join() {
         let join_promise = this.$root.request_api_endpoint(
-        `api/course/${this.enroll_in.course}/classroom/join`, 
+          `api/course/${this.enroll_in.course}/classroom/join`, 
           'post', 
           JSON.stringify({ 'classroom': this.enroll_in.classroom }),
           { 'Content-Type': 'application/json' },
@@ -119,7 +112,6 @@
 </script>
 
 <style scoped>
-  /* Main container for the app */
   .app-container {
     display: flex;
     flex-direction: column;
@@ -129,7 +121,6 @@
     height: 100vh;
   }
 
-  /* Header section styling */
   .header {
     display: flex;
     justify-content: space-between;
@@ -143,7 +134,7 @@
   }
 
   .todo-button-container {
-    position: relative; /* To position the badge relative to the button */
+    position: relative;
     display: inline-block;
   }
 
@@ -156,13 +147,13 @@
     padding: 10px 20px;
     font-size: 14px;
     cursor: pointer;
-    position: relative; /* To allow absolute positioning of the badge */
+    position: relative;
   }
 
-    .todo-button:hover,
-    .join-button:hover {
-      background-color: darkorange;
-    }
+  .todo-button:hover,
+  .join-button:hover {
+    background-color: darkorange;
+  }
 
   .badge {
     background-color: #f68b1e;
@@ -171,24 +162,45 @@
     padding: 3px 8px;
     font-size: 12px;
     position: absolute;
-    top: -5px; /* Move the badge a little above */
-    right: -5px; /* Position it on the top-right corner */
+    top: -5px;
+    right: -5px;
   }
 
+  .join-controls-wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
 
+  .join-select {
+    background-color: #3b3b98;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    appearance: none;
+  }
 
-  /* Class Cards Section - Styling */
+  .join-select:hover {
+    background-color: darkorange;
+  }
+
+  .join-select option {
+    color: black;
+  }
+
   .class-cards {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columns layout */
-    gap: 20px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
     width: 90%;
     max-width: 1200px;
     margin-top: 20px;
     padding-bottom: 20px;
   }
 
-  /* Class card styling */
   .class-card {
     display: block;
     width: 100%;
@@ -199,15 +211,14 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     background-color: #fff;
     cursor: pointer;
-    position: relative; /* Allow positioning of the overlay */
+    position: relative;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
-    .class-card:hover {
-      border: 1px solid #007bff;
-    }
+  .class-card:hover {
+    border: 1px solid #007bff;
+  }
 
-  /* Class image styling */
   .class-image {
     width: 100%;
     height: 120px;
@@ -215,45 +226,39 @@
     border-radius: 5px;
   }
 
-  /* Author text styling */
   .author {
     margin-top: 10px;
     font-size: 12px;
     color: #555;
   }
 
-  /* Class card image container */
   .class-image-container {
     position: relative;
   }
 
-  /* Class card overlay styling */
   .class-card-overlay {
     position: absolute;
     top: 50%;
     left: 40%;
-    transform: translate(-50%, -50%); /* Center the overlay */
-    color: black; /* Ensure the text is visible on darker images */
+    transform: translate(-50%, -50%);
+    color: black;
     padding: 10px;
     border-radius: 5px;
-    text-align: center; /* Center the text inside the overlay */
-    width: 80%; /* Adjust width */
+    text-align: center;
+    width: 80%;
     font-size: 14px;
   }
-  /* Media query for screens below 768px */
+
   @media (max-width: 768px) {
-    /* Adjust the layout of the app container for mobile */
     .app-container {
       flex-direction: column;
       height: auto;
     }
 
-    /* Adjust the background container to fit mobile view */
     .background-container {
       padding-top: 10px;
     }
 
-    /* Header adjustments */
     .header {
       flex-direction: column;
       align-items: flex-start;
@@ -263,47 +268,43 @@
     .todo-button-container {
       margin-top: 10px;
       display: flex;
-      flex-direction: column; /* Stack the buttons vertically */
-      width: 100%; /* Ensure container takes full width */
+      flex-direction: column;
+      width: 100%;
     }
 
-    /* Button adjustments */
     .todo-button, .join-button {
       font-size: 14px;
       padding: 12px 20px;
-      width: 100%; /* Ensure buttons are full width */
-      text-align: center; /* Center text inside buttons */
+      width: 100%;
+      text-align: center;
       border-radius: 5px;
       cursor: pointer;
-      background-color: #3b3b98; /* Default color */
-      color: white; /* Text color */
+      background-color: #3b3b98;
+      color: white;
       border: none;
-      margin-bottom: 15px; /* Add margin-bottom to create space between buttons */
+      margin-bottom: 15px;
     }
 
     .todo-button:hover, .join-button:hover {
       background-color: darkorange;
     }
 
-    /* Badge adjustments */
     .badge {
       font-size: 10px;
       padding: 2px 6px;
     }
 
-    /* Class Cards adjustments */
     .class-cards {
       display: grid;
-      grid-template-columns: repeat(2, 1fr); /* 2 columns for smaller screens */
+      grid-template-columns: repeat(2, 1fr);
       gap: 15px;
       width: 90%;
       max-width: 100%;
       margin-top: 20px;
       padding-bottom: 20px;
-      margin-bottom: 100px; /* Push the cards above the footer */
+      margin-bottom: 100px;
     }
 
-    /* Class card adjustments */
     .class-card {
       padding: 12px;
       font-size: 14px;
@@ -312,6 +313,16 @@
     .class-image {
       height: 100px;
     }
-  }
 
+    .join-controls-wrapper {
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .join-select {
+      width: 100%;
+    }
+  }
 </style>

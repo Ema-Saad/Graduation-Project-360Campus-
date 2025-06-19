@@ -1,8 +1,7 @@
 <template>
-
   <GraduationProjectCreate 
     v-if="$root.person_kind === 'P' && showPopup" 
-      @closed="showPopup = false"
+    @closed="showPopup = false"
   />
 
   <div class="projects-page">
@@ -13,7 +12,7 @@
       <div class="filter-item">
         <select v-model="filters.faculty" @change="updateFilter">
           <option value="">Faculty</option>
-          <option v-for="college in colleges" value="{{ college.id }}">
+          <option v-for="college in colleges" :value="college.id" :key="college.id">
             {{ college.name }}
           </option>
         </select>
@@ -30,14 +29,15 @@
         </select>
       </div>
 
-      <button v-if="$root.person_kind === 'P'" @click="showPopup = true" >
+      <button v-if="$root.person_kind === 'P'" @click="showPopup = true">
         Upload New Project
       </button>
     </div>
 
-    <!-- Conditionally render filtered projects if any filter is applied -->
     <div v-if="filteredProjects.length > 0" class="filtered-projects">
-      <h2 class="projects-title">Filtered Graduation Projects</h2>
+    <h2 class="projects-title">
+  {{ filters.faculty || filters.year ? "Filtered Graduation Projects" : "Popular Graduation Projects" }}
+</h2>
       <div class="project-list">
         <router-link 
           v-for="project in filteredProjects" 
@@ -46,21 +46,24 @@
           class="project-item"
         >
           <div class="project-image">
-            <img :src="project.imageUrl" alt="Project Image" />
+            <img :src="project.imageUrl || defaultProjectImg" alt="Project Image" />
             <div class="overlay">
-              <div class="overlay-text">
-                <p class="project-title-overlay">{{ project.title }}</p>
-              </div>
+             <div class="overlay-text">
+  <p class="project-title-overlay">{{ project.name }}</p>
+</div>
             </div>
           </div>
           <div class="project-details">
-            <div class="project-instructor">
-              <div class="instructor-avatar-container">
-                <img class="instructor-icon" :src="project.instructorIconUrl" alt="Instructor Icon" />
-              </div>
-              <span class="instructor-name">{{ project.instructor }}</span>
-            </div>
-            <div class="project-title">{{ project.name}}</div>
+        <div class="project-instructor">
+  <div class="instructor-avatar-container">
+    <img class="instructor-icon" :src="project.instructorIconUrl || defaultInstructorIcon" alt="Instructor Icon" />
+    <div class="instructor-info">
+     <span class="instructor-name">{{ project.instructor }}</span>
+
+      <span class="project-faculty">{{ project.faculty }}</span>
+    </div>
+  </div>
+</div>
             <p class="project-major">Majors: {{ project.faculty }}</p>
           </div>
           <div class="project-rating">
@@ -71,7 +74,6 @@
       </div>
     </div>
 
-    <!-- Show message if filters are applied but no projects match -->
     <div v-else class="no-projects-message">
       <p>No projects found for the selected filters. Please adjust your filters.</p>
     </div>
@@ -79,7 +81,8 @@
 </template>
 
 <script>
-
+import defaultProjectImg from '@/assets/project-image.png';
+import defaultInstructorIcon from '@/assets/customer.png';
 import GraduationProjectCreate from './GraduationProjectCreate.vue'
 import { useGlobalStore } from '@/global_store.js'
 
@@ -92,6 +95,8 @@ export default {
     return {
       showPopup: false,
       colleges: [],
+       defaultProjectImg,
+    defaultInstructorIcon,
       projects: [], // Stores all graduation projects fetched from the API
       filters: {
         faculty: "",
@@ -99,6 +104,7 @@ export default {
       }
     };
   },
+  
   computed: {
     filteredProjects() {
       return this.projects.filter(project => {
@@ -136,7 +142,7 @@ export default {
   .filter-section {
     display: flex;
     align-items: center;
-    padding: 30px;
+    padding: 15px;
     border-bottom: 1px solid #ccc;
   }
 
@@ -207,10 +213,12 @@ export default {
     color: inherit;
   }
 
-    .project-item:hover {
-      border: 1px solid #007bff;
-      cursor: pointer; /* Add pointer cursor */
-    }
+.project-item:hover {
+  background-color: #f4f8ff;
+  border: 1px solid #3b3b98;
+  box-shadow: 0 12px 24px rgba(59, 59, 152, 0.3);
+  cursor: pointer;
+}
   .project-image {
     position: relative; /* Needed for absolute positioning of overlay */
     overflow: hidden; /* Hide overflowing overlay content */
@@ -226,7 +234,7 @@ export default {
   .overlay {
     position: absolute;
     top: 0;
-    left: 0;
+    left: 100px;
     width: 100%;
     height: 100%;
     display: flex;
@@ -243,12 +251,13 @@ export default {
     left: 25px;
     box-sizing: border-box;
   }
-
-  .project-title-overlay {
-    font-size: 0.9rem;
-    font-weight: bold;
-    margin: 0;
-  }
+.project-title-overlay {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0;
+  word-break: break-word;
+  text-align: center;
+}
   .project-details {
     flex: 1;
     font-size: 16px;
@@ -260,28 +269,35 @@ export default {
     margin-bottom: 5px;
   }
 
-  /* Instructor Info Styles */
-  .instructor-info {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 15px;
-    padding: 10px 0;
-    margin-right: 90px;
-  }
+.instructor-info {
+  position: absolute;
+  left: 50px;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  padding: 5px 10px 5px 30px;
+  border-radius: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  min-width: 150px;
+  z-index: -1;
+}
 
-  /* Avatar container to handle background gradient */
-  .instructor-avatar-container {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: linear-gradient(to bottom, #f08a24, #3b3b98);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 10px;
-  }
-
+.instructor-avatar-container {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(to bottom, #f08a24, #3b3b98);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+  position: relative; /* Added for positioning context */
+}
+.project-faculty {
+  font-size: 0.8em;
+  color: #666;
+}
   /* Avatar image inside the container */
   .instructor-icon {
     width: 30px;
@@ -316,7 +332,41 @@ export default {
   .star {
     margin-right: 3px;
   }
-  /* Media Queries for Responsiveness */
+.filter-section button {
+  background-color: #201887;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-left: auto; /* optional: push it to the right */
+}
+
+.filter-section button:hover {
+  background-color: darkorange;
+  transform: translateY(-2px);
+}
+.remove-btn {
+  background-color: #201887;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-left: 12px;
+}
+
+.remove-btn:hover {
+  background-color: darkorange;
+  transform: translateY(-1px);
+}
   /* Media Queries for Responsiveness */
   @media (max-width: 1200px) {
     .filter-section {

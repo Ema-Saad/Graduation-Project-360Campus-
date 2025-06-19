@@ -7,65 +7,73 @@
   />
 
   <div v-if="course">
+    <!-- Course Info -->
     <div v-if="!showCourseEditingWidgets">
       <h1 id="course-title">{{ course.title }}</h1>
       <p id="course-description">{{ course.description }}</p>
     </div>
+
+    <!-- Edit Mode -->
     <div v-else-if="showCourseEditingWidgets && $root.person_kind === 'P'">
-      <input v-model="course.title" type="text" placeholder="Title" value="{{ course.title }}" size="50" />
+      <input v-model="course.title" type="text" placeholder="Title" size="50" />
       <br />
-      <textarea v-model="course.description" cols="120" rows="10">
-        {{ course.description }}
-      </textarea>
+      <textarea v-model="course.description" cols="120" rows="10"></textarea>
       <br />
-      <button @click="editCourse"> Save </button>
-      <button @click="course = copy_of_course; showCourseEditingWidgets = false">
-        Cancel
-      </button>
+      <button @click="editCourse">Save</button>
+      <button @click="course = copy_of_course; showCourseEditingWidgets = false">Cancel</button>
     </div>
 
+    <!-- Instructor Controls -->
     <span id="course-edit-controls" v-if="$root.person_kind === 'P' && !showCourseEditingWidgets">
-      <button @click="showMaterialCreateDialog = true"> Add New Material </button>
-      <button @click="copy_of_course = {...course}; showCourseEditingWidgets = true"> 
-        Edit Course Information 
-      </button>
-      <button @click="deleteCourse"> Delete Course </button>
+      <button @click="showMaterialCreateDialog = true">Add New Material</button>
+      <button @click="copy_of_course = { ...course }; showCourseEditingWidgets = true">Edit Course Information</button>
+      <button @click="deleteCourse">Delete Course</button>
     </span>
 
+    <!-- Weeks Section -->
     <div class="weeks-container">
       <div class="week-box" v-for="week in weeks" :key="week.id" @click="toggleDropdown(week.id)">
-        <span class="week-title">Week {{ week.id }} </span>
-        <span class="arrow" :class="{ 'rotate': isDropdownOpen(week.id) }">&#9660;</span>
-
-        <template v-for="materialTypeArray in week" v-if="isDropdownOpen(week.id)" class="dropdown-menu">
-          <div v-if="materialTypeArray.length > 0"> 
-            <h3> {{ stringifyMaterialType(materialTypeArray[0].kind) }} </h3>
-            <ul>
-              <li v-for="materialInstance in materialTypeArray">
-                <a class="dropdown-item" href="" @click.prevent="download(materialInstance.id)"> 
-                  {{ materialInstance.name }} 
-                </a>
-
-                <span class="material-edit-controls" v-if="$root.person_kind === 'P'">
-                  <button @click="toBeEditedMaterial = materialInstance; showMaterialCreateDialog = true">
-                    Edit
-                  </button>
-
-                  <button @click="deleteMaterial(materialInstance)">
-                    Delete
-                  </button>
-                </span>
-              </li>
-            </ul>
+        <div class="week-content">
+          <!-- Image + Text -->
+          <div class="week-image-container">
+            <img class="week-image" :src="weekImage" alt="Week background" />
+            <div class="week-overlay">
+              <span class="week-overlay-text">Week {{ week.id }}</span>
+            </div>
           </div>
-        </template>
+          <!-- Arrow -->
+          <div class="week-header">
+            <span class="arrow" :class="{ rotate: !isDropdownOpen(week.id) }">&#9660;</span> <!-- ▼ -->
+          </div>
+        </div>
+
+        <!-- Dropdown Menu -->
+        <div class="dropdown-menu" v-if="isDropdownOpen(week.id)">
+          <template v-for="materialTypeArray in week">
+            <div v-if="materialTypeArray.length > 0">
+              <h3>{{ stringifyMaterialType(materialTypeArray[0].kind) }}</h3>
+              <ul>
+                <li v-for="materialInstance in materialTypeArray" :key="materialInstance.id">
+                  <a class="dropdown-item" href="" @click.prevent="download(materialInstance.id)">
+                    {{ materialInstance.name }}
+                  </a>
+
+                  <span class="material-edit-controls" v-if="$root.person_kind === 'P'">
+                    <button @click="toBeEditedMaterial = materialInstance; showMaterialCreateDialog = true">Edit</button>
+                    <button @click="deleteMaterial(materialInstance)">Delete</button>
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </template>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-
+  import weekImage from '@/assets/pexels-photo.png';
   import MaterialCreate from './MaterialCreate.vue';
   import { useGlobalStore } from '@/global_store.js'
 
@@ -91,6 +99,7 @@
         showCourseEditingWidgets: false,
         showMaterialCreateDialog: false,
         toBeEditedMaterial: null,
+        weekImage: weekImage
       };
     },
     async beforeRouteEnter(to, from, next) {
@@ -216,100 +225,90 @@
     font-weight: bold; /* Make the text bold */
     z-index: 1; /* Ensures the overlay text is above the image */
   }
+.week-box {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+  cursor: pointer;
+}
 
+.week-box:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
 
+.week-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
-  /* Text in the overlay */
-  .overlay-text {
-    z-index: 2; /* Ensure text appears above the overlay */
-  }
+.week-image-container {
+  position: relative;
+  width: 200px; /* increase from 120px */
+  height: 150px; /* increase from 80px */
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
 
-  .course-code {
-    font-size: 1.5em;
-    font-weight: bold;
-  }
+.week-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 
-  .course-name {
-    font-size: 2.5em;
-    font-weight: bold;
-    margin-top: 10px;
-  }
+.week-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  .week-box {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 15px;
-    position: relative;
-  }
+.week-overlay-text {
+  font-weight: bold;
+  font-size: 1rem;
+  color: #000;
+}
 
-    .week-box:hover {
-      border: 1px solid #007bff;
-    }
+.week-header {
+  font-size: 1.5rem;
+  color: #333;
+}
 
-  .week-header {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-  }
+.arrow {
+  font-size: 1.5rem;
+  transition: transform 0.3s ease;
+}
+.arrow.rotate {
+  transform: rotate(180deg); /* ▼ rotated 180deg = ▲ */
+}
+.dropdown-menu {
+  margin-top: 10px;
+  padding-left: 20px;
+}
 
-  /* Week Image with Overlay */
-  .week-image-container {
-    position: relative; /* Positioning context for overlay */
-    width: 100%; /* Ensure the container takes up full width */
-  }
+.dropdown-item {
+  display: block;
+  padding: 8px 0;
+  font-size: 1.2rem;
+  color: #000;
+  font-weight: bold;
+  text-decoration: none;
+}
 
-  .week-image {
-    width: 25%;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 4px;
-  }
-  /* Week Overlay */
-  /* Week Overlay */
-  .week-overlay {
-    position: absolute;
-    top: 30%; /* Adjust the percentage to move the text upwards or downwards */
-    left: 3%; /* Horizontally center */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: black; /* Text color */
-    font-size: 2em; /* Adjust as needed */
-    font-weight: bold; /* Make the text bold */
-    z-index: 1;
-  }
+.dropdown-item:hover {
+  color: #007bff;
+}
 
-  .week-overlay-text {
-    z-index: 2; /* Ensure text appears above the overlay */
-  }
-
-  .arrow {
-    margin-left: auto;
-    transition: transform 0.3s ease;
-  }
-
-    .arrow.rotate {
-      transform: rotate(180deg);
-    }
-
-  .dropdown-menu {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .dropdown-item {
-    text-decoration: none;
-    color: black;
-    padding: 8px 0;
-  }
-
-    .dropdown-item:hover {
-      text-decoration: underline;
-      color: #007bff; /* Optional: Change color to blue when hovered */
-    }
   /* Responsive Styles */
   @media screen and (max-width: 1024px) {
     .overlay {

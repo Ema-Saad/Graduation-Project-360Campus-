@@ -44,29 +44,29 @@ faculties = [
 ]
 
 professors = [
-    {'faculty_id': 'csit-csc', 'person_kind': 'P', 'username': 'csit_csc_prof1', 'first_name': 'Test', 'last_name': 'Prof1',  'email': 'csit_csc_prof1@example.com'},
-    {'faculty_id': 'csit-csc', 'person_kind': 'P', 'username': 'csit_csc_prof2', 'first_name': 'Test', 'last_name': 'Prof2',  'email': 'csit_csc_prof2@example.com'},
-    {'faculty_id': 'csit-csc', 'person_kind': 'P', 'username': 'csit_csc_prof3', 'first_name': 'Test', 'last_name': 'Prof3',  'email': 'csit_csc_prof3@example.com'},
-    {'faculty_id': 'csit-csc', 'person_kind': 'P', 'username': 'csit_csc_prof4', 'first_name': 'Test', 'last_name': 'Prof4',  'email': 'csit_csc_prof4@example.com'},
-    {'faculty_id': 'csit-aid', 'person_kind': 'P', 'username': 'csit_aid_prof1', 'first_name': 'Test', 'last_name': 'Prof5',  'email': 'csit_aid_prof1@example.com'},
-    {'faculty_id': 'csit-aid', 'person_kind': 'P', 'username': 'csit_aid_prof2', 'first_name': 'Test', 'last_name': 'Prof6',  'email': 'csit_aid_prof2@example.com'},
-    {'faculty_id': 'csit-aid', 'person_kind': 'P', 'username': 'csit_aid_prof3', 'first_name': 'Test', 'last_name': 'Prof7',  'email': 'csit_aid_prof3@example.com'},
-    {'faculty_id': 'csit-aid', 'person_kind': 'P', 'username': 'csit_aid_prof4', 'first_name': 'Test', 'last_name': 'Prof8',  'email': 'csit_aid_prof4@example.com'},
-    {'faculty_id': 'csit-cnc', 'person_kind': 'P', 'username': 'csit_cnc_prof1', 'first_name': 'Test', 'last_name': 'Prof9',  'email': 'csit_cnc_prof1@example.com'},
-    {'faculty_id': 'csit-cnc', 'person_kind': 'P', 'username': 'csit_cnc_prof2', 'first_name': 'Test', 'last_name': 'Prof10', 'email': 'csit_cnc_prof2@example.com'},
-    {'faculty_id': 'csit-cnc', 'person_kind': 'P', 'username': 'csit_cnc_prof3', 'first_name': 'Test', 'last_name': 'Prof11', 'email': 'csit_cnc_prof3@example.com'},
-    {'faculty_id': 'csit-cnc', 'person_kind': 'P', 'username': 'csit_cnc_prof4', 'first_name': 'Test', 'last_name': 'Prof12', 'email': 'csit_cnc_prof4@example.com'},
-    {'faculty_id': 'csit-bif', 'person_kind': 'P', 'username': 'csit_bif_prof1', 'first_name': 'Test', 'last_name': 'Prof13', 'email': 'csit_bif_prof1@example.com'},
-    {'faculty_id': 'csit-bif', 'person_kind': 'P', 'username': 'csit_bif_prof2', 'first_name': 'Test', 'last_name': 'Prof14', 'email': 'csit_bif_prof2@example.com'},
-    {'faculty_id': 'csit-bif', 'person_kind': 'P', 'username': 'csit_bif_prof3', 'first_name': 'Test', 'last_name': 'Prof15', 'email': 'csit_bif_prof3@example.com'},
-    {'faculty_id': 'csit-bif', 'person_kind': 'P', 'username': 'csit_bif_prof4', 'first_name': 'Test', 'last_name': 'Prof16', 'email': 'csit_bif_prof4@example.com'},
+    {'faculty_id': 'csit-csc', 'person_type': 'P', 'username': 'csit_csc_prof1', 'first_name': 'Test', 'last_name': 'Prof1',  'email': 'csit_csc_prof1@example.com'},
+    {'faculty_id': 'csit-csc', 'person_type': 'P', 'username': 'csit_csc_prof2', 'first_name': 'Test', 'last_name': 'Prof2',  'email': 'csit_csc_prof2@example.com'},
+    {'faculty_id': 'csit-csc', 'person_type': 'P', 'username': 'csit_csc_prof3', 'first_name': 'Test', 'last_name': 'Prof3',  'email': 'csit_csc_prof3@example.com'},
+    {'faculty_id': 'csit-csc', 'person_type': 'P', 'username': 'csit_csc_prof4', 'first_name': 'Test', 'last_name': 'Prof4',  'email': 'csit_csc_prof4@example.com'},
+    {'faculty_id': 'csit-aid', 'person_type': 'P', 'username': 'csit_aid_prof1', 'first_name': 'Test', 'last_name': 'Prof5',  'email': 'csit_aid_prof1@example.com'},
+    {'faculty_id': 'csit-aid', 'person_type': 'P', 'username': 'csit_aid_prof2', 'first_name': 'Test', 'last_name': 'Prof6',  'email': 'csit_aid_prof2@example.com'},
+    {'faculty_id': 'csit-aid', 'person_type': 'P', 'username': 'csit_aid_prof3', 'first_name': 'Test', 'last_name': 'Prof7',  'email': 'csit_aid_prof3@example.com'},
+    {'faculty_id': 'csit-aid', 'person_type': 'P', 'username': 'csit_aid_prof4', 'first_name': 'Test', 'last_name': 'Prof8',  'email': 'csit_aid_prof4@example.com'},
+    {'faculty_id': 'csit-cnc', 'person_type': 'P', 'username': 'csit_cnc_prof1', 'first_name': 'Test', 'last_name': 'Prof9',  'email': 'csit_cnc_prof1@example.com'},
+    {'faculty_id': 'csit-cnc', 'person_type': 'P', 'username': 'csit_cnc_prof2', 'first_name': 'Test', 'last_name': 'Prof10', 'email': 'csit_cnc_prof2@example.com'},
+    {'faculty_id': 'csit-cnc', 'person_type': 'P', 'username': 'csit_cnc_prof3', 'first_name': 'Test', 'last_name': 'Prof11', 'email': 'csit_cnc_prof3@example.com'},
+    {'faculty_id': 'csit-cnc', 'person_type': 'P', 'username': 'csit_cnc_prof4', 'first_name': 'Test', 'last_name': 'Prof12', 'email': 'csit_cnc_prof4@example.com'},
+    {'faculty_id': 'csit-bif', 'person_type': 'P', 'username': 'csit_bif_prof1', 'first_name': 'Test', 'last_name': 'Prof13', 'email': 'csit_bif_prof1@example.com'},
+    {'faculty_id': 'csit-bif', 'person_type': 'P', 'username': 'csit_bif_prof2', 'first_name': 'Test', 'last_name': 'Prof14', 'email': 'csit_bif_prof2@example.com'},
+    {'faculty_id': 'csit-bif', 'person_type': 'P', 'username': 'csit_bif_prof3', 'first_name': 'Test', 'last_name': 'Prof15', 'email': 'csit_bif_prof3@example.com'},
+    {'faculty_id': 'csit-bif', 'person_type': 'P', 'username': 'csit_bif_prof4', 'first_name': 'Test', 'last_name': 'Prof16', 'email': 'csit_bif_prof4@example.com'},
 ]
 
 students = [
-    {'faculty_id': 'csit-csc', 'person_kind': 'S', 'username': 'student1', 'first_name': 'John', 'last_name': 'Doe', 'email': 'student1@example.com', 'password': make_password('test') },
-    {'faculty_id': 'csit-cnc', 'person_kind': 'S', 'username': 'student2', 'first_name': 'Ahmed', 'last_name': 'AbdelHamed', 'email': 'student2@example.com', 'password': make_password('test') },
-    {'faculty_id': 'csit-aid', 'person_kind': 'S', 'username': 'student3', 'first_name': 'Nour', 'last_name': 'Ismaeel', 'email': 'student3@example.com', 'password': make_password('test') },
-    {'faculty_id': 'csit-bif', 'person_kind': 'S', 'username': 'student4', 'first_name': 'Akrem', 'last_name': 'Tawheed', 'email': 'student4@example.com', 'password': make_password('test') },
+    {'faculty_id': 'csit-csc', 'person_type': 'S', 'username': 'student1', 'first_name': 'John', 'last_name': 'Doe', 'email': 'student1@example.com', 'password': make_password('test') },
+    {'faculty_id': 'csit-cnc', 'person_type': 'S', 'username': 'student2', 'first_name': 'Ahmed', 'last_name': 'AbdelHamed', 'email': 'student2@example.com', 'password': make_password('test') },
+    {'faculty_id': 'csit-aid', 'person_type': 'S', 'username': 'student3', 'first_name': 'Nour', 'last_name': 'Ismaeel', 'email': 'student3@example.com', 'password': make_password('test') },
+    {'faculty_id': 'csit-bif', 'person_type': 'S', 'username': 'student4', 'first_name': 'Akrem', 'last_name': 'Tawheed', 'email': 'student4@example.com', 'password': make_password('test') },
 ]
 
 courses = [

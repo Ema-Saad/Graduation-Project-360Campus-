@@ -11,7 +11,7 @@
       </textarea>
       <br />
 
-      <label for="max_grade"> Maximum Grade </label>
+      <label for="max_grade"> Max Grade </label>
       <input v-model="assignment.max_grade" id="max_grade" type="number" />
       <br />
 

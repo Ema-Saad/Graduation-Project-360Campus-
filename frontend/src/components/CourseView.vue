@@ -42,7 +42,7 @@
             <h3> {{ stringifyMaterialType(materialTypeArray[0].kind) }} </h3>
             <ul>
               <li v-for="materialInstance in materialTypeArray">
-                <a class="dropdown-item" @click="download(materialInstance.id)"> 
+                <a class="dropdown-item" href="" @click.prevent="download(materialInstance.id)"> 
                   {{ materialInstance.name }} 
                 </a>
 

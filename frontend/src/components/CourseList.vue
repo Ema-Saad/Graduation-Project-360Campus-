@@ -41,13 +41,14 @@
         <router-link v-for="course in popularCourses" :key="course.id"
                      :to="{ name: 'CourseView', params: { courseId: course.id } }"
                      class="course-item">
-          <!--<div class="course-image">
-            <img :src="course.imageUrl" alt="Course Image" />
-          </div>-->
-          <div class="course-details">
-            <p class="course-title">{{ course.title }}</p>
-            <p class="course-code">{{ course.id }}</p>
-          </div>
+   <div class="course-image">
+  <img :src="course.imageUrl" alt="Course Image" />
+  <div class="overlay-text">
+    <p class="course-title">{{ course.title }}</p>
+    <p class="course-code">{{ course.id }}</p>
+  </div>
+</div>
+
         </router-link>
       </div>
     </div>
@@ -93,7 +94,6 @@
         colleges: [],
         popularCourses: [],
         courses: [],
-
         filters: {
           faculty: '',  // Selected faculty
           level: '',    // Selected level
@@ -102,16 +102,19 @@
       };
     },
     async beforeRouteEnter(to, from, next) {
-      const store = useGlobalStore()
+      const store = useGlobalStore();
 
       let colleges = await store.request_api_endpoint('api/colleges');
       let courses = await store.request_api_endpoint('api/courses');
 
       next(vm => {
         vm.colleges = colleges;
-        vm.popularCourses = vm.courses = courses;
+        // Assign default image if course.imageUrl is missing
+        vm.popularCourses = vm.courses = courses.map(course => ({
+          ...course,
+          imageUrl: course.imageUrl || courseImage
+        }));
       });
-
     },
     computed: {
       isFiltered() {
@@ -215,37 +218,46 @@
     .course-item:hover {
       border: 1px solid #007bff; /* Change border color to blue on hover */
     }
-  .course-image {
-    position: relative;
-    flex: 0 0 250px; /* Adjust width as needed */
-    margin-right: 16px;
-  }
+.course-image {
+  position: relative;
+  flex: 0 0 350px; /* Increased from 250px */
+  height: 200px;   /* Add fixed height or let it scale responsively */
+  margin-right: 16px;
+  overflow: hidden;
+  border-radius: 8px;
+}
 
-    .course-image img {
-      width: 100%; /* Ensures the image fills the container */
-      height: auto;
-      border-radius: 4px;
-      object-fit: cover;
-    }
+.course-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 8px;
+}
 
-  .overlay-text {
-    position: absolute;
-    top: 50%;
-    left: 10px; /* Adjust to fit text within the image */
-    transform: translateY(-50%);
-    color: black;
-    padding: 10px;
-    border-radius: 4px;
-    width: 90%;
-  }
+.overlay-text {
+  position: absolute;
+  bottom: 55px;
+  left: 0;
+  width: 100%;
+  color: rgb(0, 0, 0);
+  padding: 10px;
+  box-sizing: border-box;
+  text-align: left;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
 
-    .overlay-text .course-title,
-    .overlay-text .course-code {
-      font-size: 16px;
-      font-weight: bold;
-      margin: 0;
-      color: black;
-    }
+.overlay-text .course-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.overlay-text .course-code {
+  font-size: 14px;
+  margin: 4px 0 0;
+}
 
   .course-details {
     flex: 1;
@@ -298,7 +310,6 @@
     color: #333; /* Dark gray color for the name */
   }
 
-
   .course-title {
     font-size: 18px;
     font-weight: bold;
@@ -325,8 +336,6 @@
     font-size: 16px;
     margin-top: 30px;
   }
-
-
 
   /* Responsive styles */
   @media screen and (max-width: 1024px) {

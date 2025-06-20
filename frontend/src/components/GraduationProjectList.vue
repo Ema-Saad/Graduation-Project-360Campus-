@@ -58,9 +58,7 @@
   <div class="instructor-avatar-container">
     <img class="instructor-icon" :src="project.instructorIconUrl || defaultInstructorIcon" alt="Instructor Icon" />
     <div class="instructor-info">
-     <span class="instructor-name">{{ project.instructor }}</span>
-
-      <span class="project-faculty">{{ project.faculty }}</span>
+<span class="instructor-name">csit_csc_prof1</span>
     </div>
   </div>
 </div>
@@ -240,9 +238,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 1; /* Always visible */
-    /* Remove the transition if you don't want a fade-in effect */
-    /* transition: opacity 0.3s ease;  */
+    opacity: 1; 
   }
   .overlay-text {
     color: black;
@@ -271,16 +267,14 @@ export default {
 
 .instructor-info {
   position: absolute;
-  left: 50px;
+  left: 20px;
   top: 0;
   display: flex;
   flex-direction: column;
-  background: white;
   padding: 5px 10px 5px 30px;
   border-radius: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   min-width: 150px;
-  z-index: -1;
+  z-index: 1; 
 }
 
 .instructor-avatar-container {
@@ -298,7 +292,6 @@ export default {
   font-size: 0.8em;
   color: #666;
 }
-  /* Avatar image inside the container */
   .instructor-icon {
     width: 30px;
     height: 30px;
@@ -367,6 +360,7 @@ export default {
   background-color: darkorange;
   transform: translateY(-1px);
 }
+
   /* Media Queries for Responsiveness */
   @media (max-width: 1200px) {
     .filter-section {

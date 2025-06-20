@@ -27,55 +27,44 @@
             >
               Edit
             </button>
-            <span v-else>
-              <input v-model="assignment.title" type="text" />
-              <button @click="showTitleControls = false">
-                Save
-              </button>
-              <button @click="assignment = {...copy}; copy = null; showTitleControls = false">
-                Cancel
-              </button>
-            </span>
+           <span v-else>
+  <input v-model="assignment.title" type="text" />
+  <button class="save-button" @click="showTitleControls = false">Save</button>
+  <button class="cancel-button" @click="assignment = {...copy}; copy = null; showTitleControls = false">Cancel</button>
+</span>
           </span>
-
           <br />
-
           Taught by {{ assignment.classroom.instructor.first_name }} {{ assignment.classroom.instructor.last_name }}
-
         </div>
       </div>
     </div>
 
     <div class="sections-container">
       <div class="left-section">
-        <p v-if="!showDescriptionTextbox">
-          {{ this.assignment.description }}
-        </p>
+  <p v-if="!showDescriptionTextbox">
+    {{ this.assignment.description }}
+  </p>
 
-        <span v-if="$root.person_kind === 'P'">
-          <button
-            v-if="!showDescriptionTextbox"
-            @click="showDescriptionTextbox = true; copy = {...assignment}"
-          > 
-            Edit
-          </button>
-          <span v-else>
-            <textarea 
-              v-if="showDescriptionTextbox"
-              v-model="assignment.description"
-            >
-            </textarea>
+  <span v-if="$root.person_kind === 'P'">
+    <button
+      v-if="!showDescriptionTextbox"
+      @click="showDescriptionTextbox = true; copy = {...assignment}"
+    > 
+      Edit
+    </button>
+    <span v-else>
+      <textarea v-if="showDescriptionTextbox" v-model="assignment.description"></textarea>
 
-            <button @click="showDescriptionTextbox = false">
-              Save
-            </button>
+      <button class="save-button" @click="showDescriptionTextbox = false">
+        Save
+      </button>
 
-            <button @click="assignment = {...copy}; copy = null; showDescriptionTextbox = false">
-              Cancel
-            </button>
-          </span>
-        </span>
-      </div>
+      <button class="cancel-button" @click="assignment = {...copy}; copy = null; showDescriptionTextbox = false">
+        Cancel
+      </button>
+    </span>
+  </span>
+</div>
       <!-- Right Section -->
       <div class="right-section">
         <div class="deadline-section">
@@ -390,7 +379,6 @@
       border: 1px solid blue;
     }
 
-
   .right-section {
     flex: 1;
     width: 140%; /* Optional: makes it wider but within 80% of its parent container */
@@ -402,8 +390,6 @@
     justify-content: space-between;
     margin-left: 130px;
   }
-
-
 
   .deadline-section {
     display: flex;
@@ -512,12 +498,147 @@
     .done-button:hover {
       background-color: #f68b1e;
     }
-  /* Media Queries */
-  /* Media Queries */
+
+.overlay-content > span > button,
+.overlay-content > span > span > button {
+  padding: 6px 12px;
+  margin-right: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.overlay-content > span > button,
+.overlay-content > span > span > button:nth-child(1) {
+  background-color: navy;
+  color: white;
+}
+
+.overlay-content > span > span > button:nth-child(2) {
+  background-color: gray;
+  color: white;
+}
+
+.overlay-content > span > button:hover,
+.overlay-content > span > span > button:nth-child(1):hover {
+  background-color: darkorange;
+}
+
+.overlay-content > span > span > button:nth-child(2):hover {
+  background-color: darkorange;
+}
+.overlay-content > span > button,
+.overlay-content > span > span > button {
+  padding: 6px 12px;
+  margin-right: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  color: white;
+}
+
+.overlay-content > span > span > button.save-button {
+  background-color: navy;
+   width: 250px;
+}
+.overlay-content > span > button{
+    background-color: navy;
+    margin-left: 10px;
+    border-radius: 8px;
+    padding: 6px 25px;
+}
+
+.overlay-content > span > span > button.save-button:hover {
+  background-color: darkorange;
+}
+
+.overlay-content > span > span > button.cancel-button {
+  background-color: rgb(159, 154, 154);
+   width: 250px;
+}
+
+.overlay-content > span > span > button.cancel-button:hover {
+  background-color: darkorange;
+}
+
+.overlay-content > span > span > input[type="text"] {
+  padding: 6px 30px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+  margin-bottom: 8px;
+  font-size: 14px;      
+  font-weight: 600;     
+  min-width: 200px;  
+  box-sizing: border-box;
+}
+/* Shared buttons */
+.left-section button {
+  padding: 6px 12px;
+  margin-right: 8px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+}
+
+.left-section .save-button {
+  background-color: navy;
+  width: 80px;
+    padding: 7px 125px;
+}
+
+.left-section .save-button:hover {
+  background-color: darkorange;
+}
+
+/* Cancel */
+.left-section .cancel-button {
+  background-color: rgb(159, 154, 154);
+  width: 80px;
+  padding: 7px 125px;
+}
+
+.left-section .cancel-button:hover {
+  background-color: darkorange;
+}
+
+/* Textarea */
+.left-section textarea {
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+  margin-bottom: 8px;
+  width: 250px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+.left-section > span > button {
+  background-color: navy;
+  color: white;
+  padding: 6px 25px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+/* Hover effect */
+.left-section > span > button:hover {
+  background-color: darkorange;
+}
 
   /* Tablet and smaller screens */
   @media (max-width: 768px) {
-    /* Adjusting Top Image */
     .top-image img {
       height: 200px;
     }

@@ -20,15 +20,6 @@
         <span class="course-code">Taught by {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}</span>
       </div>
       <img :src="bannerImage" alt="Course Banner" class="banner-image" />
-      <div v-if="$root.person_kind === 'P'">
-        <button @click="showAssignmentCreateDialog = true"> 
-          Add new assignment 
-        </button>
-        <button @click="showOnlineMeetingCreateDialog = true"> 
-          Add new meeting 
-        </button>
-        <button> Add new quiz </button>
-      </div>
     </div>
 
     <!-- Homework Section -->
@@ -43,18 +34,31 @@
         </button>
       </div>
 
-      <div id="task-list">
-          <div class="task-item" v-for="task in tasks">
-            <div class="task-icon">
-              <span class="fas" :class="[getIcon(task)]"></span>
-            </div>
-              
-            <router-link class="task" :to="task.url">
-              <span class="task-name"> {{ task.title }} </span>
-            </router-link>
+<div v-if="$root.person_kind === 'P'" style="margin-bottom: 15px;">
+  <button class="assignment-button" @click="showAssignmentCreateDialog = true"> 
+    Add new assignment 
+  </button>
+  <button class="meeting-button" @click="showOnlineMeetingCreateDialog = true"> 
+    Add new meeting 
+  </button>
+  <button class="quiz-button"> 
+    Add new quiz 
+  </button>
+</div>
 
-            <div class="due"> {{ computeTimeString(task) }} </div>
+
+      <div id="task-list">
+        <div class="task-item" v-for="task in tasks">
+          <div class="task-icon">
+            <span class="fas" :class="[getIcon(task)]"></span>
           </div>
+            
+          <router-link class="task" :to="task.url">
+            <span class="task-name"> {{ task.title }} </span>
+          </router-link>
+
+          <div class="due"> {{ computeTimeString(task) }} </div>
+        </div>
       </div>
     </div>
   </div>
@@ -273,6 +277,25 @@
     .todo-button:hover {
       background-color: darkorange;
     }
+  .assignment-button,
+.meeting-button,
+.quiz-button {
+  padding: 10px 20px;
+  background-color: navy;
+  color: white;
+  font-size: 1em;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+/* Individual hover styles (same for now, but can be customized) */
+.assignment-button:hover,
+.meeting-button:hover,
+.quiz-button:hover {
+  background-color: darkorange;
+}
 
   .task-list {
     display: flex;

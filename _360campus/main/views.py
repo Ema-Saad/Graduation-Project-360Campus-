@@ -482,3 +482,11 @@ def schedule_preference_dump(req):
 
     return Response(data)
 
+# TODO: protect this API endpoint
+@api_view(['GET'])
+def classroom_dump(req):
+    current_semester = Semester.objects.last()
+    classrooms = Classroom.objects.filter(semester=current_semester)
+    serializer = ClassroomDumpSerializer(classrooms, many=True)
+
+    return Response(serializer.data)

@@ -50,6 +50,16 @@ class ClassroomViewSerializer(ModelSerializer):
         exclude = ['students']
         depth = 1
 
+class ClassroomDumpSerializer(ModelSerializer):
+    instructor = PersonSerializer(read_only=True)
+    course = CourseSerializer(read_only=True)
+    students = PersonSerializer(many=True)
+
+    class Meta:
+        model = Classroom
+        fields = '__all__'
+        depth = 1
+
 class TaskViewSerializer(ModelSerializer):
     classroom = ClassroomViewSerializer()
 

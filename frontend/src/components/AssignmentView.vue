@@ -115,7 +115,7 @@
           <div v-else>
             <span v-if="!showMaxGradeControls"> 
               Grade: {{ assignment.max_grade }} 
-              <button @click="copy = {...assginment}; showMaxGradeControls = true">
+       <button @click="copy = {...assignment}; showMaxGradeControls = true">
                 Edit
               </button>
             </span>

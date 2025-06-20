@@ -221,7 +221,7 @@
   max-width: 1200px;
   margin-top: 20px;
   padding-bottom: 20px;
-  margin-left: 15%; 
+  margin-left: 20%; 
 }
 
 .class-card {

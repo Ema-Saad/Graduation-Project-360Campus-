@@ -373,25 +373,31 @@
   display: flex;
   gap: 8px;
   margin-top: 6px;
+  border-radius: 8px;
 }
 
 .material-edit-controls button {
   background-color: #3b3b98;
-  color: #fff;
+  color: #ffffff;
   border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 0.9rem;
-  font-weight: 500;
+  border-radius: 8px;
+  padding: 10px 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  width: 120px; /* Increased width */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .material-edit-controls button:hover {
   background-color: darkorange;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
+
   .course-edit-container {
     background: linear-gradient(to bottom, rgba(32, 24, 135, 1), rgba(244, 196, 98, 1));
     padding: 2rem;
@@ -497,6 +503,16 @@
 .form-group .course-description,
 .form-group .edit-form-title {
   font-weight: 700px bold !important;
+}
+.arrow {
+  font-size: 1.5rem;
+  transition: transform 0.3s ease;
+  display: inline-block;
+  transform-origin: center;
+}
+
+.arrow.rotate {
+  transform: rotate(180deg);
 }
   
   @media screen and (max-width: 1024px) {

@@ -13,9 +13,7 @@
           <router-link :to="{ name: 'ClassroomView', params: { courseId: assignment.classroom.course.id } }">
             {{ assignment.classroom.course.title }}
           </router-link>
-          
           <br />
-
           <span v-if="!showTitleControls">
             {{ assignment.title }} 
           </span>
@@ -75,7 +73,6 @@
             >
               {{ computeDueString(assignment.deadline) }}
             </p>
-
             <span v-if="$root.person_kind === 'P'">
               <button
                 v-if="!showDeadlineControls"
@@ -83,16 +80,16 @@
               >
                 Edit
               </button>
-              <span v-else>
-                <input ref="deadlineControl" type="datetime-local" />
-                <button 
-                  @click="assignment.deadline = new Date($refs.deadlineControl.value); showDeadlineControls = false">
-                  Save
-                </button>
-                <button @click="assignment = {...copy}; copy = null; showDeadlineControls = false">
-                  Cancel
-                </button>
-              </span>
+            <span v-else>
+  <input ref="deadlineControl" type="datetime-local" />
+  <button class="save-button" 
+    @click="assignment.deadline = new Date($refs.deadlineControl.value); showDeadlineControls = false">
+    Save
+  </button>
+  <button class="cancel-button" @click="assignment = {...copy}; copy = null; showDeadlineControls = false">
+    Cancel
+  </button>
+</span>
             </span>
 
             <div v-if="$root.person_kind === 'S' && (!assignment.deadline || assignment.deadline > Date.now())" class="buttons">
@@ -122,15 +119,15 @@
                 Edit
               </button>
             </span>
-            <span v-else>
-              <input type="number" v-model="assignment.max_grade" />
-              <button @click="showMaxGradeControls = false">
-                Save
-              </button>
-              <button @click="assignment = {...copy}; copy = null; showMaxGradeControls = false">
-                Cancel
-              </button>
-            </span>
+       <span v-else>
+  <input type="number" v-model="assignment.max_grade" />
+  <button class="save-button" @click="showMaxGradeControls = false">
+    Save
+  </button>
+  <button class="cancel-button" @click="assignment = {...copy}; copy = null; showMaxGradeControls = false">
+    Cancel
+  </button>
+</span>
           </div>
        </div>
       </div>
@@ -382,7 +379,7 @@
   .right-section {
     flex: 1;
     width: 140%; /* Optional: makes it wider but within 80% of its parent container */
-    background-color: #fef4d1;
+    background-color: #f7c974;
     padding: 12px;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -575,7 +572,7 @@
   min-width: 200px;  
   box-sizing: border-box;
 }
-/* Shared buttons */
+
 .left-section button {
   padding: 6px 12px;
   margin-right: 8px;
@@ -597,7 +594,6 @@
   background-color: darkorange;
 }
 
-/* Cancel */
 .left-section .cancel-button {
   background-color: rgb(159, 154, 154);
   width: 80px;
@@ -607,8 +603,6 @@
 .left-section .cancel-button:hover {
   background-color: darkorange;
 }
-
-/* Textarea */
 .left-section textarea {
   padding: 6px 12px;
   font-size: 14px;
@@ -632,11 +626,142 @@
   margin-bottom: 12px;
 }
 
-/* Hover effect */
 .left-section > span > button:hover {
   background-color: darkorange;
 }
 
+.right-section button,
+span > button {
+  padding: 6px 12px;
+  margin-right: 8px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+}
+span > button:not(.save-button):not(.cancel-button),
+.right-section > div > div > span > button {
+  background-color: navy;
+}
+
+span > button:not(.save-button):not(.cancel-button):hover,
+.right-section > div > div > span > button:hover {
+  background-color: darkorange;
+}
+
+.save-button {
+  background-color: navy;
+  width: 80px;
+}
+
+.save-button:hover {
+  background-color: darkorange;
+}
+
+.cancel-button {
+  background-color: rgb(159, 154, 154);
+  width: 90px;
+}
+
+.cancel-button:hover {
+  background-color: darkorange;
+}
+.right-section input[type="datetime-local"] {
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+  margin-bottom: 8px;
+  width: 250px;
+  box-sizing: border-box;
+}
+
+span > button:not(.save-button):not(.cancel-button) {
+  background-color: navy;
+  color: white;
+  padding: 6px 12px;
+  margin-left: 8px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+span > button:not(.save-button):not(.cancel-button):hover {
+  background-color: darkorange;
+}
+
+.right-section .save-button {
+  background-color: navy;
+  color: white;
+  width: 80px;
+  padding: 6px 60px;
+  margin-right: 8px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.right-section .save-button:hover {
+  background-color: darkorange;
+}
+
+.right-section .cancel-button {
+  background-color: rgb(159, 154, 154);
+  color: white;
+  width: 90px;
+  padding: 6px 60px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.right-section .cancel-button:hover {
+  background-color: darkorange;
+}
+
+input[type="number"] {
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+  margin-bottom: 8px;
+  width: 120px;
+  box-sizing: border-box;
+}
+
+.buttons > .upload-button,
+.buttons > .submit-button {
+  background-color: orange;
+  color: rgb(0, 0, 0);
+  padding: 8px 12px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.buttons > .upload-button:hover,
+.buttons > .submit-button:hover {
+  background-color: darkorange;
+}
+.left-section > span > button,
+.right-section > div > div > span > button,
+span > button:not(.save-button):not(.cancel-button) {
+  padding: 6px 30px;
+}
   /* Tablet and smaller screens */
   @media (max-width: 768px) {
     .top-image img {

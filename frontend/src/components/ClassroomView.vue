@@ -10,7 +10,6 @@
     v-if="showOnlineMeetingCreateDialog"
     @close="showOnlineMeetingCreateDialog = false"
   />
-
   <div v-if="classroom" class="page">
     <!-- Top Banner -->
     <div class="top-banner">
@@ -40,12 +39,14 @@
   <button class="meeting-button" @click="showOnlineMeetingCreateDialog = true"> 
     Add new meeting 
   </button>
-  <button class="quiz-button"> 
-    Add new quiz 
-  </button>
+<a href="http://127.0.0.1:3000/" target="_blank" class="quiz-button">
+  create meeting
+</a>
+ <a href="http://127.0.0.1:3000/" target="_blank" class="quiz-button">
+  Create Attedance
+</a>
+
 </div>
-
-
       <div id="task-list">
         <div class="task-item" v-for="task in tasks">
           <div class="task-icon">
@@ -309,7 +310,6 @@
     flex-direction: row;
   }
 
-
   .task-icon {
     width: 40px;
     height: 40px;
@@ -335,6 +335,9 @@
     text-align: right;
     color: gray;
   }
+.quiz-button {
+  text-decoration: none;
+}
 
   @media (max-width: 1200px) {
     .banner-text {

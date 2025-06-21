@@ -42,9 +42,17 @@
     <div class="card-background">
       <div class="class-card-overlay">
         <h3>{{ classroom.course.title }}</h3>
-        <p v-if="$root.person_kind === 'S'" class="author">
-          👤 {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}
-        </p>
+     <div v-if="$root.person_kind === 'S'" class="instructor-info">
+  <div class="instructor-avatar-container">
+    <img src="@/assets/customer.png" alt="Instructor" class="instructor-avatar" />
+  </div>
+  <div>
+    <span class="instructor-name">
+      {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}
+    </span>
+  </div>
+</div>
+
       </div>
     </div>
   </router-link>
@@ -124,6 +132,7 @@
     padding-top: 20px;
     height: 100vh;
   }
+
 .background-page {
   position: relative;
   overflow: hidden;
@@ -295,6 +304,40 @@
     width: 80%;
     font-size: 14px;
   }
+.instructor-info {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 15px;
+  padding: 10px 0;
+  margin-left: 90px;
+}
+
+/* Avatar container with gradient */
+.instructor-avatar-container {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(to bottom, #f08a24, #3b3b98);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Avatar image */
+.instructor-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Instructor name */
+.instructor-name {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #000000;
+}
 
   @media (max-width: 768px) {
     .app-container {

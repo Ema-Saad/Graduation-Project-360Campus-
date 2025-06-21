@@ -294,11 +294,19 @@
   position: relative;
   display: inline-block;
 }
-
 .profile-btn {
   background: none;
   border: none;
   cursor: pointer;
+}
+.profile-btn:hover {
+  background: none; /* keep transparent */
+}
+
+.profile-btn:hover i {
+  color: darkorange !important; /* refined blue */
+  transform: scale(1.08);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1));
 }
 
 .profile-btn i {
@@ -306,11 +314,6 @@
   color: #333;
   transition: color 0.3s;
 }
-
-.profile-btn:hover i {
-  color: darkorange;
-}
-
 .dropdown-menu {
   position: absolute;
   top: 100%;

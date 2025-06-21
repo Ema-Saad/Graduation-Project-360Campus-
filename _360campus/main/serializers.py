@@ -11,6 +11,7 @@ class PersonSerializer(ModelSerializer):
             'department',
             'person_type',
             'email',
+            'id',
         ]
 
 class EventSerializer(ModelSerializer):

@@ -1,5 +1,4 @@
 <template>
-
   <AssignmentCreate
     :course_id="courseId"
     v-if="showAssignmentCreateDialog"

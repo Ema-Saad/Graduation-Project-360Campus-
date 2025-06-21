@@ -168,9 +168,9 @@
       let submitted_assignments = []
 
       for (let classroom of registered_classrooms) {
-        let new_tasks = await store.request_api_endpoint(`api/course/${classroom.id}/classroom/tasks`)
-        let new_assignments = await store.request_api_endpoint(`api/course/${classroom.id}/classroom/assignments`)
-        let new_submitted_assignments = await store.request_api_endpoint(`api/course/${classroom.id}/classroom/assignments/submitted`)
+        let new_tasks = await store.request_api_endpoint(`api/course/${classroom.course.id}/classroom/tasks`)
+        let new_assignments = await store.request_api_endpoint(`api/course/${classroom.course.id}/classroom/assignments`)
+        let new_submitted_assignments = await store.request_api_endpoint(`api/course/${classroom.course.id}/classroom/assignments/submitted`)
 
         tasks = [...tasks, ...new_tasks.map(d => transform(d, classroom))]
         assignments = [...assignments, ...new_assignments.map(d => transform(d, classroom))]

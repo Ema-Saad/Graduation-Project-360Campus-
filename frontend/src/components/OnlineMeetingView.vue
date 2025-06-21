@@ -1,10 +1,10 @@
 <template>
   <div class="meeting-card">
     <div class="left-section">
-      <h1 class="meeting-title">Meeting Zoom title</h1>
+      <h1 class="meeting-title">Meeting Zoom ID : 607438079 </h1>
     </div>
     <div class="right-section">
-      <button class="join-button">join</button>
+      <a href="http://127.0.0.1:3000/" class="join-button">Join</a>
       <p class="start-time">Start in Dec 8, 2024, 11:59 PM</p>
     </div>
   </div>

@@ -1,5 +1,6 @@
 <template>
   <dialog ref="dialog">
+    <button class="close-icon" @click.prevent="$refs.dialog.close()">✕</button>
     <form method="method" @submit="submit">
       <table>
         <thead>
@@ -100,15 +101,39 @@ dialog {
   border-radius: 16px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   max-width: 90%;
-  width: 1000px;
-  background: #fff;
+  width: 900px;
+  max-height: 91vh; /* prevent it from exceeding viewport */
+  overflow: hidden;
+  background: linear-gradient(to bottom, rgba(32, 24, 135, 1), rgba(244, 196, 98, 1));
   font-family: 'Segoe UI', sans-serif;
+  position: relative;
 }
 
 form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  overflow: auto; 
+  max-height: 100%; 
+  padding-right: 8px;
+}
+
+.close-icon {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background-color: transparent;
+  border: none;
+  font-size: 22px;
+  color: #ffffffcc; /* semi-transparent white for elegance */
+  cursor: pointer;
+  z-index: 10;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.close-icon:hover {
+  color: #ff5722;
+  transform: scale(1.2); 
 }
 
 table {
@@ -120,7 +145,7 @@ table {
 }
 
 thead {
-  background-color: #1e3a8a; /* navy */
+  background-color: #201887; 
   color: white;
 }
 
@@ -130,25 +155,21 @@ th, td {
   border-bottom: 1px solid #e5e7eb;
 }
 
-tbody tr:nth-child(even) {
-  background-color: #f9fafb;
-}
-
 input[type="checkbox"] {
   transform: scale(1.2);
   margin: 2px 4px;
-  accent-color: #1e40af;
+  accent-color: #201887;
 }
 
 label {
   display: block;
   margin-top: 4px;
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 13px;
+  color: #ffffff;
 }
 
 button, input[type="submit"] {
-  background-color: #1e3a8a;
+  background-color: #201887;
   color: white;
   border: none;
   padding: 10px 16px;
@@ -158,30 +179,31 @@ button, input[type="submit"] {
   font-weight: 500;
   transition: background-color 0.3s ease;
 }
-
-button:hover, input[type="submit"]:hover {
-  background-color: #0f172a;
+button:not(.close-icon):hover,
+input[type="submit"]:hover {
+  background-color: darkorange;
 }
 
 td > button {
-  background-color: #f87171; /* soft red */
+  background-color: #201887; 
   color: white;
-  padding: 6px 10px;
+  padding: 6px 15px;
   font-size: 12px;
   border-radius: 6px;
   transition: background-color 0.2s ease;
 }
 
 td > button:hover {
-  background-color: #dc2626;
+  background-color: darkorange;
 }
 
 form > button {
-  background-color: #9ca3af; /* neutral gray */
+  background-color: #9ca3af; 
+  margin: 1px 1px; 
 }
 
 form > button:hover {
-  background-color: #6b7280;
+  background-color: darkorange;
 }
 
 </style>

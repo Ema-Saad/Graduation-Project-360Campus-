@@ -102,20 +102,23 @@ dialog {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   max-width: 90%;
   width: 900px;
-  max-height: 91vh; /* prevent it from exceeding viewport */
+  max-height: 91vh;
   overflow: hidden;
   background: linear-gradient(to bottom, rgba(32, 24, 135, 1), rgba(244, 196, 98, 1));
   font-family: 'Segoe UI', sans-serif;
   position: relative;
+    overflow: hidden;
 }
 
 form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  overflow: auto; 
-  max-height: 100%; 
-  padding-right: 8px;
+  gap: 1rem;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;  
+  box-sizing: border-box;
 }
 
 .close-icon {

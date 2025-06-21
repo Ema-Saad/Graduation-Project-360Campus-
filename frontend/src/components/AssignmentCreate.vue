@@ -1,11 +1,9 @@
-<template>
+ <template>
   <dialog ref="dialog" class="styled-dialog">
     <form method="dialog" @submit="submit">
       <label for="title">Title</label>
 <input v-model="assignment.title" id="title" type="text" placeholder="Title" />
-
       <br />
-
       <label for="description"> Description </label>
       <textarea v-model="assignment.description" id="description">
         Brief Description of the Assignment
@@ -71,10 +69,14 @@
   border-radius: 12px;
   background: linear-gradient(to bottom, rgba(32, 24, 135, 1), rgba(244, 196, 98, 1));
   color: white;
-  width: 550px; /* Dialog slightly larger */
-  max-width: 95%;
+  width: 550px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow: auto;
   font-family: sans-serif;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box; 
+  overflow-x: hidden;      
 }
 
 .styled-dialog form {

@@ -32,9 +32,10 @@
                    @click="closeMobileMenu"
                    :class="{ 'active-link': isActive('GraduationProjectList') }">Graduation Project</router-link>
 
-      <router-link :to="{ name: 'Map' }"
-                   @click="closeMobileMenu"
-                   :class="{ 'active-link': isActive('Map') }">Map</router-link>
+<a href="http://localhost:8000/index.html"
+   @click="closeMobileMenu"
+   class="external-link">Map</a>
+
     </div>
 
     <!-- Search bar and Profile button on the right -->
@@ -92,9 +93,9 @@
                    @click="closeMobileMenu"
                    :class="{ 'active-link': isActive('GraduationProjectList') }">Graduation Project</router-link>
 
-      <router-link :to="{ name: 'Map' }"
-                   @click="closeMobileMenu"
-                   :class="{ 'active-link': isActive('Map') }">Map</router-link>
+<a href="http://localhost:8000/index.html"
+   @click="closeMobileMenu"
+   class="external-link">Map</a>
     </div>
   </div>
 </template>

@@ -62,287 +62,196 @@ export default {
 
 <style scoped>
   /* Full-page background image */
-  .login-page {
-    position: relative;
-    height: 100vh;
-    background: url('@/assets/background.jpg') no-repeat center center / cover;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+/* Full-page layout */
+.login-page {
+  height: 100vh;
+  background: url('@/assets/background.jpg') no-repeat center center / cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
 
-  .top-left-logo {
-    position: absolute;
-    top: -10px;
-    left: 20px;
-    width: 20%; /* Adjust size as needed */
-    height: auto;
-  }
+.top-left-logo {
+  position: absolute;
+  top: 20px;
+  left: 30px;
+  width: 140px;
+}
 
-  .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent dark overlay */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+.overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 40px; /* shift content slightly to the left */
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 
+.content {
+  display: flex;
+  width: 70%;
+  max-width: 1200px;
+  background-color: rgba(255, 255, 255, 0.80);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  transform: translateX(70%); /* previously -5%, now shifted more */
+}
+
+/* Left-side illustration */
+.login-illustration {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  padding: 40px;
+}
+
+.login-illustration img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Right-side login form */
+.login-container {
+  flex: 1;
+  padding: 60px 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+/* Welcome badge */
+.welcome-banner {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  background-color: #201887;
+  color: #f76f2a;
+  padding: 8px 20px;
+  font-weight: 600;
+  border-radius: 15px;
+  font-size: 16px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Title */
+.login-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* Form Fields */
+.input-group {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.input-group label {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-bottom: 2px solid #ccc;
+  background-color: transparent;
+  transition: border-color 0.3s ease;
+}
+
+.input-group input:focus {
+  border-color: #201887;
+  outline: none;
+}
+
+/* Button */
+.join-button {
+  background-color: #201887;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 10px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.join-button:hover {
+  background-color: #f76f2a;
+}
+
+/* Forgot Password */
+.forgot-password {
+  text-align: center;
+  margin-top: 25px;
+}
+
+.forgot-password a {
+  color: #555;
+  text-decoration: underline;
+}
+
+.forgot-password a:hover {
+  color: #201887;
+}
+
+.errorlist {
+  margin-top: 15px;
+  color: red;
+  text-align: center;
+  white-space: pre-line;
+}
+
+/* Responsive tweaks */
+@media (max-width: 1024px) {
   .content {
-    display: flex;
-    width: 70%;
-    max-width: 1200px;
-    background-color: rgba(255, 255, 255, 0.7); /* Slightly transparent background */
-    border-radius: 20px;
-    overflow: hidden;
-  }
-
-  .login-illustration {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #fff;
-    padding: 40px;
-  }
-
-    .login-illustration img {
-      max-width: 100%;
-    }
-
-  .login-container {
-    position: relative;
-    flex: 1;
-    padding: 60px 40px;
-    display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    background-color: rgba(255, 255, 255, 0.7);
+    width: 90%;
   }
-
-  .welcome-banner {
-    position: absolute;
-    top: 20px;
-    left: 2px;
-    background-color: #201887;
-    color: #f76f2a;
-    padding: 7px 25px;
-    border-radius: 15px;
-    font-weight: bold;
-    font-size: 18px;
-  }
-
-  .login-title {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 20px;
-  }
-
-  .input-group {
-    margin-bottom: 20px;
+  .login-illustration {
+    padding: 20px;
     width: 100%;
   }
-
-    .input-group label {
-      display: block;
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 5px;
-    }
-
-    .input-group input {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      border: none;
-      border-bottom: 2px solid #ccc;
-      background-color: transparent;
-    }
-
-      .input-group input:focus {
-        outline: none;
-        border-color: #007bff;
-      }
-
-  .join-button {
-    background-color: #201887;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    width: 60%;
-    margin-top: 15px;
-    margin-left: 60px;
+  .login-container {
+    padding: 40px 30px;
+    width: 100%;
   }
+}
 
-    .join-button:hover {
-      background-color: darkorange;
-    }
-
-  .forgot-password {
-    margin-top: 25px;
-    font-size: 14px;
-    margin-left: 45px;
+@media (max-width: 768px) {
+  .login-title {
+    font-size: 22px;
   }
-
-    .forgot-password a {
-      color: #777;
-      text-decoration: underline;
-    }
-
-      .forgot-password a:hover {
-        color: #007bff;
-      }
-  @media (max-width: 1024px) {
-    .overlay {
-      padding: 20px;
-    }
-
-    .content {
-      flex-direction: column;
-      width: 100%;
-      text-align: center;
-      padding: 20px;
-    }
-
-    .login-illustration {
-      padding: 20px;
-      width: 100%;
-    }
-
-    .login-container {
-      padding: 40px 30px;
-      width: 100%;
-    }
-
-    .welcome-banner {
-      font-size: 16px;
-      padding: 8px 15px;
-    }
-
-    .login-title {
-      font-size: 20px;
-      margin-bottom: 15px;
-    }
-
-    .input-group {
-      margin-bottom: 15px;
-    }
-
-    .join-button {
-      font-size: 14px;
-      padding: 12px 25px;
-      width: 100%;
-    }
-
-    .top-left-logo {
-      width: 15%;
-    }
+  .top-left-logo {
+    width: 120px;
   }
+}
 
-  @media (max-width: 768px) {
-    .overlay {
-      padding: 3px;
-    }
-    .login-page {
-      padding: 30px;
-    }
-
-      .content {
-      padding: 20px;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .login-illustration {
-      padding: 5px;
-      width: 85%;
-    }
-
-      .login-illustration img {
-        max-width: 60%;
-      }
-
-    .login-container {
-      padding: 25px;
-      width: 100%;
-    }
-
-    .welcome-banner {
-      font-size: 14px;
-      padding: 6px 10px;
-      top: 15px;
-    }
-
-    .login-title {
-      font-size: 18px;
-      margin-bottom: 15px;
-    }
-
-    .join-button {
-      font-size: 14px;
-      padding: 12px 20px;
-      width: 100%;
-      margin-left: 10px
-    }
-
-    .forgot-password {
-      margin-left: 10px
-    }
-
-    .top-left-logo {
-      width: 25%;
-    }
+@media (max-width: 480px) {
+  .login-title {
+    font-size: 20px;
   }
-
-  @media (max-width: 480px) {
-    .overlay {
-      padding: 5px;
-    }
-
-    .content {
-      padding: 20px;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .login-illustration {
-      padding: 10px;
-      width: 100%;
-    }
-
-    .login-container {
-      padding: 20px;
-      width: 100%;
-    }
-
-    .welcome-banner {
-      font-size: 12px;
-      padding: 6px 10px;
-      top: 15px;
-    }
-
-    .login-title {
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
-
-    .join-button {
-      font-size: 12px;
-      padding: 10px 15px;
-      width: 100%;
-    }
-
-    .top-left-logo {
-      width: 30%;
-    }
+  .login-container {
+    padding: 30px 20px;
   }
+}
+
 
 </style>

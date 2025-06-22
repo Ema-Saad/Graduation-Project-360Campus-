@@ -52,7 +52,7 @@
 
          <div v-if="dropdownOpen" class="dropdown-menu">
     <div class="user-info">
-      <h4>{{ store.userinfo.first_name }} {{ store.userinfo.last_name }}</h4>
+ <h4>{{ displayedName.first_name }} {{ displayedName.last_name }}</h4>
     </div>
     <hr />
     <button @click="goTo('ProfileView')"><i class="fas fa-user"></i> Profile</button>
@@ -99,74 +99,71 @@
     </div>
   </div>
 </template>
-
 <script>
-  
-  import { useGlobalStore } from '@/global_store.js'
+import { useGlobalStore } from '@/global_store.js'
 
-  export default {
-    data() {
-      return {
-        searchQuery: '',
-        mobileMenuOpen: false,
-        dropdownOpen: false,
-        store: useGlobalStore()
+export default {
+  data() {
+    return {
+      searchQuery: '',
+      mobileMenuOpen: false,
+      dropdownOpen: false,
+      store: useGlobalStore()
+    };
+  },
+  computed: {
+    // Computed property to check if the current route matches
+    isActive() {
+      return (routeName) => {
+        return this.$route.name === routeName;
       };
     },
-    computed: {
-      // Computed property to check if the current route matches
-      isActive() {
-        return (routeName) => {
-          return this.$route.name === routeName;
-        };
-      }
-          /* 
-        isActive() {
-    return (routeName) => {
-      return this.$route.name === routeName;
-    };
-  }*/
-
-    },
-     mounted() {
+    // Updated computed property to override both first and last names
+    displayedName() {
+      return {
+        first_name: 'Moemen',
+        last_name: 'Ali' // Changed to 'Ali' as requested
+      };
+    }
+  },
+  mounted() {
     document.addEventListener('click', this.handleClickOutside);
   },
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside);
   },
-    methods: {
-      goTo(target) {
-        // Close the dropdown menu and mobile menu before navigating
-        this.dropdownOpen = false;
-        this.closeMobileMenu();
+  methods: {
+    goTo(target) {
+      // Close the dropdown menu and mobile menu before navigating
+      this.dropdownOpen = false;
+      this.closeMobileMenu();
 
-        // Handle navigation for profile or settings
-        this.$router.push({ name: target })
-      },
-      toggleMobileMenu() {
-        this.mobileMenuOpen = !this.mobileMenuOpen;
-      },
-      closeMobileMenu() {
-        this.mobileMenuOpen = false; // Close the mobile menu when a link is clicked
-      },
-      toggleDropdown() {
-        this.dropdownOpen = !this.dropdownOpen;
-      },
-      logout() {
-        this.store.logout()
-        this.dropdownOpen = false; // Close the dropdown menu on logout
-        this.$router.replace({ name: 'Login' });
-      },
-       handleClickOutside(event) {
+      // Handle navigation for profile or settings
+      this.$router.push({ name: target })
+    },
+    toggleMobileMenu() {
+      this.mobileMenuOpen = !this.mobileMenuOpen;
+    },
+    closeMobileMenu() {
+      this.mobileMenuOpen = false; // Close the mobile menu when a link is clicked
+    },
+    toggleDropdown() {
+      this.dropdownOpen = !this.dropdownOpen;
+    },
+    logout() {
+      this.store.logout()
+      this.dropdownOpen = false; // Close the dropdown menu on logout
+      this.$router.replace({ name: 'Login' });
+    },
+    handleClickOutside(event) {
       const dropdown = this.$refs.dropdownRef;
       if (dropdown && !dropdown.contains(event.target)) {
         this.dropdownOpen = false;
       }
     }
-    }
-  };
+  }
+};
 </script>
-
 <style scoped>
   /* Basic Navbar Styles */
   .navbar {
@@ -181,8 +178,8 @@
   }
 
   .logo img {
-    height: 55px;
-    width: 150px;
+    height: 65px;
+    width: 140px;
   }
 
   .nav-links {

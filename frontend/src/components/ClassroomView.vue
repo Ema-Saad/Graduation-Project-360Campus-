@@ -56,16 +56,6 @@
 
     <div class="due"> {{ computeTimeString(task) }} </div>
 
-    <!-- Add this delete button only for instructors -->
-<!-- Add this delete button only for instructors -->
-<button
-  class="delete-button"
-  @click="deleteTask(task.id)"
->
-  Delete
-</button>
-
-
   </div>
 </div>
 

@@ -24,6 +24,7 @@ import ClassroomView from '@/components/ClassroomView.vue';
 import AssignmentView from '@/components/AssignmentView.vue';
 import SettingsPage from '@/components/SettingsPage.vue';
 import QuizView from '@/components/QuizView.vue';
+import TimeLine from '@/components/TimeLine.vue';
 
 const routes = [
   // Redirect root to doctor home (can be changed to student home if needed)
@@ -52,6 +53,7 @@ const routes = [
   { name: 'GraduationProjectView', props: true, path: '/graduation-project/:graduationProjectId', component: GraduationProjectView, },
   { name: 'OnlineMeetingView', path: '/meeting/:onlineMeetingId', component: OnlineMeetingView, props: true },
   { name: 'QuizView', props: true, path: '/quiz/:quizId', component: QuizView,  },
+  { name: 'TimeLine', path: '/timeline', component: TimeLine}
 ];
 
 const router = createRouter({

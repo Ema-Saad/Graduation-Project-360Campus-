@@ -79,15 +79,29 @@
     align-items: center;
     margin-bottom: 20px;
   }
-
+.back-button:hover,
+.back-button:focus,
+.back-button:active {
+  background: none;
+  box-shadow: none;
+  outline: none;
+  color: black;
+  transform: scale(1.2);
+}
   .back-button {
     background: none;
     border: none;
-    font-size: 24px;
+    font-size: 25px;
     cursor: pointer;
-    color: #333;
+    color: #2e2d2d;
     margin-right: 10px;
+      transition: color 0.3s ease, transform 0.2s ease;
   }
+
+.back-button:hover {
+  color: rgb(0, 0, 0);
+  transform: scale(1.2);
+}
 
   .project-title {
     font-size: 28px;

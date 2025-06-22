@@ -1,5 +1,6 @@
 <template>
-  <div class="app-container">
+  <div class="app-container background-page">
+    
     <header class="header">
       <!-- To Do Button that navigates to the To Do list -->
       <div v-if="$root.person_kind === 'S'" class="todo-button-container">
@@ -11,20 +12,18 @@
       <div v-else-if="$root.person_kind === 'P'">
       </div>
 
-      <div v-if="$root.person_kind === 'S'" id="join-controls">
-        <select id="course" v-model="enroll_in.course" @change="populateClassroomsForEnroll">
+      <div v-if="$root.person_kind === 'S'" id="join-controls" class="join-controls-wrapper">
+        <select id="course" v-model="enroll_in.course" @change="populateClassroomsForEnroll" class="join-select">
           <option value="0" disabled> Course </option>
           <option v-for="course in courses" :value="course.id">
             {{ course.title }}
           </option>
         </select>
-        
-        <span> Taught by </span>
-        <select id="classroom" v-model="enroll_in.classroom">
-          <option value="0" disabled> Instructor </option>
 
+        <select id="classroom" v-model="enroll_in.classroom" class="join-select">
+          <option value="0" disabled> Instructor </option>
           <option v-for="classroom in classrooms_of_course" :value="classroom.id">
-          {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}
+            {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}
           </option>
         </select>
 
@@ -33,26 +32,35 @@
     </header>
 
     <!-- The class cards or any other content here -->
-    <div class="class-cards">
-      <router-link v-for="classroom in registered_classes"
-                   :key="classroom.id"
-                   :to="{ name: 'ClassroomView', params: { courseId: classroom.course.id } }"
-                   class="class-card">
-
+  <div class="class-cards">
+  <router-link
+    v-for="classroom in registered_classes"
+    :key="classroom.id"
+    :to="{ name: 'ClassroomView', params: { courseId: classroom.course.id } }"
+    class="class-card"
+  >
+    <div class="card-background">
+      <div class="class-card-overlay">
         <h3>{{ classroom.course.title }}</h3>
-        <p v-if="$root.person_kind === 'S'" class="author">👤 {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}</p>
-      </router-link>
-    </div>
+     <div v-if="$root.person_kind === 'S'" class="instructor-info">
+  <div class="instructor-avatar-container">
+    <img src="@/assets/customer.png" alt="Instructor" class="instructor-avatar" />
+  </div>
+  <div>
+    <span class="instructor-name">
+      {{ classroom.instructor.first_name }} {{ classroom.instructor.last_name }}
+    </span>
+  </div>
+</div>
 
+      </div>
+    </div>
+  </router-link>
+</div>
   </div>
 </template>
 
-
 <script>
-  import class1Image from '@/assets/pexels-photo.png';
-  import class2Image from '@/assets/pexels-photo.png';
-  import class3Image from '@/assets/pexels-photo.png';
-
   import { useGlobalStore } from '@/global_store.js'
 
   export default {
@@ -83,21 +91,18 @@
       });
     },
     methods: {
-      // Method to navigate to the To-Do page
       populateClassroomsForEnroll() {
         let classrooms_promise = this.$root.request_api_endpoint(`api/course/${this.enroll_in.course}/classrooms`, 'get', null);
-
         classrooms_promise.then((data) => {
           this.classrooms_of_course = data;
         });
-  
       },
       goToToDoPage() {
-        this.$router.push({ name: 'ToDoPage' }); // 'ToDoPage' should be the name of the route for the to-do list
+        this.$router.push({ name: 'ToDoPage' });
       },
       join() {
         let join_promise = this.$root.request_api_endpoint(
-        `api/course/${this.enroll_in.course}/classroom/join`, 
+          `api/course/${this.enroll_in.course}/classroom/join`, 
           'post', 
           JSON.stringify({ 'classroom': this.enroll_in.classroom }),
           { 'Content-Type': 'application/json' },
@@ -119,7 +124,6 @@
 </script>
 
 <style scoped>
-  /* Main container for the app */
   .app-container {
     display: flex;
     flex-direction: column;
@@ -129,7 +133,25 @@
     height: 100vh;
   }
 
-  /* Header section styling */
+.background-page {
+  position: relative;
+  overflow: hidden;
+}
+
+.background-page::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('@/assets/classroom.jpg');
+  background-size: 65%;
+  background-repeat: no-repeat;
+  background-position: center top;
+  filter: blur(4px) brightness(0.8); /* 🔹 blur + dim effect */
+  z-index: 0;
+}
   .header {
     display: flex;
     justify-content: space-between;
@@ -143,7 +165,7 @@
   }
 
   .todo-button-container {
-    position: relative; /* To position the badge relative to the button */
+    position: relative;
     display: inline-block;
   }
 
@@ -156,13 +178,13 @@
     padding: 10px 20px;
     font-size: 14px;
     cursor: pointer;
-    position: relative; /* To allow absolute positioning of the badge */
+    position: relative;
   }
 
-    .todo-button:hover,
-    .join-button:hover {
-      background-color: darkorange;
-    }
+  .todo-button:hover,
+  .join-button:hover {
+    background-color: darkorange;
+  }
 
   .badge {
     background-color: #f68b1e;
@@ -171,43 +193,94 @@
     padding: 3px 8px;
     font-size: 12px;
     position: absolute;
-    top: -5px; /* Move the badge a little above */
-    right: -5px; /* Position it on the top-right corner */
+    top: -5px;
+    right: -5px;
   }
 
-
-
-  /* Class Cards Section - Styling */
-  .class-cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columns layout */
-    gap: 20px;
-    width: 90%;
-    max-width: 1200px;
-    margin-top: 20px;
-    padding-bottom: 20px;
+  .join-controls-wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: center;
   }
 
-  /* Class card styling */
-  .class-card {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
+  .join-select {
+    background-color: #3b3b98;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 14px;
     cursor: pointer;
-    position: relative; /* Allow positioning of the overlay */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    appearance: none;
   }
 
-    .class-card:hover {
-      border: 1px solid #007bff;
-    }
+  .join-select:hover {
+    background-color: darkorange;
+  }
 
-  /* Class image styling */
+  .join-select option {
+    color: black;
+  }
+
+.class-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  width: 90%;
+  max-width: 1200px;
+  margin-top: 20px;
+  padding-bottom: 20px;
+  margin-left: 20%; 
+}
+
+.class-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  padding: 0;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: transparent;
+}
+
+.card-background {
+  width: 100%;
+  height: 180px;
+  background-image: url('@/assets/pexels-photo.png');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.class-card-overlay {
+  color: white;
+  padding: 15px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.class-card h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.author {
+  font-size: 14px;
+  margin-top: 8px;
+  color: #f0f0f0;
+}
+
+  .class-card:hover {
+    border: 1px solid #007bff;
+  }
+
   .class-image {
     width: 100%;
     height: 120px;
@@ -215,45 +288,67 @@
     border-radius: 5px;
   }
 
-  /* Author text styling */
-  .author {
-    margin-top: 10px;
-    font-size: 12px;
-    color: #555;
-  }
-
-  /* Class card image container */
   .class-image-container {
     position: relative;
   }
 
-  /* Class card overlay styling */
   .class-card-overlay {
     position: absolute;
     top: 50%;
     left: 40%;
-    transform: translate(-50%, -50%); /* Center the overlay */
-    color: black; /* Ensure the text is visible on darker images */
+    transform: translate(-50%, -50%);
+    color: black;
     padding: 10px;
     border-radius: 5px;
-    text-align: center; /* Center the text inside the overlay */
-    width: 80%; /* Adjust width */
+    text-align: center;
+    width: 80%;
     font-size: 14px;
   }
-  /* Media query for screens below 768px */
+.instructor-info {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 15px;
+  padding: 10px 0;
+  margin-left: 90px;
+}
+
+/* Avatar container with gradient */
+.instructor-avatar-container {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(to bottom, #f08a24, #3b3b98);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Avatar image */
+.instructor-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Instructor name */
+.instructor-name {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #000000;
+}
+
   @media (max-width: 768px) {
-    /* Adjust the layout of the app container for mobile */
     .app-container {
       flex-direction: column;
       height: auto;
     }
 
-    /* Adjust the background container to fit mobile view */
     .background-container {
       padding-top: 10px;
     }
 
-    /* Header adjustments */
     .header {
       flex-direction: column;
       align-items: flex-start;
@@ -263,47 +358,43 @@
     .todo-button-container {
       margin-top: 10px;
       display: flex;
-      flex-direction: column; /* Stack the buttons vertically */
-      width: 100%; /* Ensure container takes full width */
+      flex-direction: column;
+      width: 100%;
     }
 
-    /* Button adjustments */
     .todo-button, .join-button {
       font-size: 14px;
       padding: 12px 20px;
-      width: 100%; /* Ensure buttons are full width */
-      text-align: center; /* Center text inside buttons */
+      width: 100%;
+      text-align: center;
       border-radius: 5px;
       cursor: pointer;
-      background-color: #3b3b98; /* Default color */
-      color: white; /* Text color */
+      background-color: #3b3b98;
+      color: white;
       border: none;
-      margin-bottom: 15px; /* Add margin-bottom to create space between buttons */
+      margin-bottom: 15px;
     }
 
     .todo-button:hover, .join-button:hover {
       background-color: darkorange;
     }
 
-    /* Badge adjustments */
     .badge {
       font-size: 10px;
       padding: 2px 6px;
     }
 
-    /* Class Cards adjustments */
     .class-cards {
       display: grid;
-      grid-template-columns: repeat(2, 1fr); /* 2 columns for smaller screens */
+      grid-template-columns: repeat(2, 1fr);
       gap: 15px;
       width: 90%;
       max-width: 100%;
       margin-top: 20px;
       padding-bottom: 20px;
-      margin-bottom: 100px; /* Push the cards above the footer */
+      margin-bottom: 100px;
     }
 
-    /* Class card adjustments */
     .class-card {
       padding: 12px;
       font-size: 14px;
@@ -312,6 +403,16 @@
     .class-image {
       height: 100px;
     }
-  }
 
+    .join-controls-wrapper {
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .join-select {
+      width: 100%;
+    }
+  }
 </style>

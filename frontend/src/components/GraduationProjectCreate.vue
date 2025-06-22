@@ -3,7 +3,8 @@
     <div class="popup-content">
       <button @click="$emit('closed')" class="close-btn">×</button>
       <h2>Upload New Project</h2>
-      <input type="text" placeholder="Enter the title of project" class="input-field" />
+<input v-model="title" type="text" placeholder="Enter the title of project" class="input-field" />
+
 
       <div class="upload-container" @click="triggerFileUpload">
         <!-- Hidden file input -->
@@ -32,10 +33,24 @@
     name: 'GraduationProjectCreate',
     emits: ['closed'],
     data() {
-
+  return {
+    title: '',
+    selectedFile: null,
+  };
     },
     methods: {
-    }
+  uploadProject() {
+    console.log("Upload triggered:", this.title, this.selectedFile);
+    this.$emit('closed'); // Optional: Close the popup after
+  },
+  handleFileUpload(event) {
+  this.selectedFile = event.target.files[0];
+},
+triggerFileUpload() {
+  this.$refs.fileInput.click();
+}
+
+}
   }
 
 </script>
@@ -66,9 +81,14 @@
     align-items: center;
     justify-content: center;
     position: relative; /* Ensure positioning works */
-    top: 90px; /* Move the popup down */
+    top: 32px; /* Move the popup down */
   }
-
+.close-btn:focus,
+.close-btn:hover {
+  background: none;
+  outline: none;
+  box-shadow: none;
+}
   .close-btn {
     position: absolute;
     top: 10px;
@@ -76,9 +96,14 @@
     font-size: 40px;
     background: none;
     border: none;
+    color:white;
     cursor: pointer;
   }
-
+.close-btn:hover {
+  color: rgb(0, 0, 0);
+  transform: scale(1.2);
+  transition: all 0.2s ease;
+}
   .input-field,
   .upload-container {
     width: 90%;
@@ -161,7 +186,6 @@
     padding-bottom: 25px; /* Adds spacing below */
     text-align: center; /* Keep it centered */
   }
-
 
 </style>
 

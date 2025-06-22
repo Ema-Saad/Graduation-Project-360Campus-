@@ -6,25 +6,22 @@
       <div class="hero-text">
         <h1>Welcome to the Learning Platform</h1>
         <p>Explore our courses and resources to learn and grow.</p>
-        <router-link to="/my-courses">
+        <router-link to="/classroom/list">
           <button class="explore-btn">Explore Our Courses</button>
         </router-link>
       </div>
     </section>
 
     <!-- Popup Icon and Window -->
-    <!-- Popup Icon (Navigates Directly to Map Page) -->
-    <div>
-      <div class="popup-icon" @click="goToMapPage">
-        <i class="fas fa-map-marker-alt"></i>
-      </div>
-    </div>
+<a href="http://localhost:8000/index.html" class="popup-icon noUnderline" @click="closeMobileMenu">
+  <i class="fas fa-map-marker-alt"></i>
+</a>
 
     <!-- Popular Materials Section -->
     <section class="popular-materials-section">
       <div class="popular-materials-header">
         <h1>Our Popular Materials</h1>
-        <router-link to="/materials" class="see-more-link">See More...</router-link>
+        <router-link to="/course/list" class="see-more-link">See More...</router-link>
       </div>
 
       <!-- Course Cards -->
@@ -78,7 +75,7 @@
           From educational workshops to fun social gatherings, there’s something for everyone.<br>
           Whether you're looking to learn something new, connect with peers, or just enjoy a good time.
         </p>
-        <button class="hero-button" @click="goToEventsPage">Explore Our Events</button>
+<button class="hero-button" @click="goToEventList">Explore Our Events</button>
       </div>
     </div>
 
@@ -90,7 +87,7 @@
           Here you can find all the courses you are currently enrolled in. Click on any course card to learn more and access the course materials.
         </p>
         <div class="see-more-container">
-          <router-link to="/my-courses" class="see-more-link">See More...</router-link>
+          <router-link to="/classroom/list" class="see-more-link">See More...</router-link>
         </div>
       </div>
 
@@ -181,6 +178,9 @@
       togglePopup() {
         this.showPopup = !this.showPopup;
       },
+        goToEventList() {
+    this.$router.push('/event/list');
+  },
       goToMapPage() {
         console.log("Navigating to Map Page");
         this.$router.push({ name: 'Map' }); // Navigate directly
@@ -189,10 +189,9 @@
         console.log("Navigating to Events Page");
         this.$router.push({ name: 'Events' });
       },
-      goToCourseDetails(courseId) {
-        console.log("Navigating to course details:", courseId);
-        this.$router.push({ name: 'CourseDetails', params: { id: courseId } });
-      },
+    goToCourseDetails(courseId) {
+    this.$router.push(`/this/course/${courseId}`);
+  },
       goToMyCourseDetail(courseId) {
         console.log("Navigating to my course details:", courseId);
         this.$router.push({ name: 'MyCourseDetail', params: { id: courseId } });
@@ -512,8 +511,6 @@
     font-weight: bold; /* Make the instructor's name bold */
     color: #333; /* Dark gray color for the name */
   }
-
-
   .course-subtitle {
     font-size: 1em; /* Regular font size for the subtitle */
     color: #777; /* Lighter gray color for the subtitle */
@@ -611,6 +608,10 @@
     gap: 20px;
     margin: 20px;
   }
+.popup-icon.no-underline {
+  text-decoration: none;
+  color: inherit; /* Optional: keep the icon color unchanged */
+}
 
   /* Card Styles */
   .card {
@@ -686,35 +687,35 @@
     .view-course-btn:hover {
       background-color: darkorange;
     }
-  .popup-icon {
-    position: fixed;
-    top: 58%; /* You can adjust this to place the icon where you want it */
-    right: 20px; /* Distance from the right edge of the screen */
-    cursor: pointer;
-    font-size: 29px;
-    color: black;
-    background: #fe6805; /* Initial Orange */
-    padding: 10px;
-    border-radius: 50%; /* Circular shape */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Shadow for the icon */
-    transition: all 0.3s ease; /* Smooth transition for hover effects */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 35px;
-    height: 35px;
-    z-index: 1000; /* Ensures it stays on top of other elements */
-  }
+.popup-icon {
+  position: fixed;
+  top: 58%;
+  right: 20px;
+  cursor: pointer;
+  font-size: 29px;
+  color: black;
+  background: #fe6805;
+  padding: 10px;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  text-decoration: none; /* This removes the underline */
+  z-index: 1000;
+}
 
 /* Hover Effect */
 .popup-icon:hover {
-    background: radial-gradient(circle, #3234A9 40%, rgba(50, 52, 169, 0.5) 70%, rgba(50, 52, 169, 0.1) 100%);
-    color: black; /* Change icon color */
-    transform: scale(1.1) translateY(-3px);
-    box-shadow: 0 0 20px rgba(50, 52, 169, 0.6);
+  background: radial-gradient(circle, #3234A9 40%, rgba(50, 52, 169, 0.5) 70%, rgba(50, 52, 169, 0.1) 100%);
+  color: black;
+  transform: scale(1.1) translateY(-3px);
+  box-shadow: 0 0 20px rgba(50, 52, 169, 0.6);
+  text-decoration: none; /* Ensures underline doesn't appear on hover */
 }
-
-
     /* Click Effect */
     .popup-icon:active {
       transform: scale(0.95); /* Slight shrink effect when clicked */

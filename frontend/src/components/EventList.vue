@@ -126,12 +126,11 @@
     z-index: 1;
   }
 
-  /* Event Details Section */
-  .event-details {
-    flex: 1;
-    padding: 20px;
-  }
-
+.event-details {
+  flex: 1;
+  padding: 20px;
+  margin-left: -90px; /* Shift slightly left */
+}
     .event-details h2 {
       font-size: 1.8rem;
       font-weight: bold;
@@ -175,7 +174,7 @@
   }
 
     .enroll-button:hover {
-      background-color: #f6790f;
+      background-color: darkorange;
     }
 
     /* Confirmed Enroll Button Styles */

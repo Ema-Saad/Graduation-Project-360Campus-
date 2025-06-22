@@ -1,202 +1,196 @@
 <template>
-  <div :class="{'blur': showPopup}" class="user-profile">
+  <div class="profile-container">
     <!-- Left Section -->
-    <div class="left-section">
+    <div class="profile-left">
       <!-- Profile Image Section -->
-      <div class="profile-image-container">
-        <img src="@/assets/Momen.jpg" alt="User Image" class="profile-image" />
-        <button class="edit-profile-btn" @click="openPopup">Edit profile</button>
+      <div class="profile-image-wrapper">
+        <img src="@/assets/momen.jpg" alt="User Image" class="profile-photo" />
+        <button class="profile-edit-btn" @click="showPopup = true">Edit profile</button>
       </div>
 
-      <div class="separator">
-        <span class="separator-label">Courses</span>
+      <div class="timeline-separator">
+        <span class="timeline-label">Courses</span>
       </div>
 
       <!-- Courses Section -->
-      <div class="courses-section">
-        <div class="course">
+      <div class="profile-courses">
+        <div class="profile-course">
           <h4>CSC 410 Software Quality</h4>
-          <p class="course-description">Dr/ Mohamed</p>
-          <p class="course-description">Best courses in CSIT program</p>
+          <p class="profile-course-description">Dr/ Mohamed</p>
+          <p class="profile-course-description">Best courses in CSIT program</p>
         </div>
-        <div class="course">
+        <div class="profile-course">
           <h4>CSC 410 Software Quality</h4>
-          <p class="course-description">Dr/ Mohamed</p>
-          <p class="course-description">Best courses in CSIT program</p>
+          <p class="profile-course-description">Dr/ Mohamed</p>
+          <p class="profile-course-description">Best courses in CSIT program</p>
         </div>
-        <!-- Updated to use router-link -->
         <router-link to="/my-courses">
-          <button class="view-courses-btn">View my courses</button>
+          <button class="courses-view-btn">View my courses</button>
         </router-link>
       </div>
 
-      <!-- Separator Line with Label -->
-      <div class="separator">
-        <span class="separator-label">Events</span>
+      <div class="timeline-separator">
+        <span class="timeline-label">Events</span>
       </div>
 
       <!-- Events Section -->
-      <div class="events-section">
+      <div class="profile-events">
         <ul>
-          <li>Event 1</li>
-          <li>Event 2</li>
-          <li>Event 3</li>
+          <li>Event1</li>
+          <li>Event2</li>
+          <li>Event3</li>
         </ul>
       </div>
     </div>
 
     <!-- Right Section -->
-    <div class="right-section">
-      <!-- User Information -->
+    <div class="profile-right">
       <div class="user-info-header">
-        <h1 class="user-name">Mo'men Ali</h1>
-        <p class="user-role">CSIT</p>
-        <p class="user-location">
+        <h1 class="user-fullname">Mo'men Ali</h1>
+        <p class="user-department">CSIT</p>
+        <p class="user-address">
           <i class="fas fa-map-marker-alt"></i> Alexandria
         </p>
-
-        <!-- Wrap the buttons in a new container -->
-        <div class="buttons-container">
+        <div class="button-container">
           <router-link to="/events">
-            <button class="view-events-btn">View Events</button>
+            <button class="events-view-btn">View Events</button>
           </router-link>
-          <!-- Add Download Report Button -->
           <button class="download-report-btn" @click="downloadReport">Download Report</button>
         </div>
       </div>
 
-      <!-- Tabs -->
-      <div class="tabs">
-        <router-link to="/profile" class="tab" active-class="active">
+      <div class="profile-tabs">
+        <router-link to="/profile" class="profile-tab" :class="{ active: $route.path === '/profile' }">
           <i class="fas fa-user"></i> About
         </router-link>
-        <router-link to="/timeline" class="tab" active-class="active">
+        <router-link to="/timeline" class="profile-tab" active-class="active">
           <i class="fas fa-clock"></i> Timeline
-          <span v-if="taskCount > 0" class="task-count">{{ taskCount }}</span>
+          <span v-if="taskCalc > 0" class="task-calc">{{ taskCalc }}</span>
         </router-link>
-        <router-link to="/settings" class="tab" active-class="active">
+        <router-link to="/settings" class="profile-tab" :class="{ active: $route.path === '/settings' }">
           <i class="fas fa-cog"></i> Settings
         </router-link>
       </div>
 
-      <!-- Information Sections -->
-      <div class="info-section">
-        <h3>University Information</h3>
-        <p><strong>Student ID:</strong> <span>320210001</span></p>
-        <p><strong>Full Name (AR):</strong> <span>مؤمن علي</span></p>
-        <p><strong>Full Name (EN):</strong> <span>mo'men Ali</span></p>
-        <p><strong>Nationality:</strong> <span>Egyptian</span></p>
-        <p><strong>National ID:</strong> <span>30305048754585</span></p>
-        <p><strong>E-mail:</strong> <span>mo'men Ali@ejust.edu.eg</span></p>
+      <div class="timeline-section">
+        <h3>Assignment</h3>
+        <div class="view-btn-container">
+          <div class="circle-number">{{ taskCount }}</div> <!-- Dynamic Orange Circle with Number -->
+          <router-link to="/todo">
+            <button class="timeline-view-btn">View</button>
+          </router-link>
+        </div>
       </div>
 
-      <div class="info-section">
-        <h3>Contact Information</h3>
-        <p><strong>Phone:</strong> <span>+12154878511</span></p>
-        <p><strong>Address:</strong> <span>Alexandria</span></p>
-        <p><strong>E-mail:</strong> <span>mo'men Ali@ejust.edu.eg</span></p>
-      </div>
+      <div class="section-separator"></div>
 
-      <div class="info-section">
-        <h3>Basic Information</h3>
-        <p><strong>Birth Date:</strong> <span>06/06/2003</span></p>
-        <p><strong>Gender:</strong> <span>Male</span></p>
+      <div class="timeline-section">
+        <h3>Online Lecture</h3>
+        <div class="view-btn-container">
+          <div class="circle-number">{{ lectureCount }}</div> <!-- Dynamic Orange Circle with Number -->
+          <router-link to="/todo">
+            <button class="timeline-view-btn">View</button>
+          </router-link>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Popup Modal (Edit Profile) -->
-  <div v-if="showPopup" class="popup-overlay">
-    <div class="popup-content">
-      <button class="close-btn" @click="closePopup">✖</button>
+    <!-- Popup Modal (Edit Profile) -->
+    <div v-if="showPopup" class="popup-overlay">
+      <div class="popup-content">
+        <button class="close-btn" @click="showPopup = false">✖</button>
 
-      <!-- Profile Picture Section -->
-      <div class="profile-pic-container">
-        <span class="profile-pic-label">Profile Picture</span>
+        <!-- Profile Picture Section -->
+        <div class="profile-pic-container">
+          <span class="profile-pic-label">Profile Picture</span>
 <img src="@/assets/Momen1.jpg" alt="Profile Picture" class="profile-pic" />
-        <label class="upload-btn">
-          Upload
-          <input type="file" class="hidden" @change="uploadImage">
-        </label>
-      </div>
-      <hr class="separator">
-      <h2 class="user-name">{{ profile.fullNameEn }}</h2>
-      <span class="profile-name-label">Profile Name</span>
-      <hr class="separator">
-      <h3 class="section-title">University Information</h3>
-      <div class="details-line">
-        <span class="details-label">Details</span>
-      </div>
-      <div class="info-section">
-        <p>
-          <label for="studentId">Student ID:</label> <span style="color: blue;">{{ profile.studentId }}</span>
-        </p>
-        <p>
-          <label for="fullNameAr">Full Name (AR):</label>
-          <span style="color: blue;">{{ profile.fullNameAr }}</span>
-        </p>
-        <p>
-          <label for="fullNameEn">Full Name (EN):</label>
-          <span style="color: blue;">{{ profile.fullNameEn }}</span>
-        </p>
-        <p>
-          <label for="nationality">Nationality:</label>
-          <span style="color: blue;">{{ profile.nationality }}</span>
-        </p>
-        <p>
-          <label for="nationalId">National ID:</label>
-          <span style="color: blue;">{{ profile.nationalId }}</span>
-        </p>
 
-        <p>
-          <label for="email">Email:</label> <span style="color: blue;">{{ profile.email }}</span>
-        </p>
-      </div>
+          <label class="upload-btn">
+            Upload
+            <input type="file" class="hidden" @change="uploadImage">
+          </label>
+        </div>
 
-      <h3 class="section-title">Contact Information</h3>
-      <div class="info-section">
-        <p>
-          <label for="phone">Phone:</label> <input id="phone" v-model="profile.phone" class="editable-input" type="tel" />
-        </p>
-        <p>
-          <label for="address">Address:</label> <input id="address" v-model="profile.address" class="editable-input" />
-        </p>
-        <p>
-          <label for="contactEmail">Email:</label> <input id="contactEmail" v-model="contact.email" class="editable-input" type="email" />
-        </p>
-      </div>
+        <hr class="separator">
+        <h2 class="user-name">{{ profile.fullNameEn }}</h2>
+        <span class="profile-name-label">Profile Name</span>
+        <hr class="separator">
 
-      <h3 class="section-title">Basic Information</h3>
-      <div class="info-section">
-        <p>
-          <label for="birthDate">Birth Date:</label>
-          <span style="color: blue;">{{ profile.birthDate }}</span>
-        </p>
-        <p>
-          <label for="gender">Gender:</label> <span>{{ profile.gender }}</span>
-        </p>
+        <h3 class="section-title">University Information</h3>
+        <div class="details-line">
+          <span class="details-label">Details</span>
+        </div>
+        <div class="info-section">
+          <p>
+            <label for="studentId">Student ID:</label> <span style="color: blue;">{{ profile.studentId }}</span>
+          </p>
+          <p>
+            <label for="fullNameAr">Full Name (AR):</label>
+            <span style="color: blue;">{{ profile.fullNameAr }}</span>
+          </p>
+          <p>
+            <label for="fullNameEn">Full Name (EN):</label>
+            <span style="color: blue;">{{ profile.fullNameEn }}</span>
+          </p>
+          <p>
+            <label for="nationality">Nationality:</label>
+            <span style="color: blue;">{{ profile.nationality }}</span>
+          </p>
+          <p>
+            <label for="nationalId">National ID:</label>
+            <span style="color: blue;">{{ profile.nationalId }}</span>
+          </p>
+          <p>
+            <label for="email">Email:</label> <span style="color: blue;">{{ profile.email }}</span>
+          </p>
+        </div>
 
-      </div>
-      <hr class="separator">
-      <!-- events Section -->
-      <div class="title-container">
-        <h3 class="section-title">events</h3>
-      </div>
+        <h3 class="section-title">Contact Information</h3>
+        <div class="info-section">
+          <p>
+            <label for="phone">Phone:</label> <input id="phone" v-model="profile.phone" class="editable-input" type="tel" />
+          </p>
+          <p>
+            <label for="address">Address:</label> <input id="address" v-model="profile.address" class="editable-input" />
+          </p>
+          <p>
+            <label for="contactEmail">Email:</label> <input id="contactEmail" v-model="contact.email" class="editable-input" type="email" />
+          </p>
+        </div>
 
-      <div class="events-section">
-        <ul>
-          <li v-for="(event, index) in profile.events" :key="index">
-            {{ event }}
-            <button class="remove-event-btn" @click="removeEvent(index)">Remove</button>
-          </li>
-        </ul>
-      </div>
+        <h3 class="section-title">Basic Information</h3>
+        <div class="info-section">
+          <p>
+            <label for="birthDate">Birth Date:</label>
+            <span style="color: blue;">{{ profile.birthDate }}</span>
+          </p>
+          <p>
+            <label for="gender">Gender:</label> <span>{{ profile.gender }}</span>
+          </p>
+        </div>
 
-      <!-- Save Button -->
-      <button class="save-btn" @click="saveProfile">Save</button>
+        <hr class="separator">
+
+        <!-- Events Section -->
+        <div class="title-container">
+          <h3 class="section-title">Events</h3>
+        </div>
+        <div class="events-section">
+          <ul>
+            <li v-for="(event, index) in profile.events" :key="index">
+              {{ event }}
+              <button class="remove-event-btn" @click="removeEvent(index)">Remove</button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Save Button -->
+        <button class="save-btn" @click="saveProfile">Save</button>
+      </div>
     </div>
   </div>
 </template>
+
 
 <script>
   import profilePicture from '@/assets/profilepic.png';
@@ -204,12 +198,13 @@
     name: "ProfilePage",
     data() {
       return {
-        showInput: false, 
+        showInput: false,
         showPopup: false,
+        taskCount: 3, // Dynamic number for tasks
+        lectureCount: 2, // Dynamic number for online lectures
         profilePicture: profilePicture, // Default or uploaded image
-        newSkill: "",
         newEvent: '',
-        taskCount: 3, 
+        taskCalc: 3,
         profile: {
           studentId: "320210001",
           fullNameAr: "مؤمن علي",
@@ -255,11 +250,11 @@
       // Method to download report (keeping existing functionality)
       downloadReport() {
         const reportContent = `
-          Name: Mo'men Ali
-          Role: CSIT Student
-          Location: Alexandria
-          Email: mo'men@ejust.edu.eg
-        `;
+        Name: Mo'men Ali
+        Role: CSIT Student
+        Location: Alexandria
+        Email: mo'men@ejust.edu.eg
+      `;
         const blob = new Blob([reportContent], { type: 'text/plain' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
@@ -272,7 +267,7 @@
 
 <style scoped>
   /* General Layout */
-  .user-profile {
+  .profile-container {
     display: flex;
     gap: 30px;
     max-width: 1200px;
@@ -281,32 +276,26 @@
     font-family: Arial, sans-serif;
     color: #333;
   }
-  .blur {
-    filter: blur(0.3px);
-    opacity: 0.3;
-    pointer-events: none; /* Optional: Disables interaction with blurred elements */
-    transition: filter 0.3s ease; /* Smooth transition for the blur */
-  }
 
   /* Left Section */
-  .left-section {
+  .profile-left {
     width: 30%;
+
   }
 
-  .profile-image-container {
+  .profile-image-wrapper {
     position: relative;
     text-align: center;
     margin-bottom: 20px;
   }
 
-  .profile-image {
+  .profile-photo {
     width: 100%;
     object-fit: cover;
     border-radius: 3px;
     border: 1px solid #ccc;
   }
-
-  .edit-profile-btn {
+  .profile-edit-btn {
     position: absolute;
     bottom: -10px;
     left: 50%;
@@ -320,32 +309,32 @@
     cursor: pointer;
   }
 
-    .edit-profile-btn:hover {
+    .profile-edit-btn:hover {
       background-color: darkorange;
     }
 
-  .courses-section {
+  .profile-courses {
     margin-bottom: 30px;
   }
 
-    .courses-section h3 {
+    .profile-courses h3 {
       margin-bottom: 10px;
     }
 
-  .course {
+  .profile-course {
     margin-bottom: 15px;
   }
 
-    .course h4 {
+    .profile-course h4 {
       font-weight: bold;
       margin: 5px 0;
     }
 
-  .course-description {
+  .profile-course-description {
     color: #777;
   }
 
-  .view-courses-btn {
+  .courses-view-btn {
     background-color: #3b3780;
     color: white;
     padding: 10px 20px;
@@ -354,18 +343,18 @@
     cursor: pointer;
   }
 
-    .view-courses-btn:hover {
+    .courses-view-btn:hover {
       background-color: darkorange;
     }
 
   /* Separator Line with Label */
-  .separator {
+  .timeline-separator {
     position: relative;
     margin: 20px 0;
     text-align: center;
   }
 
-    .separator:before {
+    .timeline-separator:before {
       content: "";
       position: absolute;
       top: 50%;
@@ -377,7 +366,7 @@
       z-index: 1;
     }
 
-  .separator-label {
+  .timeline-label {
     position: relative;
     z-index: 2;
     background: white;
@@ -389,17 +378,17 @@
     transform: translateY(0);
   }
   /* Events Section */
-  .events-section ul {
+  .profile-events ul {
     list-style: none;
     padding: 0;
   }
 
-    .events-section ul li {
+    .profile-events ul li {
       margin-bottom: 8px;
     }
 
   /* Right Section */
-  .right-section {
+  .profile-right {
     width: 70%;
   }
 
@@ -408,30 +397,30 @@
     margin-bottom: 20px;
   }
 
-  .user-name {
+  .user-fullname {
     font-size: 28px;
     font-weight: bold;
+    color: #333;
   }
 
-  .user-role {
+  .user-department {
     font-size: 16px;
     color: #555;
   }
 
-  .user-location {
+  .user-address {
     font-size: 14px;
     color: #777;
   }
 
-  /* Buttons Container */
-  .buttons-container {
+  .button-container {
     display: flex;
     gap: 10px;
-    width: 100%;
+    margin-top: 15px;
   }
 
-  /* View Events and Download Report Buttons */
-  .view-events-btn, .download-report-btn {
+  .events-view-btn,
+  .download-report-btn {
     background-color: #3b3780;
     color: white;
     padding: 10px 20px;
@@ -439,46 +428,44 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
+    transition: background-color 0.3s ease; /* Smooth transition */
   }
-    .view-events-btn:hover,
+
+    .events-view-btn:hover,
     .download-report-btn:hover {
       background-color: darkorange; /* Change to orange on hover */
     }
-
-  .view-events-btn {
+  .events-view-btn {
     padding: 10px 30px;
   }
 
-    /* Tabs */
-    .tabs {
-      display: flex;
-      gap: 20px;
-      margin: 20px 0;
-      border-bottom: 1px solid #ddd;
+  /* Tabs */
+  .profile-tabs {
+    display: flex;
+    gap: 20px;
+    margin: 20px 0;
+    border-bottom: 1px solid #ddd;
+  }
+    .profile-tabs .profile-tab:hover {
+      color: #3b3780;
     }
 
-  .tab {
+  .profile-tab {
     text-decoration: none;
-    color: #555; /* Default color */
+    color: #555;
     padding: 10px 15px;
     font-size: 16px;
-    position: relative; /* Make the tab positioned */
-    transition: color 0.3s ease; /* Smooth transition for color change */
   }
 
-    .tab:hover {
-      color: #3b3780; /* Change color to blue on hover */
-    }
-    .tab.active {
+    .profile-tab.active {
       font-weight: bold;
       color: #3b3780;
       border-bottom: 3px solid #3b3780;
     }
-
-  .task-count {
+  .task-calc {
     position: absolute;
-    top: -10px;
-    right: 1px;
+    top: 42%;
+    right: 50%;
     background-color: darkorange;
     color: white;
     padding: 4px 6px;
@@ -487,6 +474,62 @@
     font-weight: bold;
   }
 
+  .timeline-section {
+    margin-bottom: 20px;
+  }
+
+    .timeline-section h3 {
+      margin-bottom: 10px;
+      font-size: 20px;
+    }
+
+    .timeline-section p {
+      margin: 5px 0;
+    }
+
+  .section-separator {
+    height: 1px;
+    background-color: #ddd;
+    margin: 20px 0;
+  }
+
+  .view-btn-container {
+    position: relative; /* To position the circle relative to this container */
+    display: flex;
+    justify-content: flex-end;
+    align-items: center; /* Ensure the button and circle are aligned */
+  }
+  .circle-number {
+    position: absolute; /* Position it above the button */
+    top: -7px; /* Adjust this value to fine-tune its position */
+    left: 99%; /* Adjust this value to fine-tune its position */
+    background-color: darkorange; /* Background color for the circle */
+    color: white;
+    font-size: 14px; /* Adjust size as needed */
+    width: 20px; /* Set the size of the circle */
+    height: 20px; /* Set the size of the circle */
+    border-radius: 50%; /* Make it a circle */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Center the number inside the circle */
+    font-weight: bold; /* Make the number bold */
+  }
+  .timeline-view-btn {
+    background-color: #3b3780;
+    color: white;
+    padding: 7px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+  }
+
+    .timeline-view-btn:hover {
+      background-color: darkorange;
+    }
+    
   /* Popup Modal (Edit Profile) */
   .popup-overlay {
     position: fixed;
@@ -504,7 +547,6 @@
     .popup-overlay .section-title {
       color: #777; /* Change text color to gray */
     }
-
   .popup-content {
     background: white;
     padding: 30px;
@@ -519,11 +561,12 @@
     overflow-y: auto;
   }
 
-      .popup-content h2 {
-        font-size: 24px;
-        margin-bottom: 20px;
-        text-align: center;
-      }
+    .popup-content h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
   .scrollable-content {
     overflow-y: auto; /* Enable vertical scrolling */
     flex: 1; /* Allow this section to take up remaining space */
@@ -531,19 +574,19 @@
   }
 
   .popup-overlay .close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #333;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
   }
 
-      .popup-overlay .close-btn:hover {
-        color: darkorange;
-      }
+    .popup-overlay .close-btn:hover {
+      color: darkorange;
+    }
 
   .popup-overlay .upload-section {
     text-align: center;
@@ -565,14 +608,15 @@
     .popup-overlay .upload-btn:hover {
       background-color: darkorange;
     }
-    .popup-overlay .hidden {
-      display: none;
-    }
 
-    .popup-overlay .separator {
+  .popup-overlay .hidden {
+    display: none;
+  }
+
+  .popup-overlay .separator {
     border-top: 1px solid #ccc; /* Style the line */
     margin: 10px 0; /* Add margin above and below */
-    }
+  }
 
   .popup-overlay .profile-pic-container {
     text-align: center;
@@ -631,6 +675,7 @@
     background: #ddd;
     margin: 20px 0;
   }
+
   .title-container {
     display: flex;
     justify-content: flex-end;
@@ -650,6 +695,7 @@
     width: 100%; /* Ensure full width of container */
     position: relative; /* Make the parent container relative for positioning the button */
   }
+
     .popup-overlay .events-section ul {
       list-style-type: none;
       padding: 0;
@@ -664,6 +710,7 @@
       margin-bottom: 10px; /* Space between events */
       text-align: center; /* Center the text inside each event */
     }
+
   .remove-event-btn {
     background-color: #3b3780;
     color: white;
@@ -677,6 +724,7 @@
     .remove-event-btn:hover {
       background-color: darkorange;
     }
+
   .popup-overlay .save-btn {
     background-color: #3b3780;
     color: white;
@@ -689,9 +737,9 @@
     margin-top: 30px; /* Push the button to the bottom */
   }
 
-      .popup-overlay .save-btn:hover {
-        background-color: darkorange;
-      }
+    .popup-overlay .save-btn:hover {
+      background-color: darkorange;
+    }
 
   .save-event-btn {
     background-color: #3b3780;
@@ -729,7 +777,6 @@
     position: relative;
     display: inline-block;
     padding: 0 20px;
-    background-color: #fff;
     top: -50px; /* Shift the label upwards slightly */
     right: 15px
   }
@@ -813,7 +860,6 @@
         padding-left: 20px; /* Add padding to values */
         box-sizing: border-box; /* Include padding in width calculation */
       }
-  /* Media Queries for responsiveness */
   /* For screens smaller than 1200px */
   @media screen and (max-width: 1200px) {
     /* Adjust .separator-label to the left and add space under it */
@@ -821,38 +867,210 @@
       left: 20px; /* Move the label to the left */
       margin-bottom: 25px; /* Add more space under the label to ensure text appears well */
     }
-    /* Adjust other layout components if needed */
-    .user-profile {
-      flex-direction: column; /* Stack the sections vertically */
+
+    /* Adjust layout for profile container */
+    .profile-container {
+      flex-direction: column; /* Stack sections vertically */
       gap: 20px;
-    }
-    .popup-overlay .info-section p {
-      display: flex;
-      align-items: baseline;
-      justify-content: flex-start;
-      padding-left: 50px; /* Adjust overall left padding as needed */
+      padding: 15px;
     }
 
-    .popup-overlay .profile-name-label {
-      top: 45%;
-      right: 35px; /* Aligns the label to the right */
+    .profile-left, .profile-right {
+      width: 100%; /* Make sections full-width */
     }
 
-    .left-section, .right-section {
-      width: 100%; /* Make sections full-width on smaller screens */
+    .profile-image-wrapper {
+      text-align: center;
+    }
+
+    .profile-photo {
+      width: 80%; /* Adjust photo size */
+      max-width: 200px;
+    }
+
+    .profile-edit-btn {
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+
+    .profile-courses h3 {
+      font-size: 18px;
+    }
+
+    .profile-course h4 {
+      font-size: 14px;
+    }
+
+    .profile-course-description {
+      font-size: 12px;
+    }
+
+    .courses-view-btn {
+      width: 100%;
+      padding: 12px 20px;
+    }
+
+    .events-separator {
+      margin: 15px 0;
+    }
+
+    .events-label {
+      font-size: 14px;
+    }
+
+    .profile-events ul li {
+      font-size: 14px;
+    }
+
+    .user-info-header {
+      text-align: center;
+    }
+
+    .user-fullname {
+      font-size: 22px;
+    }
+
+    .user-department {
+      font-size: 14px;
+    }
+
+    .user-address {
+      font-size: 12px;
+    }
+
+    .events-view-btn {
+      width: 100%;
+      padding: 12px 20px;
+    }
+
+    .button-container {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .profile-tabs {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .profile-tab {
+      width: 100%;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    .timeline-section h3 {
+      font-size: 18px;
+    }
+
+    .timeline-section p {
+      font-size: 14px;
+    }
+
+    .timeline-view-btn {
+      width: 100%;
+      padding: 12px 20px;
+    }
+
+    .timeline-section {
+      margin-right: 10px;
+    }
+
+    .task-calc {
+      margin-top: 190%;
+      margin-left: auto; /* Push it to the right */
+      margin-right: -14%;
+    }
+
+    .section-separator {
+      margin: 15px 0;
     }
   }
 
   /* For screens smaller than 768px */
   @media screen and (max-width: 768px) {
-    .separator-label {
-      left: 10px; /* Move the label further to the left for smaller screens */
-      margin-bottom: 30px; /* Add more space under the label to ensure text appears well */
+    .profile-photo {
+      max-width: 95%;
+      height: 90%;
+    }
+    .profile-tab {
+      text-decoration: none;
+      color: #555;
+      padding: 10px 15px;
+      font-size: 16px;
+      display: inline-block; /* Ensures the width of the tab matches the content */
     }
 
-    .profile-image {
-      width: 75%;
-      height: 75%;
+      .profile-tab.active {
+        font-weight: bold;
+        color: #3b3780;
+        border-bottom: 3px solid #3b3780;
+        padding-bottom: 5px; /* Optional: Adjust the spacing between the text and border */
+        width: auto; /* Makes sure the border length is constrained to the tab width */
+      }
+    .profile-right {
+      margin-left: 0; /* Removes any left margin */
+      margin-left: 0;
+      padding-left: 0; /* Removes any left padding */
+    }
+
+    .profile-container {
+      display: flex;
+      gap: 30px;
+      max-width: 1700px;
+      margin: auto;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+    .profile-edit-btn {
+     margin-bottom: -15px;
+    }
+    .timeline-label {
+        right: 45%;
+    }
+
+     .courses-view-btn {
+      padding: 8px 15px;
+    }
+    .user-info-header .user-fullname {
+      font-size: 1.5rem; /* Increase the font size of the full name */
+    }
+
+    .user-info-header .user-department,
+    .user-info-header .user-address {
+      font-size: 1rem; /* Increase the font size of the department and address */
+    }
+
+    .events-view-btn {
+      padding: 8px 15px;
+    }
+    .profile-events ul li {
+      font-size: 16px; /* Increase font size */
+    }
+
+    .timeline-view-btn {
+      padding: 8px 15px;
+    }
+
+    .timeline-section{
+      margin-right: 10px;
+    }
+    .task-calc {
+      margin-top: 200%;
+      margin-left: auto; /* Push it to the right */
+      margin-right: -10%;
+    }
+    .profile-course-description{
+        font-size: 16px;
+    }
+
+    .profile-course h4{
+        font-size: 16px;
     }
 
     .popup-overlay .info-section p {
@@ -861,97 +1079,40 @@
       justify-content: flex-start;
       padding-left: 50px; /* Adjust overall left padding as needed */
     }
-    .user-profile {
-      padding: 10px; /* Reduce padding for smaller screens */
-    }
 
-    .left-section, .right-section {
-      width: 100%; /* Sections will be full-width */
-    }
-    .user-info-header {
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-    }
-      .user-info-header .user-name {
-        font-size: 1.5rem; /* Set the font size for the name */
-        margin-bottom: 5px; /* Reduce the space below the name */
-      }
-
-      .user-info-header .user-role,
-      .user-info-header .user-location {
-        font-size: 1rem; /* Set the font size for the role and location */
-        margin-bottom: 3px; /* Reduce the space below the role and location */
-      }
-
-
-    .view-events-btn{
-        width: 100%;
-    }
-    .separator-label{
-        left: -45%;
-    }
-    .buttons-container {
-      flex-direction: column; /* Stack buttons vertically */
-      gap: 10px;
-    }
-
-    .tabs {
-      display: flex;
-      flex-direction: column; /* Stack tabs vertically */
-      gap: 10px;
-      align-items: center; /* Center items horizontally */
-      justify-content: center; /* Center items vertically */
-      text-align: center; /* Ensures text inside is centered */
-      margin: auto; /* Center the container itself if needed */
-    }
-
-    .popup-overlay .save-btn {
-      padding: 8px 12px; /* Adjust button padding */
-      font-size: 14px;
-    }
-    .popup-overlay .upload-btn{
-        margin-left: -20px;
-    } 
-
-    .popup-overlay .profile-pic {
-      width: 30%; /* Adjust profile picture size */
-    }
-    .task-count {
-      top: -7px;
-      right: 0%;
-    }
-    .popup-overlay .title-container .section-title {
-      font-size: 18px; /* Adjust title font size */
-    }
     .popup-overlay .profile-name-label {
-      top: 45%;
-      right: 35px; /* Aligns the label to the right */
+      top: 35%;
+      right: 40px; /* Aligns the label to the right */
     }
+
   }
 
   /* For screens smaller than 480px */
   @media screen and (max-width: 480px) {
     .separator-label {
-      left: 5px; /* Move closer to the left edge on very small screens */
-      margin-bottom: 35px; /* Add more space under the label to ensure text appears well */
+      left: 5px; /* Move closer to the left edge */
+      margin-bottom: 35px; /* Add more space under the label */
     }
+
     .popup-overlay .info-section p {
       display: flex;
       align-items: baseline;
       justify-content: flex-start;
       padding-left: 50px; /* Adjust overall left padding as needed */
     }
-    .popup-overlay .profile-name-label {
-      top: 45%;
-      right: 35px; /* Aligns the label to the right */
+
+    .timeline-section {
+      margin-right: 10px;
+    }
+
+    .task-calc {
+      margin-top: 190%;
+      margin-left: auto; /* Push it to the right */
+      margin-right: -14%;
     }
 
     .user-profile {
-      padding: 5px; /* Further reduce padding */
+      padding: 5px; /* Reduce padding */
     }
 
     .left-section, .right-section {
@@ -969,13 +1130,14 @@
     }
 
     .popup-overlay .save-btn {
-      padding: 8px 10px; /* Further reduce button padding */
+      padding: 8px 10px; /* Reduce button padding */
       font-size: 13px;
     }
 
     .popup-overlay .profile-pic {
       width: 40%; /* Adjust profile picture size */
     }
+
     .task-count {
       top: -10px;
       right: 78%;

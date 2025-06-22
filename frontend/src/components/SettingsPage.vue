@@ -4,7 +4,7 @@
     <div class="left-section">
       <!-- Profile Image Section -->
       <div class="profile-image-container">
-        <img src="@/assets/profilepic.png" alt="User Image" class="profile-image" />
+        <img src="@/assets/Momen.jpg" alt="User Image" class="profile-image" />
         <button class="edit-profile-btn" @click="showPopup = true">Edit profile</button>
       </div>
       <!-- Separator Line with Label -->
@@ -117,7 +117,7 @@
         <!-- Profile Picture Section -->
         <div class="profile-pic-container">
           <span class="profile-pic-label">Profile Picture</span>
-          <img :src="profilePicture" alt="Profile Picture" class="profile-pic" />
+     <img src="@/assets/Momen1.jpg" alt="Profile Picture" class="profile-pic" />
           <label class="upload-btn">
             Upload
             <input type="file" class="hidden" @change="uploadImage">
@@ -574,7 +574,7 @@
     }
   .task-count {
     position: absolute;
-    top: 44%;
+    top: 43%;
     right: 50%;
     background-color: darkorange;
     color: white;
@@ -705,7 +705,7 @@
 
   .popup-overlay .profile-name-label {
     position: absolute;
-    top: 40%;
+    top: 33%;
     right: 50px; /* Aligns the label to the right */
     font-size: 16px;
     font-weight: bold;

@@ -83,7 +83,12 @@ triggerFileUpload() {
     position: relative; /* Ensure positioning works */
     top: 32px; /* Move the popup down */
   }
-
+.close-btn:focus,
+.close-btn:hover {
+  background: none;
+  outline: none;
+  box-shadow: none;
+}
   .close-btn {
     position: absolute;
     top: 10px;

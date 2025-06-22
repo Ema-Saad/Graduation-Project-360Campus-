@@ -11,6 +11,7 @@ class PersonSerializer(ModelSerializer):
             'department',
             'person_type',
             'email',
+            'id',
         ]
 
 class EventSerializer(ModelSerializer):
@@ -48,6 +49,16 @@ class ClassroomViewSerializer(ModelSerializer):
     class Meta:
         model = Classroom
         exclude = ['students']
+        depth = 1
+
+class ClassroomDumpSerializer(ModelSerializer):
+    instructor = PersonSerializer(read_only=True)
+    course = CourseSerializer(read_only=True)
+    students = PersonSerializer(many=True)
+
+    class Meta:
+        model = Classroom
+        fields = '__all__'
         depth = 1
 
 class TaskViewSerializer(ModelSerializer):

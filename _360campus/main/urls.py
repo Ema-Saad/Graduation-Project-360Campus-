@@ -44,5 +44,6 @@ urlpatterns = [
     path('api/schedule/preference/create', schedule_preference_create),
     path('api/schedule/preference/list', schedule_preference_list),
     path('api/schedule/preference/dump', schedule_preference_dump),
+    path('api/classroom/dump', classroom_dump),
 ]
 

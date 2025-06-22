@@ -83,6 +83,27 @@ dialog textarea {
   border-radius: 6px;
   border: none;
   font-size: 1em;
+  background-color: #ffffff;
+  color: #000000;
+  box-sizing: border-box;
+}
+
+/* Special styling for datetime-local input */
+dialog input[type="datetime-local"] {
+  background-color: #ffffff;
+  color: #000000;
+  font-family: inherit;
+  font-size: 1em;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  box-sizing: border-box;
+}
+
+/* Optional: better focus outline */
+dialog input:focus,
+dialog textarea:focus {
+  outline: 2px solid darkorange;
 }
 
 dialog textarea {

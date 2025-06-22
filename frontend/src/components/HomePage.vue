@@ -13,12 +13,9 @@
     </section>
 
     <!-- Popup Icon and Window -->
-    <!-- Popup Icon (Navigates Directly to Map Page) -->
-    <div>
-      <div class="popup-icon" @click="goToMapPage">
-        <i class="fas fa-map-marker-alt"></i>
-      </div>
-    </div>
+<a href="http://localhost:8000/index.html" class="popup-icon noUnderline" @click="closeMobileMenu">
+  <i class="fas fa-map-marker-alt"></i>
+</a>
 
     <!-- Popular Materials Section -->
     <section class="popular-materials-section">
@@ -512,8 +509,6 @@
     font-weight: bold; /* Make the instructor's name bold */
     color: #333; /* Dark gray color for the name */
   }
-
-
   .course-subtitle {
     font-size: 1em; /* Regular font size for the subtitle */
     color: #777; /* Lighter gray color for the subtitle */
@@ -611,6 +606,10 @@
     gap: 20px;
     margin: 20px;
   }
+.popup-icon.no-underline {
+  text-decoration: none;
+  color: inherit; /* Optional: keep the icon color unchanged */
+}
 
   /* Card Styles */
   .card {
@@ -703,6 +702,7 @@
     justify-content: center;
     width: 35px;
     height: 35px;
+    text-decoration: none;
     z-index: 1000; /* Ensures it stays on top of other elements */
   }
 

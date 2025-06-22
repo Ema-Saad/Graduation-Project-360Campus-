@@ -3,10 +3,21 @@
     <div class="footer-container">
       <!-- Logo and Title -->
       <div class="footer-logo-section">
-        <img src="@/assets/footerlogo.png" alt="Logo" class="footer-logo" />
+        <img src="@/assets/logo-icon.png" alt="Logo" class="footer-logo" />
 
         <span class="footer-title">360Campus</span>
       </div>
+      <!-- Navigation Links -->
+      <div class="footer-column">
+        <h3 class="footer-heading">Navigation</h3>
+        <ul>
+          <li><router-link to="/home">Home</router-link></li>
+          <li><router-link to="/course/list">Materials</router-link></li>
+          <li><router-link to="/classroom/list">My Courses</router-link></li>
+          <li><router-link to="/event/list">Events</router-link></li>
+        </ul>
+      </div>
+
       <!-- Social Links -->
       <div class="footer-column">
         <h3 class="footer-heading">Social</h3>
@@ -31,7 +42,7 @@
     </div>
 
     <div class="footer-bottom">
-      <span>Copyright © 2024 E-Learning</span>
+      <span>Copyright © 2025 E-Learning</span>
       <span>Designed by Digital Innovators Team</span>
     </div>
   </footer>
@@ -148,8 +159,8 @@
   }
 
   .footer-logo {
-    width: 50px;
-    height: 50px;
+    width: 120px;
+    height: 70px;
   }
 
   .footer-title {

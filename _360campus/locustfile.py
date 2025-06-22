@@ -12,7 +12,7 @@ class StudentUser(HttpUser):
         self.username = random.choice(STUDENT_USERS)
         response = self.client.post(
             "/api/auth/login",
-            json={"username": self.username, "password": "pass"}
+            data={"username": self.username, "password": "test"}
         )
         if response.ok:
             self.token = response.json().get("token")

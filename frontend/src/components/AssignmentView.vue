@@ -574,6 +574,22 @@
     .done-button:hover {
       background-color: #f68b1e;
     }
+  .chat-input button {
+  background-color: #201887; /* Default color */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.chat-input button:hover {
+  background-color: darkorange; /* Hover color */
+  transform: scale(1.1); /* Optional scaling effect on hover */
+}
+
 
 .overlay-content > span > button,
 .overlay-content > span > span > button {
@@ -999,6 +1015,14 @@ span > button:not(.save-button):not(.cancel-button) {
   border: none;
   border-radius: 20px;
   cursor: pointer;
+}
+.close-button:hover,
+.close-button:focus,
+.close-button:active {
+  background: none;
+  outline: none;
+  box-shadow: none;
+  transform: scale(1.2);
 }
 
 @media (max-width: 768px) {

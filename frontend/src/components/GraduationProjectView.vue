@@ -79,7 +79,15 @@
     align-items: center;
     margin-bottom: 20px;
   }
-
+.back-button:hover,
+.back-button:focus,
+.back-button:active {
+  background: none;
+  box-shadow: none;
+  outline: none;
+  color: black;
+  transform: scale(1.2);
+}
   .back-button {
     background: none;
     border: none;
